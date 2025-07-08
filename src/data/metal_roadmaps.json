@@ -1,0 +1,92 @@
+[
+  {
+    "icon": "🔥",
+    "title": "Termodinámica",
+    "description": "Equilibrio, energía libre, leyes fundamentales"
+  },
+  {
+    "icon": "⚡",
+    "title": "Cinética",
+    "description": "Velocidades de reacción, Arrhenius, mecanismos"
+  },
+  {
+    "icon": "💎",
+    "title": "Cristalografía",
+    "description": "Estructuras, defectos, sistemas cristalinos"
+  },
+  {
+    "icon": "🔬",
+    "title": "Metalurgia Física",
+    "description": "Microestructura, tratamientos térmicos, propiedades"
+  },
+  {
+    "icon": "🏭",
+    "title": "Procesos Industriales",
+    "description": "Fundición, laminación, forja"
+  },
+  {
+    "icon": "⚙️",
+    "title": "Metalurgia Extractiva",
+    "description": "Pirometalurgia, hidrometalurgia, electro"
+  },
+  {
+    "icon": "💻",
+    "title": "Metalurgia Computacional",
+    "description": "FEM, CFD, Machine Learning"
+  },
+  {
+    "icon": "🌱",
+    "title": "Ciencia de Materiales",
+    "description": "Nanomateriales, biomateriales, compuestos"
+  },
+  {
+    "icon": "🚀",
+    "title": "Proyectos y Laboratorios",
+    "description": "Simulaciones prácticas, casos reales"
+  },
+  {
+    "icon": "🧪",
+    "title": "Química Metalúrgica",
+    "description": "Reacciones en soluciones, lixiviación, química de sales"
+  },
+  {
+    "icon": "🔩",
+    "title": "Mecánica de Materiales",
+    "description": "Tensiones, deformación, ley de Hooke, fatiga"
+  },
+  {
+    "icon": "📈",
+    "title": "Control de Calidad",
+    "description": "Normas ASTM, inspección no destructiva, ensayos mecánicos"
+  },
+  {
+    "icon": "⚛️",
+    "title": "Corrosión y Protección",
+    "description": "Corrosión galvánica, recubrimientos, protección catódica"
+  },
+  {
+    "icon": "🌊",
+    "title": "Fluidos en Metalurgia",
+    "description": "Hidrodinámica, CFD en reactores, fluidización"
+  },
+  {
+    "icon": "🎛️",
+    "title": "Automatización y Control",
+    "description": "Instrumentación industrial, control PID en plantas"
+  },
+  {
+    "icon": "🛰️",
+    "title": "Sensores y Monitoreo",
+    "description": "Sensores IoT, monitoreo de procesos, mantenimiento predictivo"
+  },
+  {
+    "icon": "🚧",
+    "title": "Seguridad Industrial",
+    "description": "Normas OSHAS, ergonomía, gestión de riesgos"
+  },
+  {
+    "icon": "🌍",
+    "title": "Sostenibilidad Metalúrgica",
+    "description": "Economía circular, reciclaje de metales, huella de carbono"
+  }
+]
