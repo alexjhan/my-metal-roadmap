@@ -10,10 +10,10 @@ function App() {
   return (
     <>
       <Navbar />
-        <RoadmapGrid />
-        <HeroSection />
-        <RoadmapsSection />
-        <FeaturesSection />
+      <HeroSection />
+      <RoadmapGrid />
+      <RoadmapsSection />
+      <FeaturesSection />
       <Footer />
     </>
   );

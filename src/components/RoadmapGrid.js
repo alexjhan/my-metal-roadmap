@@ -4,7 +4,7 @@ import data from '../data/metal_roadmaps.json';
 export default function RoadmapGrid() {
   return (
     <div className=" mt-28 max-w-6xl mx-auto ml-8 mr-8 p-6 bg-gray-100 rounded-xl shadow-xl">
-      <h1 className="mt-2 p-2 text-4xl font-bold text-center mb-8 #1e293b ">
+      <h1 className="mt-2 p-2 text-4xl font-bold text-center mb-8 text-slate-800">
         MetalRoadmap para Ingenieros Metalúrgicos
       </h1>
       <p className="text-center text-lg mb-4 text-gray-700">
