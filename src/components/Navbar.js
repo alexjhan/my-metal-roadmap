@@ -1,10 +1,13 @@
 import React from "react";
+import { Link, useLocation } from "react-router-dom";
 
 export default function Navbar() {
+  const location = useLocation();
+
   return (
     <nav className="fixed top-0 w-full bg-white z-[1000]">
       <div className="flex justify-center items-center w-full py-6">
-        <div className="flex items-center gap-3">
+        <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
           <img
             src="/assets/logo.png"
             alt="MetalRoadmap"
@@ -29,7 +32,7 @@ export default function Navbar() {
           >
             Alex J. Geri 
           </h1>
-        </div>
+        </Link>
       </div>
 
       <style jsx>{`

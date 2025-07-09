@@ -1,32 +1,28 @@
-export default function HeroSection() {
+export default function RoadmapsSection() {
+  const roadmaps = [
+    { id: 'fundamentals', icon: '🧪', title: 'Fundamentos', description: 'Bases sólidas en química y física', progress: 85 },
+    { id: 'physical', icon: '🔬', title: 'Metalurgia Física', description: 'Microestructura y transformaciones', progress: 70 },
+    { id: 'extractive', icon: '⛏️', title: 'Metalurgia Extractiva', description: 'Procesamiento de minerales', progress: 60 },
+    { id: 'materials', icon: '🏗️', title: 'Ciencia de Materiales', description: 'Nanomateriales y compuestos', progress: 40 },
+    { id: 'processing', icon: '🏭', title: 'Procesamiento Industrial', description: 'Fundición y laminación', progress: 55 },
+    { id: 'computational', icon: '💻', title: 'Metalurgia Computacional', description: 'Simulación FEM y CFD', progress: 25 },
+  ];
+
   return (
-    <section className="mt-20 py-16 bg-white text-center container mx-auto px-6 rounded-xl shadow">
-      <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-slate-800">
-        MetalRoadmap
-      </h1>
-      <p className=" text-gray-600 text-lg md:text-xl  mb-6 max-w-2xl mx-auto">
-        Rutas de aprendizaje especializadas en Ingeniería Metalúrgica y Ciencia de Materiales
-      </p>
-      <p className="text-sm text-slate-400 mb-10">
-        Contenido curado por la comunidad, proyectos prácticos y simulaciones interactivas
-      </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-        <div className="bg-white border rounded-lg p-6 shadow hover:shadow-lg">
-          <div className="text-3xl font-bold text-blue-600 mb-2">12</div>
-          <div className="text-slate-600">Roadmaps Especializados</div>
-        </div>
-        <div className="bg-white border rounded-lg p-6 shadow hover:shadow-lg">
-          <div className="text-3xl font-bold text-blue-600 mb-2">150+</div>
-          <div className="text-slate-600">Proyectos Prácticos</div>
-        </div>
-        <div className="bg-white border rounded-lg p-6 shadow hover:shadow-lg">
-          <div className="text-3xl font-bold text-blue-600 mb-2">50+</div>
-          <div className="text-slate-600">Simulaciones</div>
-        </div>
-        <div className="bg-white border rounded-lg p-6 shadow hover:shadow-lg">
-          <div className="text-3xl font-bold text-blue-600 mb-2">25</div>
-          <div className="text-slate-600">Laboratorios Virtuales</div>
-        </div>
+    <section id="roadmaps" className="container mx-auto py-16 px-6">
+      <h2 className="text-3xl font-bold text-center mb-12 text-slate-900">Roadmaps de Aprendizaje</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {roadmaps.map(roadmap => (
+          <div key={roadmap.id} className="bg-white border rounded-lg p-6 hover:shadow-lg transition">
+            <div className="text-4xl mb-2">{roadmap.icon}</div>
+            <h3 className="text-xl font-semibold mb-2">{roadmap.title}</h3>
+            <p className="text-slate-600 mb-4">{roadmap.description}</p>
+            <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+              <div className="bg-blue-600 h-2" style={{width: `${roadmap.progress}%`}}></div>
+            </div>
+            <div className="text-right text-sm text-slate-500 mt-1">{roadmap.progress}%</div>
+          </div>
+        ))}
       </div>
     </section>
   );
