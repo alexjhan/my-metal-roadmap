@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiPlus, FiTrash2, FiSave } from 'react-icons/fi';
+import { supabase, roadmapService } from '../lib/supabase';
+import { useNavigate } from 'react-router-dom';
 
 export default function CreateRoadmap() {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [roadmapData, setRoadmapData] = useState({
     emoji: '🔥',
     title: '',
@@ -14,6 +19,18 @@ export default function CreateRoadmap() {
     description: '',
     icon: '📚'
   });
+
+  useEffect(() => {
+    // Verificar si el usuario está autenticado
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        alert('Debes iniciar sesión para crear roadmaps');
+        navigate('/');
+        return;
+      }
+      setUser(session.user);
+    });
+  }, [navigate]);
 
   const addNode = () => {
     if (newNode.label.trim()) {
@@ -32,11 +49,46 @@ export default function CreateRoadmap() {
     }));
   };
 
-  const saveRoadmap = () => {
-    // Aquí se implementaría la lógica para guardar el roadmap
-    console.log('Roadmap guardado:', roadmapData);
-    alert('Roadmap guardado exitosamente!');
+  const saveRoadmap = async () => {
+    if (!user) {
+      alert('Debes iniciar sesión para guardar roadmaps');
+      return;
+    }
+
+    if (!roadmapData.title || roadmapData.nodes.length === 0) {
+      alert('Completa el título y agrega al menos un concepto');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Crear el roadmap
+      const roadmap = await roadmapService.createRoadmap(user.id, roadmapData);
+      
+      // Crear los nodos
+      for (const node of roadmapData.nodes) {
+        await roadmapService.createNode(roadmap.id, node);
+      }
+
+      alert('Roadmap guardado exitosamente!');
+      navigate('/');
+    } catch (error) {
+      console.error('Error al guardar:', error);
+      alert('Error al guardar el roadmap: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Cargando...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -163,11 +215,11 @@ export default function CreateRoadmap() {
               <div className="border-t pt-6">
                 <button
                   onClick={saveRoadmap}
-                  disabled={!roadmapData.title || roadmapData.nodes.length === 0}
+                  disabled={loading || !roadmapData.title || roadmapData.nodes.length === 0}
                   className="flex items-center px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
                   <FiSave className="mr-2" />
-                  Guardar Roadmap
+                  {loading ? 'Guardando...' : 'Guardar Roadmap'}
                 </button>
               </div>
             </div>

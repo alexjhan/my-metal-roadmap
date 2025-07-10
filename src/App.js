@@ -9,6 +9,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import TermodinamicaPage from './components/TermodinamicaPage';
 import GraphLayout from './components/GraphLayout';
 import CreateRoadmap from './components/CreateRoadmap';
+import MyRoadmaps from './components/MyRoadmaps';
+import PrivacyPolicy from './components/PrivacyPolicy';
 
 
 function App() {
@@ -27,6 +29,8 @@ function App() {
         <Route path="/termodinamica" element={<TermodinamicaPage />} />
         <Route path="/graph" element={<GraphLayout />} />
         <Route path="/create" element={<CreateRoadmap />} />
+        <Route path="/my-roadmaps" element={<MyRoadmaps />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
 
       </Routes>
       <Footer />

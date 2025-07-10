@@ -1,6 +1,7 @@
 import React from 'react';
 import data from '../data/metal_roadmaps.json';
 import { useNavigate } from 'react-router-dom';
+import ConfigAlert from './ConfigAlert';
 
 export default function RoadmapGrid() {
   const navigate = useNavigate();
@@ -16,6 +17,9 @@ export default function RoadmapGrid() {
   return (
     <div className="w-full min-h-screen bg-gradient-to-r from-blue-100 via-indigo-100 to-blue-200 py-10">
       <div className="max-w-5xl mx-auto px-6 sm:px-8 lg:px-20">
+        {/* Alerta de configuración */}
+        <ConfigAlert />
+        
         {/* Título y subtítulo */}
         <div className="text-center mb-8 pt-8 pb-4">
           <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 via-yellow-500 to-blue-800 bg-clip-text text-transparent animate-gradient-x px-4 py-2 select-none pointer-events-none">

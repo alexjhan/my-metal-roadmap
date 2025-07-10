@@ -1,12 +1,29 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import Auth from "./Auth";
+import { supabase } from "../lib/supabase";
 
 export default function Navbar() {
   const location = useLocation();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // Verificar sesión actual
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Escuchar cambios de autenticación
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   return (
     <nav className="w-full bg-white z-[1000]">
-      <div className="flex justify-center items-center w-full py-4 sm:py-6">
+      <div className="flex justify-between items-center w-full py-4 sm:py-6 px-4 sm:px-6">
         <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
           <img
             src="/assets/logo.png"
@@ -32,6 +49,27 @@ export default function Navbar() {
            San Antonio Abad
           </h1>
         </Link>
+        
+        {/* Navegación para usuarios autenticados */}
+        {user && (
+          <div className="flex items-center space-x-4">
+            <Link
+              to="/my-roadmaps"
+              className="text-sm text-gray-700 hover:text-blue-600 transition-colors"
+            >
+              Mis Roadmaps
+            </Link>
+            <Link
+              to="/create"
+              className="text-sm text-gray-700 hover:text-blue-600 transition-colors"
+            >
+              Crear Roadmap
+            </Link>
+          </div>
+        )}
+        
+        {/* Componente de autenticación */}
+        <Auth />
       </div>
       <style jsx>{`
         h1:hover {
