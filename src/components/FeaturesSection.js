@@ -1,24 +1,28 @@
-export default function FeaturesSection() {
-  const features = [
-    { icon: '🎯', title: 'Especialización Total', description: 'Contenido 100% enfocado en metalurgia' },
-    { icon: '🧬', title: 'Estructura Neuronal', description: 'Conexiones claras entre conceptos' },
-    { icon: '🔬', title: 'Laboratorios Virtuales', description: 'Simulaciones interactivas' },
-    { icon: '📊', title: 'Proyectos Reales', description: 'Casos de estudio industriales' },
-    { icon: '🌐', title: 'Comunidad', description: 'Conecta con otros ingenieros' },
-    { icon: '🚀', title: 'Actualización Constante', description: 'Últimas tecnologías' },
-  ];
+import React from 'react';
 
+export default function FeaturesSection() {
   return (
-    <section id="features" className="container mx-auto py-16 px-6">
-      <h2 className="text-3xl font-bold text-center mb-12 text-slate-900">¿Por qué MetalRoadmap?</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {features.map((feature, index) => (
-          <div key={index} className="bg-white border rounded-lg p-6 text-center hover:shadow-lg">
-            <div className="text-4xl mb-4">{feature.icon}</div>
-            <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-            <p className="text-slate-600">{feature.description}</p>
-          </div>
-        ))}
+    <section className="max-w-5xl mx-auto px-6 sm:px-8 lg:px-20 mb-10">
+      <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Características Destacadas</h2>
+        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-gray-700">
+          <li className="flex items-start">
+            <span className="text-2xl mr-3">🧭</span>
+            Mapas mentales interactivos y navegables
+          </li>
+          <li className="flex items-start">
+            <span className="text-2xl mr-3">📚</span>
+            Recursos curados por expertos
+          </li>
+          <li className="flex items-start">
+            <span className="text-2xl mr-3">🛠️</span>
+            Proyectos y simulaciones prácticas
+          </li>
+          <li className="flex items-start">
+            <span className="text-2xl mr-3">🌐</span>
+            Comunidad y colaboración
+          </li>
+        </ul>
       </div>
     </section>
   );

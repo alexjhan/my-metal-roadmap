@@ -1,92 +1,247 @@
 [
   {
-    "icon": "🔥",
     "title": "Termodinámica",
-    "description": "Equilibrio, energía libre, leyes fundamentales"
+    "description": "Fundamentos de termodinámica aplicada a procesos metalúrgicos. Incluye sistemas, leyes fundamentales, energía de Gibbs y equilibrio.",
+    "icon": "🔥",
+    "status": "active",
+    "link": "/termodinamica"
   },
   {
-    "icon": "⚡",
     "title": "Cinética",
-    "description": "Velocidades de reacción, Arrhenius, mecanismos"
+    "description": "Velocidad de reacciones químicas y procesos de transformación en metalurgia. Mecanismos de reacción y control de velocidad.",
+    "icon": "⚡",
+    "status": "coming-soon",
+    "link": "/cinetica"
   },
   {
-    "icon": "💎",
-    "title": "Cristalografía",
-    "description": "Estructuras, defectos, sistemas cristalinos"
+    "title": "Transferencia de Calor",
+    "description": "Mecanismos de transferencia de calor en procesos metalúrgicos. Conducción, convección y radiación.",
+    "icon": "🌡️",
+    "status": "coming-soon",
+    "link": "/transferencia-calor"
   },
   {
-    "icon": "🔬",
     "title": "Metalurgia Física",
-    "description": "Microestructura, tratamientos térmicos, propiedades"
+    "description": "Estructura cristalina, defectos en cristales y propiedades mecánicas de los materiales metálicos.",
+    "icon": "💎",
+    "status": "coming-soon",
+    "link": "/metalurgia-fisica"
   },
   {
+    "title": "Procesos de Fabricación",
+    "description": "Técnicas de conformado, fundición, soldadura y otros procesos de fabricación metalúrgica.",
     "icon": "🏭",
-    "title": "Procesos Industriales",
-    "description": "Fundición, laminación, forja"
+    "status": "coming-soon",
+    "link": "/procesos-fabricacion"
   },
   {
-    "icon": "⚙️",
-    "title": "Metalurgia Extractiva",
-    "description": "Pirometalurgia, hidrometalurgia, electro"
+    "title": "Corrosión",
+    "description": "Mecanismos de corrosión, protección anticorrosiva y durabilidad de materiales metálicos.",
+    "icon": "🛡️",
+    "status": "coming-soon",
+    "link": "/corrosion"
   },
   {
-    "icon": "💻",
-    "title": "Metalurgia Computacional",
-    "description": "FEM, CFD, Machine Learning"
+    "title": "Concentración de Minerales",
+    "description": "Técnicas de separación y concentración de minerales. Flotación, separación magnética y gravimétrica.",
+    "icon": "🔍",
+    "status": "coming-soon",
+    "link": "/concentracion-minerales"
   },
   {
-    "icon": "🌱",
-    "title": "Ciencia de Materiales",
-    "description": "Nanomateriales, biomateriales, compuestos"
-  },
-  {
-    "icon": "🚀",
-    "title": "Proyectos y Laboratorios",
-    "description": "Simulaciones prácticas, casos reales"
-  },
-  {
+    "title": "Lixiviación",
+    "description": "Procesos de extracción de metales mediante disolución. Lixiviación ácida, bacteriana y a presión.",
     "icon": "🧪",
-    "title": "Química Metalúrgica",
-    "description": "Reacciones en soluciones, lixiviación, química de sales"
+    "status": "coming-soon",
+    "link": "/lixiviacion"
   },
   {
-    "icon": "🔩",
-    "title": "Mecánica de Materiales",
-    "description": "Tensiones, deformación, ley de Hooke, fatiga"
+    "title": "Flotación",
+    "description": "Proceso de separación de minerales por diferencias en propiedades superficiales. Reactivos y celdas de flotación.",
+    "icon": "🫧",
+    "status": "coming-soon",
+    "link": "/flotacion"
   },
   {
-    "icon": "📈",
-    "title": "Control de Calidad",
-    "description": "Normas ASTM, inspección no destructiva, ensayos mecánicos"
+    "title": "Extracción por Solventes",
+    "description": "Separación y purificación de metales mediante extracción líquido-líquido. Selectividad y eficiencia.",
+    "icon": "⚗️",
+    "status": "coming-soon",
+    "link": "/extraccion-solventes"
   },
   {
+    "title": "Fundición",
+    "description": "Procesos de fusión y refinación de metales. Hornos, control de temperatura y composición.",
+    "icon": "🔥",
+    "status": "coming-soon",
+    "link": "/fundicion"
+  },
+  {
+    "title": "Refinación Electrolítica",
+    "description": "Purificación de metales mediante procesos electrolíticos. Celdas electrolíticas y control de parámetros.",
+    "icon": "⚡",
+    "status": "coming-soon",
+    "link": "/refinacion-electrolitica"
+  },
+  {
+    "title": "Aleaciones",
+    "description": "Diseño y desarrollo de aleaciones metálicas. Propiedades mecánicas, térmicas y químicas.",
+    "icon": "🔧",
+    "status": "coming-soon",
+    "link": "/aleaciones"
+  },
+  {
+    "title": "Tratamiento Térmico",
+    "description": "Procesos de calentamiento y enfriamiento controlado para modificar propiedades de metales.",
+    "icon": "🌡️",
+    "status": "coming-soon",
+    "link": "/tratamiento-termico"
+  },
+  {
+    "title": "Conformado Mecánico",
+    "description": "Procesos de deformación plástica de metales. Laminación, forja, extrusión y estirado.",
+    "icon": "⚙️",
+    "status": "coming-soon",
+    "link": "/conformado-mecanico"
+  },
+  {
+    "title": "Matemáticas",
+    "description": "Cálculo diferencial, álgebra lineal y métodos numéricos aplicados a metalurgia.",
+    "icon": "📐",
+    "status": "coming-soon",
+    "link": "/matematicas"
+  },
+  {
+    "title": "Física",
+    "description": "Mecánica clásica, electromagnetismo y física de materiales.",
     "icon": "⚛️",
-    "title": "Corrosión y Protección",
-    "description": "Corrosión galvánica, recubrimientos, protección catódica"
+    "status": "coming-soon",
+    "link": "/fisica"
   },
   {
+    "title": "Química",
+    "description": "Química inorgánica, equilibrio químico y cinética de reacciones.",
+    "icon": "🧪",
+    "status": "coming-soon",
+    "link": "/quimica"
+  },
+  {
+    "title": "Estadística",
+    "description": "Análisis estadístico, control de calidad y diseño de experimentos.",
+    "icon": "📊",
+    "status": "coming-soon",
+    "link": "/estadistica"
+  },
+  {
+    "title": "Mecánica de Fluidos",
+    "description": "Flujo de fluidos, bombas, válvulas y sistemas de transporte.",
     "icon": "🌊",
-    "title": "Fluidos en Metalurgia",
-    "description": "Hidrodinámica, CFD en reactores, fluidización"
+    "status": "coming-soon",
+    "link": "/mecanica-fluidos"
   },
   {
-    "icon": "🎛️",
-    "title": "Automatización y Control",
-    "description": "Instrumentación industrial, control PID en plantas"
+    "title": "Separación Magnética",
+    "description": "Técnicas de separación basadas en propiedades magnéticas de minerales.",
+    "icon": "🧲",
+    "status": "coming-soon",
+    "link": "/separacion-magnetica"
   },
   {
-    "icon": "🛰️",
-    "title": "Sensores y Monitoreo",
-    "description": "Sensores IoT, monitoreo de procesos, mantenimiento predictivo"
+    "title": "Separación Gravimétrica",
+    "description": "Concentración por diferencias de densidad entre minerales.",
+    "icon": "⚖️",
+    "status": "coming-soon",
+    "link": "/separacion-gravimetrica"
   },
   {
-    "icon": "🚧",
-    "title": "Seguridad Industrial",
-    "description": "Normas OSHAS, ergonomía, gestión de riesgos"
+    "title": "Lixiviación Bacteriana",
+    "description": "Extracción de metales usando microorganismos oxidantes.",
+    "icon": "🦠",
+    "status": "coming-soon",
+    "link": "/lixiviacion-bacteriana"
   },
   {
-    "icon": "🌍",
-    "title": "Sostenibilidad Metalúrgica",
-    "description": "Economía circular, reciclaje de metales, huella de carbono"
+    "title": "Lixiviación a Presión",
+    "description": "Extracción de metales en autoclaves a alta temperatura y presión.",
+    "icon": "🔥",
+    "status": "coming-soon",
+    "link": "/lixiviacion-presion"
+  },
+  {
+    "title": "Reactivos de Flotación",
+    "description": "Colectores, espumantes y modificadores para flotación.",
+    "icon": "🧪",
+    "status": "coming-soon",
+    "link": "/reactivos-flotacion"
+  },
+  {
+    "title": "Celdas de Flotación",
+    "description": "Diseño y operación de celdas de flotación industrial.",
+    "icon": "🏭",
+    "status": "coming-soon",
+    "link": "/celdas-flotacion"
+  },
+  {
+    "title": "Electrorefinación",
+    "description": "Purificación de metales mediante electrólisis.",
+    "icon": "⚡",
+    "status": "coming-soon",
+    "link": "/electrorefinacion"
+  },
+  {
+    "title": "Electrodeposición",
+    "description": "Recubrimientos metálicos mediante procesos electrolíticos.",
+    "icon": "🔋",
+    "status": "coming-soon",
+    "link": "/electrodeposicion"
+  },
+  {
+    "title": "Aleaciones Ferrosas",
+    "description": "Aceros, hierros fundidos y aleaciones de hierro.",
+    "icon": "🔩",
+    "status": "coming-soon",
+    "link": "/aleaciones-ferrosas"
+  },
+  {
+    "title": "Aleaciones No Ferrosas",
+    "description": "Aluminio, cobre, zinc y otras aleaciones no ferrosas.",
+    "icon": "🔧",
+    "status": "coming-soon",
+    "link": "/aleaciones-no-ferrosas"
+  },
+  {
+    "title": "Templado",
+    "description": "Tratamiento térmico para endurecer aceros.",
+    "icon": "❄️",
+    "status": "coming-soon",
+    "link": "/templado"
+  },
+  {
+    "title": "Recocido",
+    "description": "Tratamiento térmico para ablandar y recristalizar metales.",
+    "icon": "🔥",
+    "status": "coming-soon",
+    "link": "/recocido"
+  },
+  {
+    "title": "Laminación",
+    "description": "Deformación plástica por compresión entre rodillos.",
+    "icon": "📏",
+    "status": "coming-soon",
+    "link": "/laminacion"
+  },
+  {
+    "title": "Forja",
+    "description": "Deformación plástica por impacto o compresión.",
+    "icon": "🔨",
+    "status": "coming-soon",
+    "link": "/forja"
+  },
+  {
+    "title": "Extrusión",
+    "description": "Deformación plástica por compresión a través de matriz.",
+    "icon": "🔲",
+    "status": "coming-soon",
+    "link": "/extrusion"
   }
-]
+] 

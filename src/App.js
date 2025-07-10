@@ -7,7 +7,8 @@ import React from 'react';
 import RoadmapGrid from './components/RoadmapGrid';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import TermodinamicaPage from './components/TermodinamicaPage';
-import ConceptNetwork from './components/ConceptNetwork';
+import GraphLayout from './components/GraphLayout';
+
 
 function App() {
   return (
@@ -23,7 +24,8 @@ function App() {
           </>
         } />
         <Route path="/termodinamica" element={<TermodinamicaPage />} />
-        <Route path="/red-conceptual" element={<ConceptNetwork />} />
+        <Route path="/graph" element={<GraphLayout />} />
+
       </Routes>
       <Footer />
     </Router>
