@@ -21,9 +21,18 @@ export default function RoadmapGrid() {
           <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 via-yellow-500 to-blue-800 bg-clip-text text-transparent animate-gradient-x px-4 py-2 select-none pointer-events-none">
             MetalRoadmap para Ingenieros Metalúrgicos
           </h1>
-          <p className="text-lg text-slate-700">
+          <p className="text-lg text-slate-700 mb-6">
             Explora los mejores recursos y guías para convertirte en un experto en ingeniería metalúrgica. Cada tarjeta representa un roadmap único con recursos valiosos.
           </p>
+          
+          {/* Botón Crear Roadmap */}
+          <button
+            onClick={() => navigate('/create')}
+            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105"
+          >
+            <span className="mr-2">✨</span>
+            Crear Mi Roadmap
+          </button>
         </div>
       </div>
 

@@ -8,6 +8,7 @@ import RoadmapGrid from './components/RoadmapGrid';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import TermodinamicaPage from './components/TermodinamicaPage';
 import GraphLayout from './components/GraphLayout';
+import CreateRoadmap from './components/CreateRoadmap';
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
         } />
         <Route path="/termodinamica" element={<TermodinamicaPage />} />
         <Route path="/graph" element={<GraphLayout />} />
+        <Route path="/create" element={<CreateRoadmap />} />
 
       </Routes>
       <Footer />
