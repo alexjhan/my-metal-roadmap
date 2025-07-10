@@ -31,6 +31,7 @@ function App() {
         <Route path="/create" element={<CreateRoadmap />} />
         <Route path="/my-roadmaps" element={<MyRoadmaps />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/privacidad" element={<PrivacyPolicy />} />
 
       </Routes>
       <Footer />

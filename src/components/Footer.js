@@ -10,7 +10,7 @@ export default function Footer() {
           Desarrollado por un estudiante de Ingeniería Metalúrgica e Ingeniería de Sistemas.
         </div>
         <div className="flex justify-center space-x-6 text-xs">
-          <Link to="/privacy" className="text-slate-500 hover:text-slate-700 transition-colors">
+          <Link to="/privacidad" className="text-slate-500 hover:text-slate-700 transition-colors">
             Política de Privacidad
           </Link>
           <a href="mailto:contact@metalroadmap.com" className="text-slate-500 hover:text-slate-700 transition-colors">
