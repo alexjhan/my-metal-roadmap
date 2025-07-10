@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FiArrowLeft, FiPrinter, FiShare2 } from 'react-icons/fi';
+import { FiArrowLeft, FiPrinter, FiShare2, FiMessageSquare } from 'react-icons/fi';
 import GraphLayout from './GraphLayout';
 
 export default function TermodinamicaPage() {
@@ -13,20 +13,19 @@ export default function TermodinamicaPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-8 md:px-12 lg:px-16 xl:px-20 mb-4 sm:mb-6 md:mb-8 lg:mb-10">
         <div className="bg-white rounded-xl shadow-lg border border-gray-100">
           <div className="p-4 sm:p-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-              {/* Botones a la izquierda */}
-              <div className="flex items-center space-x-2 sm:space-x-4 mr-0 sm:mr-6">
-                {/* AllRoadmaps: botón en móvil, texto en desktop */}
-                <Link to="/" className="block">
-                  <span className="sm:hidden">
-                    <button className="flex items-center px-3 py-2 bg-gray-200 text-gray-700 rounded-md text-xs font-semibold hover:bg-gray-300 transition">
-                      <FiArrowLeft className="mr-1" /> AllRoadmaps
-                    </button>
-                  </span>
-                  <span className="hidden sm:inline text-base font-semibold text-gray-500 hover:text-blue-600 transition">
-                    AllRoadmaps
-                  </span>
+            {/* Botones en la parte superior */}
+            <div className="flex items-center justify-between mb-4">
+              {/* All Roadmaps - Extremo izquierdo */}
+              <div className="flex items-center">
+                <Link to="/" className="flex items-center px-3 py-2 bg-gray-200 text-gray-700 rounded-md text-sm font-semibold hover:bg-gray-300 transition">
+                  <FiArrowLeft className="mr-2" />
+                  <span className="hidden sm:inline">All Roadmaps</span>
+                  <span className="sm:hidden">All</span>
                 </Link>
+              </div>
+
+              {/* Botones de acción - Extremo derecho */}
+              <div className="flex items-center space-x-2 sm:space-x-3">
                 {/* Botón Imprimir */}
                 <button
                   className="flex items-center px-3 py-2 bg-orange-500 text-white rounded-md text-xs font-semibold hover:bg-orange-600 transition"
@@ -46,23 +45,25 @@ export default function TermodinamicaPage() {
                   <span className="hidden sm:inline">Compartir</span>
                 </button>
               </div>
-              {/* Info principal del encabezado */}
-              <div className="flex-1">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-                  🔥 Termodinámica Metalúrgica
-                </h1>
-                <p className="mt-2 text-sm sm:text-lg text-gray-600">
-                  Mapa mental interactivo de conceptos fundamentales de termodinámica aplicada a procesos metalúrgicos
-                </p>
-              </div>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
-                <div className="text-xs sm:text-sm text-gray-500">
-                  <span className="font-medium">Nodos:</span> 18 conceptos
-                </div>
-                <div className="text-xs sm:text-sm text-gray-500">
-                  <span className="font-medium">Conexiones:</span> 16 relaciones
-                </div>
-              </div>
+            </div>
+
+            {/* Título y descripción */}
+            <div className="mb-4">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 select-none pointer-events-none">
+                🔥 Termodinámica Metalúrgica
+              </h1>
+              <p className="text-sm sm:text-lg text-gray-600">
+                Mapa mental interactivo de conceptos fundamentales de termodinámica aplicada a procesos metalúrgicos
+              </p>
+            </div>
+
+            {/* Botón de sugerencias - Extremo inferior derecho */}
+            <div className="flex justify-end">
+              <button className="flex items-center px-3 py-2 bg-gray-200 text-gray-700 rounded-md text-sm font-semibold hover:bg-gray-300 transition">
+                <FiMessageSquare className="mr-2" />
+                <span className="hidden sm:inline">Sugerencias</span>
+                <span className="sm:hidden">Sug</span>
+              </button>
             </div>
           </div>
         </div>

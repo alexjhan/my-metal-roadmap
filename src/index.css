@@ -1,3 +1,37 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Prevenir scroll horizontal */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Asegurar que el contenido principal no cause overflow */
+#root {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Estilos para contenedores principales */
+.container {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Animación para el gradiente dinámico */
+@keyframes gradient-x {
+  0%, 100% {
+    background-size: 200% 200%;
+    background-position: left center;
+  }
+  50% {
+    background-size: 200% 200%;
+    background-position: right center;
+  }
+}
+
+.animate-gradient-x {
+  animation: gradient-x 3s ease infinite;
+}

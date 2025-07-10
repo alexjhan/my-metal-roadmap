@@ -29,7 +29,7 @@ export default function Navbar() {
               padding: "0.3rem",
             }}
           >
-            San Antonio de Abad 
+           San Antonio Abad
           </h1>
         </Link>
       </div>
