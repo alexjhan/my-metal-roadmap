@@ -2,6 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevenir zoom de página en móviles */
+html, body {
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Permitir scroll pero no zoom de página */
+@media (max-width: 768px) {
+  html, body {
+    touch-action: pan-x pan-y;
+  }
+}
+
 /* Prevenir scroll horizontal */
 html, body {
   overflow-x: hidden;
@@ -20,7 +38,7 @@ html, body {
   overflow-x: hidden;
 }
 
-/* Animación para el gradiente dinámico */
+/* Animación de gradiente para el título */
 @keyframes gradient-x {
   0%, 100% {
     background-size: 200% 200%;

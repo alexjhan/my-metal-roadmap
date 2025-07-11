@@ -229,8 +229,8 @@ const GraphLayout = () => {
   const selectedNode = nodes.find(n => n.id === selectedNodeId);
 
   return (
-    <div className="w-full h-full relative">
-      <div className="h-full">
+    <div className="w-full h-full relative" style={{ touchAction: 'none' }}>
+      <div className="h-full" style={{ touchAction: 'none' }}>
         <ReactFlow
           nodes={nodesWithClick}
           edges={edges}
@@ -253,6 +253,7 @@ const GraphLayout = () => {
           attributionPosition="bottom-left"
           preventScrolling={false}
           zoomOnDoubleClick={false}
+          style={{ touchAction: 'none' }}
         >
           <FlowWithFitView />
           <Controls />
