@@ -45,21 +45,24 @@ export default function Navbar() {
   return (
     <nav className="w-full bg-white z-[1000]">
       <div className="flex justify-between items-center w-full py-4 sm:py-6 px-4 sm:px-6">
-        <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+        <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity min-h-[4rem]">
           <img
             src="/assets/logo.png"
             alt="MetalRoadmap"
             className="transition duration-500 cursor-pointer"
             style={{
-              height: "3rem",
+              height: "4rem",
               width: "auto",
               objectFit: "contain",
               padding: "0.3rem",
             }}
-            onClick={() => navigate('/')}
+            onClick={() => {
+              navigate('/');
+              window.location.reload();
+            }}
           />
           <h1
-            className="text-4xl font-bold transition-all duration-500 cursor-pointer"
+            className="hidden sm:block text-4xl font-bold transition-all duration-500 cursor-pointer"
             style={{
               fontFamily: "'Great Vibes', cursive",
               fontSize: "1.5rem",
@@ -67,7 +70,10 @@ export default function Navbar() {
               color: "#001f3f",
               padding: "0.3rem",
             }}
-            onClick={() => navigate('/')}
+            onClick={() => {
+              navigate('/');
+              window.location.reload();
+            }}
           >
            San Antonio Abad
           </h1>
