@@ -246,25 +246,23 @@ const GraphLayout = () => {
           nodesDraggable={false}
           nodesConnectable={false}
           elementsSelectable={true}
-          panOnScroll={true}
-          zoomOnScroll={true}
-          panOnDrag={true}
-          zoomOnPinch={true}
+          panOnScroll={false}
+          zoomOnScroll={false}
+          panOnDrag={false}
+          zoomOnPinch={false}
           attributionPosition="bottom-left"
+          preventScrolling={false}
+          zoomOnDoubleClick={false}
         >
           <FlowWithFitView />
           <Controls />
-          <MiniMap 
-            nodeStrokeColor={(n) => {
-              if (n.type === 'custom') return '#3B82F6';
-              return '#6B7280';
-            }}
-            nodeColor={(n) => {
-              if (n.type === 'custom') return '#DBEAFE';
-              return '#F3F4F6';
-            }}
+          <Background 
+            variant="lines" 
+            gap={20} 
+            size={1} 
+            color="#e5e7eb"
+            style={{ backgroundColor: '#f9fafb' }}
           />
-          <Background variant="dots" gap={12} size={1} />
         </ReactFlow>
       </div>
       {/* Drawer lateral fullscreen */}
