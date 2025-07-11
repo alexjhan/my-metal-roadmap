@@ -109,16 +109,16 @@ export default function Navbar() {
         )}
         {/* Botones para visitantes */}
         {!user && (
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             <button
               onClick={() => setShowAuth(true)}
-              className="px-6 py-3 text-sm font-medium bg-white text-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+              className="px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium bg-white text-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 hover:border-gray-300 hover:bg-gray-50 whitespace-nowrap"
             >
               Iniciar sesión
             </button>
             <button
               onClick={() => setShowAuth(true)}
-              className="px-6 py-3 text-sm font-medium bg-gray-900 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 hover:bg-gray-800"
+              className="px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium bg-gray-900 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 hover:bg-gray-800 whitespace-nowrap"
             >
               Registrarse
             </button>
