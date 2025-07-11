@@ -89,20 +89,21 @@ export default function Navbar() {
         
         {/* Navegación para usuarios autenticados */}
         {user && (
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             <Link
               to="/my-roadmaps"
-              className="text-sm text-gray-700 hover:text-blue-600 transition-colors"
+              className="text-xs sm:text-sm text-gray-700 hover:text-blue-600 transition-colors whitespace-nowrap"
             >
               Mis Roadmaps
             </Link>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="inline-flex items-center px-5 py-2 bg-white text-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-sm font-medium"
-              style={{ minWidth: '140px', justifyContent: 'center' }}
+              className="inline-flex items-center px-3 sm:px-5 py-2 bg-white text-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-xs sm:text-sm font-medium whitespace-nowrap"
+              style={{ minWidth: '120px', justifyContent: 'center' }}
             >
-              <span className="mr-2">✨</span>
-              Crear Roadmap
+              <span className="mr-1 sm:mr-2">✨</span>
+              <span className="hidden sm:inline">Crear Roadmap</span>
+              <span className="sm:hidden">Crear</span>
             </button>
             <UserProfile />
           </div>
