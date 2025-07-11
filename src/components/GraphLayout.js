@@ -250,6 +250,7 @@ const GraphLayout = () => {
           zoomOnScroll={false}
           panOnDrag={true}
           zoomOnPinch={true}
+          panOnScrollMode="free"
           attributionPosition="bottom-left"
           preventScrolling={false}
           zoomOnDoubleClick={false}
