@@ -3,6 +3,7 @@ import ReactFlow, { MiniMap, Controls, Background, addEdge, useNodesState, useEd
 import { FiPlus, FiTrash2, FiSave } from 'react-icons/fi';
 import { supabase, roadmapService } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../UserContext';
 
 const initialNodes = [
   {
@@ -17,8 +18,7 @@ const initialEdges = [];
 
 export default function CreateRoadmap() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { user, loading } = useUser();
   const [roadmapData, setRoadmapData] = useState({
     emoji: '🔥',
     title: '',
@@ -39,15 +39,12 @@ export default function CreateRoadmap() {
 
   useEffect(() => {
     // Verificar si el usuario está autenticado
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        alert('Debes iniciar sesión para crear roadmaps');
-        navigate('/');
-        return;
-      }
-      setUser(session.user);
-    });
-  }, [navigate]);
+    if (!loading && !user) {
+      alert('Debes iniciar sesión para crear roadmaps');
+      navigate('/');
+      return;
+    }
+  }, [user, loading, navigate]);
 
   const addNode = () => {
     if (newNode.label.trim()) {
@@ -77,7 +74,6 @@ export default function CreateRoadmap() {
       return;
     }
 
-    setLoading(true);
     try {
       // Crear el roadmap
       const roadmap = await roadmapService.createRoadmap(user.id, roadmapData);
@@ -92,16 +88,24 @@ export default function CreateRoadmap() {
     } catch (error) {
       console.error('Error al guardar:', error);
       alert('Error al guardar el roadmap: ' + error.message);
-    } finally {
-      setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Cargando...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!user) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600">Cargando...</p>
+          <p className="text-gray-600">Redirigiendo...</p>
         </div>
       </div>
     );

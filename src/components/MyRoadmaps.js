@@ -2,25 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase, roadmapService } from '../lib/supabase';
 import { FiEdit, FiTrash2, FiEye, FiPlus } from 'react-icons/fi';
+import { useUser } from '../UserContext';
 
 export default function MyRoadmaps() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const { user, loading } = useUser();
   const [roadmaps, setRoadmaps] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [roadmapsLoading, setRoadmapsLoading] = useState(true);
 
   useEffect(() => {
     // Verificar autenticación
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        alert('Debes iniciar sesión para ver tus roadmaps');
-        navigate('/');
-        return;
-      }
-      setUser(session.user);
-      loadUserRoadmaps(session.user.id);
-    });
-  }, [navigate]);
+    if (!loading && !user) {
+      alert('Debes iniciar sesión para ver tus roadmaps');
+      navigate('/');
+      return;
+    }
+
+    if (user) {
+      loadUserRoadmaps(user.id);
+    }
+  }, [user, loading, navigate]);
 
   const loadUserRoadmaps = async (userId) => {
     try {
@@ -30,7 +31,7 @@ export default function MyRoadmaps() {
       console.error('Error cargando roadmaps:', error);
       alert('Error al cargar tus roadmaps');
     } finally {
-      setLoading(false);
+      setRoadmapsLoading(false);
     }
   };
 
@@ -65,6 +66,26 @@ export default function MyRoadmaps() {
   };
 
   if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Cargando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Redirigiendo...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (roadmapsLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">

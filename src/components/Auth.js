@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { FiMail, FiLock, FiUser, FiLogOut, FiLinkedin } from 'react-icons/fi';
+import { useUser } from '../UserContext';
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
@@ -8,21 +9,7 @@ export default function Auth() {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    // Verificar sesión actual
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-
-    // Escuchar cambios de autenticación
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  const { user } = useUser();
 
   const handleAuth = async (e) => {
     e.preventDefault();
@@ -55,14 +42,14 @@ export default function Auth() {
     }
   };
 
-  // Eliminar handleLinkedInAuth y el botón de LinkedIn
-  // Agregar funciones para Google y GitHub
   const handleGoogleAuth = async () => {
     setLoading(true);
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: window.location.origin }
+        options: { 
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
       });
       if (error) throw error;
     } catch (error) {
@@ -77,7 +64,9 @@ export default function Auth() {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'github',
-        options: { redirectTo: window.location.origin }
+        options: { 
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
       });
       if (error) throw error;
     } catch (error) {

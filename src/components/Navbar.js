@@ -1,13 +1,14 @@
 import React, { useCallback, useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Auth from "./Auth";
+import UserProfile from "./UserProfile";
 import { supabase } from "../lib/supabase";
 import { useUser } from '../UserContext';
 
 export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user, loading } = useUser();
   const [showAuth, setShowAuth] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newTitle, setNewTitle] = useState("");
@@ -36,6 +37,10 @@ export default function Navbar() {
       setCreating(false);
     }
   };
+
+  if (loading) {
+    return null; // No mostrar nada mientras carga
+  }
 
   return (
     <nav className="w-full bg-white z-[1000]">
@@ -69,16 +74,6 @@ export default function Navbar() {
         {/* Navegación para usuarios autenticados */}
         {user && (
           <div className="flex items-center space-x-4">
-            <span className="flex items-center space-x-2">
-              <img
-                src={user.user_metadata?.avatar_url || '/assets/default-avatar.png'}
-                alt="Perfil"
-                className="w-10 h-10 rounded-full object-cover border-2 border-blue-500"
-              />
-              <span className="text-gray-700 font-semibold">
-                ¡Bienvenido, {user.user_metadata?.full_name || user.email}!
-              </span>
-            </span>
             <Link
               to="/my-roadmaps"
               className="text-sm text-gray-700 hover:text-blue-600 transition-colors"
@@ -93,6 +88,7 @@ export default function Navbar() {
               <span className="mr-2">✨</span>
               Crear Roadmap
             </button>
+            <UserProfile />
           </div>
         )}
         {/* Botones para visitantes */}

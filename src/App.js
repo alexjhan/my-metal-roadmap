@@ -11,6 +11,7 @@ import GraphLayout from './components/GraphLayout';
 import CreateRoadmap from './components/CreateRoadmap';
 import MyRoadmaps from './components/MyRoadmaps';
 import PrivacyPolicy from './components/PrivacyPolicy';
+import AuthCallback from './components/AuthCallback';
 
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
         <Route path="/my-roadmaps" element={<MyRoadmaps />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/privacidad" element={<PrivacyPolicy />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
 
       </Routes>
       <Footer />
