@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Prevenir zoom de página en móviles */
+/* Prevenir zoom de página en móviles pero permitir gestos de React Flow */
 html, body {
   touch-action: manipulation;
   -webkit-touch-callout: none;
@@ -18,12 +18,20 @@ html, body {
   html, body {
     touch-action: pan-x pan-y;
   }
+  
+  /* Permitir gestos en contenedores de React Flow */
+  .react-flow__viewport {
+    touch-action: manipulation;
+  }
+  
+  .react-flow__pane {
+    touch-action: manipulation;
+  }
 }
 
 /* Prevenir scroll horizontal */
-html, body {
+html {
   overflow-x: hidden;
-  max-width: 100vw;
 }
 
 /* Asegurar que el contenido principal no cause overflow */
