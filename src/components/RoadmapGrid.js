@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import data from '../data/metal_roadmaps.json';
 import { useNavigate } from 'react-router-dom';
 import ConfigAlert from './ConfigAlert';
+import { supabase } from '../lib/supabase';
+import Auth from './Auth';
+import { useUser } from '../UserContext';
 
 export default function RoadmapGrid() {
   const navigate = useNavigate();
+  const { user } = useUser();
+  const [showAuth, setShowAuth] = useState(false);
+
+  // Elimina el estado y useEffect de usuario local y el efecto de cierre de modal
 
   const handleCardClick = (item) => {
     if (item.status === "active") {
@@ -84,6 +91,18 @@ export default function RoadmapGrid() {
                 </div>
               ))}
             </div>
+            {/* Botón Crear Roadmap solo si NO está logueado */}
+            {!user && (
+              <div className="flex justify-center mt-4">
+                <button
+                  onClick={() => setShowAuth(true)}
+                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105"
+                >
+                  <span className="mr-2">✨</span>
+                  Crear Roadmap
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Línea y título "Ingeniería Metalúrgica Extractiva" */}
@@ -127,6 +146,18 @@ export default function RoadmapGrid() {
                 </div>
               ))}
             </div>
+            {/* Botón Crear Roadmap solo si NO está logueado */}
+            {!user && (
+              <div className="flex justify-center mt-4">
+                <button
+                  onClick={() => setShowAuth(true)}
+                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105"
+                >
+                  <span className="mr-2">✨</span>
+                  Crear Roadmap
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Línea y título "Ingeniería Metalúrgica Transformativa" */}
@@ -170,9 +201,31 @@ export default function RoadmapGrid() {
                 </div>
               ))}
             </div>
+            {/* Botón Crear Roadmap solo si NO está logueado */}
+            {!user && (
+              <div className="flex justify-center mt-4">
+                <button
+                  onClick={() => setShowAuth(true)}
+                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105"
+                >
+                  <span className="mr-2">✨</span>
+                  Crear Roadmap
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Modal de Auth para login flotante */}
+      {showAuth && (
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md relative">
+            <button onClick={() => setShowAuth(false)} className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-3xl font-bold leading-none focus:outline-none" style={{lineHeight: '1', width: '2.5rem', height: '2.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>&times;</button>
+            <Auth />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

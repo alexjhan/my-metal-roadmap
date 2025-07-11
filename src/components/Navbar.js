@@ -1,25 +1,41 @@
-import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useCallback, useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Auth from "./Auth";
 import { supabase } from "../lib/supabase";
+import { useUser } from '../UserContext';
 
 export default function Navbar() {
   const location = useLocation();
-  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+  const { user } = useUser();
+  const [showAuth, setShowAuth] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [newDesc, setNewDesc] = useState("");
+  const [creating, setCreating] = useState(false);
 
-  useEffect(() => {
-    // Verificar sesión actual
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-
-    // Escuchar cambios de autenticación
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  const handleCreateRoadmap = async () => {
+    if (!newTitle) return;
+    setCreating(true);
+    try {
+      const userId = user.id;
+      const { data, error } = await supabase
+        .from('roadmaps')
+        .insert([{ title: newTitle, description: newDesc, user_id: userId }])
+        .select();
+      if (error) throw error;
+      if (data && data[0]) {
+        setShowCreateModal(false);
+        setNewTitle("");
+        setNewDesc("");
+        navigate(`/edit/${data[0].id}`);
+      }
+    } catch (err) {
+      alert('Error al crear roadmap: ' + err.message);
+    } finally {
+      setCreating(false);
+    }
+  };
 
   return (
     <nav className="w-full bg-white z-[1000]">
@@ -53,24 +69,96 @@ export default function Navbar() {
         {/* Navegación para usuarios autenticados */}
         {user && (
           <div className="flex items-center space-x-4">
+            <span className="flex items-center space-x-2">
+              <img
+                src={user.user_metadata?.avatar_url || '/assets/default-avatar.png'}
+                alt="Perfil"
+                className="w-10 h-10 rounded-full object-cover border-2 border-blue-500"
+              />
+              <span className="text-gray-700 font-semibold">
+                ¡Bienvenido, {user.user_metadata?.full_name || user.email}!
+              </span>
+            </span>
             <Link
               to="/my-roadmaps"
               className="text-sm text-gray-700 hover:text-blue-600 transition-colors"
             >
               Mis Roadmaps
             </Link>
-            <Link
-              to="/create"
-              className="text-sm text-gray-700 hover:text-blue-600 transition-colors"
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="inline-flex items-center px-5 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105 text-sm"
+              style={{ minWidth: '140px', justifyContent: 'center' }}
             >
+              <span className="mr-2">✨</span>
               Crear Roadmap
-            </Link>
+            </button>
           </div>
         )}
-        
-        {/* Componente de autenticación */}
-        <Auth />
+        {/* Botones para visitantes */}
+        {!user && (
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => setShowAuth(true)}
+              className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+            >
+              Iniciar sesión
+            </button>
+            <button
+              onClick={() => setShowAuth(true)}
+              className="px-4 py-2 text-sm bg-gray-200 text-blue-700 rounded hover:bg-gray-300 transition-colors"
+            >
+              Registrarse
+            </button>
+          </div>
+        )}
       </div>
+      {/* Modal de Auth */}
+      {showAuth && (
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md relative">
+            <button onClick={() => setShowAuth(false)} className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-xl">&times;</button>
+            <Auth />
+          </div>
+        </div>
+      )}
+      {/* Modal para crear roadmap */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md relative">
+            <button onClick={() => setShowCreateModal(false)} className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-xl">&times;</button>
+            <h2 className="text-xl font-bold mb-4">Crear nuevo Roadmap</h2>
+            <input
+              type="text"
+              placeholder="Título"
+              value={newTitle}
+              onChange={e => setNewTitle(e.target.value)}
+              className="w-full mb-3 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <textarea
+              placeholder="Descripción"
+              value={newDesc}
+              onChange={e => setNewDesc(e.target.value)}
+              className="w-full mb-4 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-700"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleCreateRoadmap}
+                disabled={creating || !newTitle}
+                className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold disabled:bg-gray-300"
+              >
+                {creating ? 'Creando...' : 'Crear'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <style jsx>{`
         h1:hover {
           background: linear-gradient(270deg, #6e7b8b, #bfa14c, #6e7b8b);

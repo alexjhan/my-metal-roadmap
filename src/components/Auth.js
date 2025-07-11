@@ -117,25 +117,50 @@ export default function Auth() {
   }
 
   return (
-    <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
+    <>
+      <h2 className="text-2xl font-bold mb-1 text-gray-900 text-center">Iniciar sesión o Registrarse</h2>
+      <p className="text-gray-500 text-sm mb-6 text-center">Debes iniciar sesión para realizar esta acción.</p>
+      {/* Botón Google */}
+      <button
+        onClick={handleGoogleAuth}
+        disabled={loading}
+        className="flex items-center justify-center w-full mb-4 px-4 py-2 text-base bg-white border border-gray-300 rounded-lg shadow hover:bg-gray-50 transition-colors disabled:bg-gray-200 font-medium text-gray-700"
+      >
+        <span className="flex items-center mr-3">
+          <svg width="24" height="24" viewBox="0 0 48 48" style={{ display: 'block' }}>
+            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            <path fill="none" d="M0 0h48v48H0z"/>
+          </svg>
+        </span>
+        {loading ? 'Cargando...' : 'Continuar con Google'}
+      </button>
+      {/* Separador */}
+      <div className="flex items-center w-full my-4">
+        <div className="flex-grow border-t border-gray-200"></div>
+        <span className="mx-3 text-gray-400 text-xs font-medium">O</span>
+        <div className="flex-grow border-t border-gray-200"></div>
+      </div>
       {/* Login con Email */}
-      <form onSubmit={handleAuth} className="flex items-center space-x-2">
+      <form onSubmit={handleAuth} className="w-full flex flex-col space-y-3 mb-2">
         {isSignUp && (
           <input
             type="text"
             placeholder="Nombre"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="px-3 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="px-3 py-2 text-base border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             required
           />
         )}
         <input
           type="email"
-          placeholder="Email"
+          placeholder="Correo electrónico"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="px-3 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="px-3 py-2 text-base border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           required
         />
         <input
@@ -143,48 +168,36 @@ export default function Auth() {
           placeholder="Contraseña"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="px-3 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="px-3 py-2 text-base border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           required
         />
         <button
           type="submit"
           disabled={loading}
-          className="px-4 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors disabled:bg-gray-300"
+          className="w-full px-4 py-2 text-base bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-300"
         >
           {loading ? 'Cargando...' : (isSignUp ? 'Registrarse' : 'Iniciar sesión')}
         </button>
       </form>
-
-      {/* Separador */}
-      <div className="hidden sm:block text-gray-400">|</div>
-
-      {/* Login con Google */}
-      <button
-        onClick={handleGoogleAuth}
-        disabled={loading}
-        className="flex items-center px-4 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors disabled:bg-gray-300"
-      >
-        <svg className="mr-1" width="18" height="18" viewBox="0 0 48 48"><g><path fill="#4285F4" d="M24 9.5c3.54 0 6.7 1.22 9.19 3.22l6.85-6.85C35.64 2.36 30.13 0 24 0 14.82 0 6.73 5.82 2.69 14.09l7.98 6.2C12.36 13.36 17.73 9.5 24 9.5z"/><path fill="#34A853" d="M46.1 24.5c0-1.64-.15-3.22-.42-4.74H24v9.04h12.42c-.54 2.9-2.18 5.36-4.64 7.04l7.18 5.59C43.27 37.27 46.1 31.36 46.1 24.5z"/><path fill="#FBBC05" d="M9.69 28.29c-1.13-3.36-1.13-6.93 0-10.29l-7.98-6.2C-1.13 17.09-1.13 30.91 1.71 38.2l7.98-6.2z"/><path fill="#EA4335" d="M24 46c6.13 0 11.64-2.36 15.85-6.41l-7.18-5.59c-2.01 1.36-4.57 2.16-7.67 2.16-6.27 0-11.64-3.86-13.33-9.29l-7.98 6.2C6.73 42.18 14.82 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></g></svg>
-        {loading ? 'Cargando...' : 'Google'}
-      </button>
-
-      {/* Login con GitHub */}
-      <button
-        onClick={handleGithubAuth}
-        disabled={loading}
-        className="flex items-center px-4 py-1 text-sm bg-gray-800 text-white rounded hover:bg-gray-900 transition-colors disabled:bg-gray-300"
-      >
-        <svg className="mr-1" width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.477 2 2 6.484 2 12.021c0 4.428 2.865 8.184 6.839 9.504.5.092.682-.217.682-.482 0-.237-.009-.868-.014-1.703-2.782.605-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.461-1.11-1.461-.908-.62.069-.608.069-.608 1.004.07 1.532 1.032 1.532 1.032.892 1.53 2.341 1.088 2.91.832.091-.647.35-1.088.636-1.339-2.221-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.025A9.564 9.564 0 0 1 12 6.844c.85.004 1.705.115 2.504.337 1.909-1.295 2.748-1.025 2.748-1.025.546 1.378.202 2.397.1 2.65.64.7 1.028 1.595 1.028 2.688 0 3.847-2.337 4.695-4.566 4.944.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.744 0 .267.18.578.688.48A10.025 10.025 0 0 0 22 12.021C22 6.484 17.523 2 12 2z"/></svg>
-        {loading ? 'Cargando...' : 'GitHub'}
-      </button>
-
-      {/* Cambiar modo */}
-      <button
-        onClick={() => setIsSignUp(!isSignUp)}
-        className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
-      >
-        {isSignUp ? '¿Ya tienes cuenta?' : '¿Nuevo usuario?'}
-      </button>
-    </div>
+      <div className="w-full flex justify-between mb-2">
+        <button
+          type="button"
+          onClick={() => setIsSignUp(!isSignUp)}
+          className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
+        >
+          {isSignUp ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate'}
+        </button>
+        <button
+          type="button"
+          onClick={() => alert('Funcionalidad de recuperación próximamente')}
+          className="text-sm text-gray-500 hover:text-blue-600 transition-colors"
+        >
+          ¿Olvidaste tu contraseña?
+        </button>
+      </div>
+      <p className="text-xs text-gray-400 mt-4 text-center">
+        Al continuar, aceptas nuestros <a href="/privacidad" className="underline hover:text-blue-600">Términos de Servicio</a> y <a href="/privacidad" className="underline hover:text-blue-600">Política de Privacidad</a>.
+      </p>
+    </>
   );
 } 
