@@ -1,69 +1,17 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { FiMail, FiLock, FiUser, FiLogOut, FiLinkedin } from 'react-icons/fi';
+import { FiLogOut } from 'react-icons/fi';
 import { useUser } from '../UserContext';
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [isSignUp, setIsSignUp] = useState(false);
   const { user } = useUser();
-
-  const handleAuth = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              name: name
-            }
-          }
-        });
-        if (error) throw error;
-        alert('Revisa tu email para confirmar tu cuenta!');
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
-        if (error) throw error;
-      }
-    } catch (error) {
-      alert(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleGoogleAuth = async () => {
     setLoading(true);
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: { 
-          redirectTo: `${window.location.origin}/auth/callback`
-        }
-      });
-      if (error) throw error;
-    } catch (error) {
-      alert(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGithubAuth = async () => {
-    setLoading(true);
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'github',
         options: { 
           redirectTo: `${window.location.origin}/auth/callback`
         }
@@ -107,8 +55,9 @@ export default function Auth() {
 
   return (
     <>
-      <h2 className="text-2xl font-bold mb-1 text-gray-900 text-center">Iniciar sesión o Registrarse</h2>
-      <p className="text-gray-500 text-sm mb-6 text-center">Debes iniciar sesión para realizar esta acción.</p>
+      <h2 className="text-xl sm:text-2xl font-bold mb-1 text-gray-900 text-center">Iniciar sesión</h2>
+      <p className="text-gray-500 text-sm mb-6 text-center">Inicia sesión con tu cuenta de Google</p>
+      
       {/* Botón Google */}
       <button
         onClick={handleGoogleAuth}
@@ -126,64 +75,7 @@ export default function Auth() {
         </span>
         {loading ? 'Cargando...' : 'Continuar con Google'}
       </button>
-      {/* Separador */}
-      <div className="flex items-center w-full my-4">
-        <div className="flex-grow border-t border-gray-200"></div>
-        <span className="mx-3 text-gray-400 text-xs font-medium">O</span>
-        <div className="flex-grow border-t border-gray-200"></div>
-      </div>
-      {/* Login con Email */}
-      <form onSubmit={handleAuth} className="w-full flex flex-col space-y-3 mb-2">
-        {isSignUp && (
-          <input
-            type="text"
-            placeholder="Nombre"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-400 focus:border-gray-400 transition-all duration-300"
-            required
-          />
-        )}
-        <input
-          type="email"
-          placeholder="Correo electrónico"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-400 focus:border-gray-400 transition-all duration-300"
-          required
-        />
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-400 focus:border-gray-400 transition-all duration-300"
-          required
-        />
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full px-6 py-3 text-base bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-all duration-300 shadow-sm hover:shadow-md disabled:bg-gray-300 disabled:cursor-not-allowed"
-        >
-          {loading ? 'Cargando...' : (isSignUp ? 'Registrarse' : 'Iniciar sesión')}
-        </button>
-      </form>
-      <div className="w-full flex justify-between mb-2">
-        <button
-          type="button"
-          onClick={() => setIsSignUp(!isSignUp)}
-          className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
-        >
-          {isSignUp ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate'}
-        </button>
-        <button
-          type="button"
-          onClick={() => alert('Funcionalidad de recuperación próximamente')}
-          className="text-sm text-gray-500 hover:text-blue-600 transition-colors"
-        >
-          ¿Olvidaste tu contraseña?
-        </button>
-      </div>
+      
       <p className="text-xs text-gray-400 mt-4 text-center">
         Al continuar, aceptas nuestros <a href="/privacidad" className="underline hover:text-blue-600">Términos de Servicio</a> y <a href="/privacidad" className="underline hover:text-blue-600">Política de Privacidad</a>.
       </p>

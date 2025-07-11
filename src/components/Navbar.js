@@ -128,8 +128,8 @@ export default function Navbar() {
       </div>
       {/* Modal de Auth */}
       {showAuth && (
-        <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black bg-opacity-40">
-          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md relative">
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black bg-opacity-40 p-4">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm sm:max-w-md relative mx-4">
             <button onClick={() => setShowAuth(false)} className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-xl">&times;</button>
             <Auth />
           </div>
