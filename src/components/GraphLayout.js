@@ -92,40 +92,40 @@ function NodeDrawer({ node, onClose }) {
         className="fixed inset-0 bg-black bg-opacity-50 z-[200] transition-opacity duration-300"
         onClick={onClose}
       />
-      {/* Drawer lateral - Responsive */}
+      {/* Drawer lateral - Responsive mejorado para móviles */}
       <div className="fixed top-0 right-0 h-screen w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-2/5 bg-white z-[210] shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-3 sm:p-4 md:p-6 border-b border-gray-200">
           <div className="flex items-center space-x-2 sm:space-x-3">
-            <span className="text-2xl sm:text-3xl">{node.data.icon}</span>
-            <h3 className="text-lg sm:text-xl font-bold text-gray-900 truncate">{nodeData.title}</h3>
+            <span className="text-xl sm:text-2xl md:text-3xl">{node.data.icon}</span>
+            <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 truncate">{nodeData.title}</h3>
           </div>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors p-1 sm:p-2"
           >
-            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
         {/* Contenido */}
-        <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
-          <div className="space-y-6 sm:space-y-8">
+        <div className="flex-1 p-3 sm:p-4 md:p-6 overflow-y-auto">
+          <div className="space-y-4 sm:space-y-6 md:space-y-8">
             {/* Texto explicativo */}
             <div>
-              <p className="text-sm sm:text-base text-black leading-relaxed">
+              <p className="text-xs sm:text-sm md:text-base text-black leading-relaxed">
                 {nodeData.description}
               </p>
             </div>
 
             {/* Recursos gratuitos */}
             <div>
-              <div className="relative mb-4">
+              <div className="relative mb-3 sm:mb-4">
                 <div className="absolute top-1/2 left-0 right-0 border-t border-green-500"></div>
-                <div className="text-left pl-4">
-                  <h4 className="text-xs sm:text-sm font-semibold text-green-700 border border-green-500 rounded-lg px-3 py-1 bg-white inline-block relative z-10">
+                <div className="text-left pl-3 sm:pl-4">
+                  <h4 className="text-xs sm:text-sm font-semibold text-green-700 border border-green-500 rounded-lg px-2 sm:px-3 py-1 bg-white inline-block relative z-10">
                     <svg className="inline w-3 h-3 mr-1 text-green-600" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                     </svg>
@@ -138,7 +138,7 @@ function NodeDrawer({ node, onClose }) {
                   <div key={index} className="flex items-center">
                     <a
                       href={resource.url}
-                      className={`text-xs sm:text-sm font-semibold px-2 py-1 rounded mr-3 transition-colors hover:opacity-80 ${
+                      className={`text-xs sm:text-sm font-semibold px-2 py-1 rounded mr-2 sm:mr-3 transition-colors hover:opacity-80 ${
                         resource.type === 'artículo' ? 'bg-yellow-500 text-black' :
                         resource.type === 'video' ? 'bg-purple-500 text-black' :
                         resource.type === 'libro' ? 'bg-blue-500 text-black' :
@@ -148,7 +148,7 @@ function NodeDrawer({ node, onClose }) {
                     </a>
                     <a
                       href={resource.url}
-                      className="text-gray-700 text-sm sm:text-base font-medium truncate hover:text-blue-600 transition-colors pr-4 underline decoration-gray-600 hover:decoration-blue-700"
+                      className="text-gray-700 text-xs sm:text-sm md:text-base font-medium truncate hover:text-blue-600 transition-colors pr-2 sm:pr-4 underline decoration-gray-600 hover:decoration-blue-700"
                     >
                       {resource.title}
                     </a>
@@ -159,10 +159,10 @@ function NodeDrawer({ node, onClose }) {
 
             {/* Recursos premium */}
             <div>
-              <div className="relative mb-4">
+              <div className="relative mb-3 sm:mb-4">
                 <div className="absolute top-1/2 left-0 right-0 border-t border-purple-500"></div>
-                <div className="text-left pl-4">
-                  <h4 className="text-xs sm:text-sm font-semibold text-purple-700 border border-purple-500 rounded-lg px-3 py-1 bg-white inline-block relative z-10">
+                <div className="text-left pl-3 sm:pl-4">
+                  <h4 className="text-xs sm:text-sm font-semibold text-purple-700 border border-purple-500 rounded-lg px-2 sm:px-3 py-1 bg-white inline-block relative z-10">
                     <svg className="inline w-3 h-3 mr-1 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                     </svg>
@@ -170,8 +170,8 @@ function NodeDrawer({ node, onClose }) {
                   </h4>
                 </div>
               </div>
-              <div className="text-center py-4">
-                <p className="text-gray-500 text-sm font-medium">Muy pronto</p>
+              <div className="text-center py-3 sm:py-4">
+                <p className="text-gray-500 text-xs sm:text-sm font-medium">Muy pronto</p>
               </div>
             </div>
           </div>

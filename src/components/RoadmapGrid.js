@@ -25,12 +25,12 @@ export default function RoadmapGrid() {
         {/* Alerta de configuración */}
         <ConfigAlert />
         
-        {/* Título y subtítulo */}
+        {/* Título y subtítulo - Reducido para móviles */}
         <div className="text-center mb-8 pt-8 pb-4">
-          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 via-yellow-500 to-blue-800 bg-clip-text text-transparent animate-gradient-x px-4 py-2 select-none pointer-events-none">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 via-yellow-500 to-blue-800 bg-clip-text text-transparent animate-gradient-x px-4 py-2 select-none pointer-events-none">
             MetalRoadmap para Ingenieros Metalúrgicos
           </h1>
-          <p className="text-lg text-slate-700 mb-6">
+          <p className="text-sm sm:text-base md:text-lg text-slate-700 mb-6">
             Explora los mejores recursos y guías para convertirte en un experto en ingeniería metalúrgica. Cada tarjeta representa un roadmap único con recursos valiosos.
           </p>
         </div>
@@ -43,7 +43,7 @@ export default function RoadmapGrid() {
           <div className="relative mb-8">
             <div className="absolute top-1/2 left-0 right-0 border-t border-indigo-400" style={{left: 'calc(-50vw + 50%)', right: 'calc(-50vw + 50%)'}}></div>
             <div className="text-center">
-              <h2 className="text-base font-bold text-indigo-800 border border-indigo-400 rounded-xl px-3 py-1 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 inline-block relative z-10">Ciencias Básicas</h2>
+              <h2 className="text-sm sm:text-base font-bold text-indigo-800 border border-indigo-400 rounded-xl px-3 py-1 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 inline-block relative z-10">Ciencias Básicas</h2>
             </div>
           </div>
           
@@ -54,11 +54,11 @@ export default function RoadmapGrid() {
                 <div
                   key={idx}
                   onClick={() => handleCardClick(item)}
-                  className={`p-2 rounded-xl shadow-lg hover:shadow-xl transition cursor-pointer transform hover:scale-105 duration-200 border ${
+                  className={`p-3 sm:p-2 rounded-xl shadow-lg hover:shadow-xl transition cursor-pointer transform hover:scale-105 duration-200 border ${
                     item.status === 'coming-soon' ? 'bg-slate-100 border-slate-300 opacity-90' : 'bg-white border-indigo-200'
                   }`}
                 >
-                  <h2 className={`text-lg font-semibold mb-1 ${
+                  <h2 className={`text-base sm:text-lg font-semibold mb-1 ${
                     item.status === 'coming-soon' ? 'text-slate-600' : 'text-slate-900'
                   }`}>
                     <span className={item.status === 'coming-soon' ? 'grayscale' : ''}>{item.icon}</span> {item.title}
@@ -85,10 +85,11 @@ export default function RoadmapGrid() {
               <div className="flex justify-center mt-6">
                 <button
                   onClick={() => setShowAuth(true)}
-                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105"
+                  className="inline-flex items-center px-4 sm:px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105 text-sm sm:text-base"
                 >
                   <span className="mr-2">✨</span>
-                  Crear Mi Roadmap en Ciencias Básicas
+                  <span className="hidden sm:inline">Crear Mi Roadmap en Ciencias Básicas</span>
+                  <span className="sm:hidden">Crear Roadmap</span>
                 </button>
               </div>
             )}
@@ -98,7 +99,7 @@ export default function RoadmapGrid() {
           <div className="relative mb-8">
             <div className="absolute top-1/2 left-0 right-0 border-t border-indigo-400" style={{left: 'calc(-50vw + 50%)', right: 'calc(-50vw + 50%)'}}></div>
             <div className="text-center">
-              <h2 className="text-base font-bold text-indigo-800 border border-indigo-400 rounded-xl px-3 py-1 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 inline-block relative z-10">Ingeniería Metalúrgica Extractiva</h2>
+              <h2 className="text-sm sm:text-base font-bold text-indigo-800 border border-indigo-400 rounded-xl px-3 py-1 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 inline-block relative z-10">Ingeniería Metalúrgica Extractiva</h2>
             </div>
           </div>
           
@@ -109,11 +110,11 @@ export default function RoadmapGrid() {
                 <div
                   key={idx + 12}
                   onClick={() => handleCardClick(item)}
-                  className={`p-2 rounded-xl shadow-lg hover:shadow-xl transition cursor-pointer transform hover:scale-105 duration-200 border ${
+                  className={`p-3 sm:p-2 rounded-xl shadow-lg hover:shadow-xl transition cursor-pointer transform hover:scale-105 duration-200 border ${
                     item.status === 'coming-soon' ? 'bg-slate-100 border-slate-300 opacity-90' : 'bg-white border-indigo-200'
                   }`}
                 >
-                  <h2 className={`text-lg font-semibold mb-1 ${
+                  <h2 className={`text-base sm:text-lg font-semibold mb-1 ${
                     item.status === 'coming-soon' ? 'text-slate-600' : 'text-slate-900'
                   }`}>
                     <span className={item.status === 'coming-soon' ? 'grayscale' : ''}>{item.icon}</span> {item.title}
@@ -140,10 +141,11 @@ export default function RoadmapGrid() {
               <div className="flex justify-center mt-6">
                 <button
                   onClick={() => setShowAuth(true)}
-                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105"
+                  className="inline-flex items-center px-4 sm:px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105 text-sm sm:text-base"
                 >
                   <span className="mr-2">✨</span>
-                  Crear Mi Roadmap en Extractiva
+                  <span className="hidden sm:inline">Crear Mi Roadmap en Extractiva</span>
+                  <span className="sm:hidden">Crear Roadmap</span>
                 </button>
               </div>
             )}
@@ -153,7 +155,7 @@ export default function RoadmapGrid() {
           <div className="relative mb-8">
             <div className="absolute top-1/2 left-0 right-0 border-t border-indigo-400" style={{left: 'calc(-50vw + 50%)', right: 'calc(-50vw + 50%)'}}></div>
             <div className="text-center">
-              <h2 className="text-base font-bold text-indigo-800 border border-indigo-400 rounded-xl px-3 py-1 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 inline-block relative z-10">Ingeniería Metalúrgica Transformativa</h2>
+              <h2 className="text-sm sm:text-base font-bold text-indigo-800 border border-indigo-400 rounded-xl px-3 py-1 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 inline-block relative z-10">Ingeniería Metalúrgica Transformativa</h2>
             </div>
           </div>
           
@@ -164,11 +166,11 @@ export default function RoadmapGrid() {
                 <div
                   key={idx + 22}
                   onClick={() => handleCardClick(item)}
-                  className={`p-2 rounded-xl shadow-lg hover:shadow-xl transition cursor-pointer transform hover:scale-105 duration-200 border ${
+                  className={`p-3 sm:p-2 rounded-xl shadow-lg hover:shadow-xl transition cursor-pointer transform hover:scale-105 duration-200 border ${
                     item.status === 'coming-soon' ? 'bg-slate-100 border-slate-300 opacity-90' : 'bg-white border-indigo-200'
                   }`}
                 >
-                  <h2 className={`text-lg font-semibold mb-1 ${
+                  <h2 className={`text-base sm:text-lg font-semibold mb-1 ${
                     item.status === 'coming-soon' ? 'text-slate-600' : 'text-slate-900'
                   }`}>
                     <span className={item.status === 'coming-soon' ? 'grayscale' : ''}>{item.icon}</span> {item.title}
@@ -195,10 +197,11 @@ export default function RoadmapGrid() {
               <div className="flex justify-center mt-6">
                 <button
                   onClick={() => setShowAuth(true)}
-                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105"
+                  className="inline-flex items-center px-4 sm:px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105 text-sm sm:text-base"
                 >
                   <span className="mr-2">✨</span>
-                  Crear Mi Roadmap en Transformativa
+                  <span className="hidden sm:inline">Crear Mi Roadmap en Transformativa</span>
+                  <span className="sm:hidden">Crear Roadmap</span>
                 </button>
               </div>
             )}
