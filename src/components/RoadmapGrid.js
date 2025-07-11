@@ -11,8 +11,6 @@ export default function RoadmapGrid() {
   const { user } = useUser();
   const [showAuth, setShowAuth] = useState(false);
 
-  // Elimina el estado y useEffect de usuario local y el efecto de cierre de modal
-
   const handleCardClick = (item) => {
     if (item.status === "active") {
       navigate(item.link);
@@ -35,15 +33,6 @@ export default function RoadmapGrid() {
           <p className="text-lg text-slate-700 mb-6">
             Explora los mejores recursos y guías para convertirte en un experto en ingeniería metalúrgica. Cada tarjeta representa un roadmap único con recursos valiosos.
           </p>
-          
-          {/* Botón Crear Roadmap */}
-          <button
-            onClick={() => navigate('/create')}
-            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105"
-          >
-            <span className="mr-2">✨</span>
-            Crear Mi Roadmap
-          </button>
         </div>
       </div>
 
@@ -91,15 +80,15 @@ export default function RoadmapGrid() {
                 </div>
               ))}
             </div>
-            {/* Botón Crear Roadmap solo si NO está logueado */}
-            {!user && (
-              <div className="flex justify-center mt-4">
+            {/* Botón Crear Roadmap al final de Ciencias Básicas */}
+            {user && (
+              <div className="flex justify-center mt-6">
                 <button
-                  onClick={() => setShowAuth(true)}
+                  onClick={() => navigate('/create')}
                   className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105"
                 >
                   <span className="mr-2">✨</span>
-                  Crear Roadmap
+                  Crear Roadmap en Ciencias Básicas
                 </button>
               </div>
             )}
@@ -146,15 +135,15 @@ export default function RoadmapGrid() {
                 </div>
               ))}
             </div>
-            {/* Botón Crear Roadmap solo si NO está logueado */}
-            {!user && (
-              <div className="flex justify-center mt-4">
+            {/* Botón Crear Roadmap al final de Extractiva */}
+            {user && (
+              <div className="flex justify-center mt-6">
                 <button
-                  onClick={() => setShowAuth(true)}
+                  onClick={() => navigate('/create')}
                   className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105"
                 >
                   <span className="mr-2">✨</span>
-                  Crear Roadmap
+                  Crear Roadmap en Extractiva
                 </button>
               </div>
             )}
@@ -201,15 +190,15 @@ export default function RoadmapGrid() {
                 </div>
               ))}
             </div>
-            {/* Botón Crear Roadmap solo si NO está logueado */}
-            {!user && (
-              <div className="flex justify-center mt-4">
+            {/* Botón Crear Roadmap al final de Transformativa */}
+            {user && (
+              <div className="flex justify-center mt-6">
                 <button
-                  onClick={() => setShowAuth(true)}
+                  onClick={() => navigate('/create')}
                   className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105"
                 >
                   <span className="mr-2">✨</span>
-                  Crear Roadmap
+                  Crear Roadmap en Transformativa
                 </button>
               </div>
             )}
