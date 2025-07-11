@@ -248,11 +248,14 @@ const GraphLayout = () => {
           elementsSelectable={true}
           panOnScroll={false}
           zoomOnScroll={false}
-          panOnDrag={false}
+          panOnDrag={true}
           zoomOnPinch={true}
+          panOnScrollMode="free"
           attributionPosition="bottom-left"
           preventScrolling={false}
           zoomOnDoubleClick={false}
+          multiSelectionKeyCode={null}
+          deleteKeyCode={null}
         >
           <FlowWithFitView />
           <Controls />
