@@ -19,202 +19,135 @@ export default function RoadmapGrid() {
     }
   };
 
+  // Organizar los datos por categorías
+  const organizeByCategory = () => {
+    const categories = {};
+    data.forEach(item => {
+      if (!categories[item.category]) {
+        categories[item.category] = [];
+      }
+      categories[item.category].push(item);
+    });
+    return categories;
+  };
+
+  const categories = organizeByCategory();
+
+  // Componente para renderizar una categoría
+  const renderCategory = (categoryName, items) => (
+    <div key={categoryName}>
+      {/* Línea y título de la categoría */}
+      <div className="relative mb-6">
+        <div className="absolute top-1/2 left-0 right-0 border-t border-indigo-400" style={{left: 'calc(-50vw + 50%)', right: 'calc(-50vw + 50%)'}}></div>
+        <div className="text-center">
+          <h2 className="text-sm font-bold text-indigo-800 border border-indigo-400 rounded-xl px-3 py-1 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 inline-block relative z-10">{categoryName}</h2>
+        </div>
+      </div>
+      
+      {/* Grid de items de la categoría */}
+      <div className="mb-6">
+        <div className="grid grid-cols-1 gap-2 px-4 sm:grid-cols-2 sm:px-8 lg:grid-cols-3 lg:px-32 xl:grid-cols-4 xl:px-40 2xl:grid-cols-5 2xl:px-48 3xl:grid-cols-5 3xl:px-56">
+          {items.map((item, idx) => (
+            <div
+              key={`${categoryName}-${idx}`}
+              onClick={() => handleCardClick(item)}
+              className={`p-2 rounded-lg shadow-md hover:shadow-lg transition cursor-pointer transform hover:scale-102 duration-200 border hover:border-indigo-700 ${
+                item.status === 'coming-soon' ? 'bg-slate-100 border-slate-300 opacity-90' : 'bg-white border-indigo-200'
+              }`}
+            >
+              <h3 className={`text-sm font-semibold mb-1 ${
+                item.status === 'coming-soon' ? 'text-slate-600' : 'text-slate-900'
+              }`}>
+                <span className={item.status === 'coming-soon' ? 'grayscale' : ''}>{item.icon}</span> {item.title}
+              </h3>
+              <p className={`text-xs mb-1 ${
+                item.status === 'coming-soon' ? 'text-slate-500' : 'text-slate-600'
+              }`} style={{
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                display: 'block'
+              }}>
+                {item.description}
+              </p>
+              {item.status === "active" && item.title !== "Termodinámica" ? (
+                <div className="mt-1 text-xs text-indigo-600 font-medium">
+                  ✨ Haz click para explorar
+                </div>
+              ) : (
+                <div className="mt-1 text-xs text-slate-500 font-medium">
+                  
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+        {/* Botón Crear Roadmap al final de cada categoría */}
+        {!user && (
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={() => setShowAuth(true)}
+              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105 text-sm"
+            >
+              <span className="mr-2">✨</span>
+              <span className="hidden sm:inline">Crear Roadmap</span>
+              <span className="sm:hidden">Crear Roadmap</span>
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   return (
-    <div className="w-full min-h-screen bg-gradient-to-r from-blue-100 via-indigo-100 to-blue-200 py-10">
-      <div className="max-w-5xl mx-auto px-6 sm:px-8 lg:px-20">
+    <div className="w-full min-h-screen bg-gradient-to-r from-blue-100 via-indigo-100 to-blue-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-32 xl:px-40 2xl:px-48 3xl:px-56">
         {/* Alerta de configuración */}
         <ConfigAlert />
         
-        {/* Título y subtítulo - Reducido para móviles */}
-        <div className="text-center mb-8 pt-8 pb-4">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 via-yellow-500 to-blue-800 bg-clip-text text-transparent animate-gradient-x px-4 py-2 select-none pointer-events-none">
-            MetalRoadmap para Ingenieros Metalúrgicos
-          </h1>
-          <p className="text-sm sm:text-base md:text-lg text-slate-700 mb-6">
-            Explora los mejores recursos y guías para convertirte en un experto en ingeniería metalúrgica. Cada tarjeta representa un roadmap único con recursos valiosos.
-          </p>
+        {/* Título y subtítulo - Responsive con márgenes grandes */}
+        <div className="pt-4 pb-4 lg:mb-12 xl:mb-16 2xl:mb-20 3xl:mb-24">
+          {/* Título izquierda en móviles, centrado en pantallas grandes */}
+          <div className="text-left sm:text-center lg:text-center xl:text-center 2xl:text-center 3xl:text-center px-4 sm:px-8 lg:px-32 xl:px-40 2xl:px-48 3xl:px-56">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-600 via-yellow-500 to-blue-800 bg-clip-text text-transparent animate-gradient-x select-none pointer-events-none lg:py-4 xl:py-6 2xl:py-8 3xl:py-10">
+              <span className="block sm:hidden">MetalRoad Ing. Metalurgistas</span>
+              <span className="hidden sm:block">MetalRoadmap para Ingenieros Metalúrgicos</span>
+            </h1>
+          </div>
+          
+          {/* Descripción izquierda en móviles, centrada en pantallas grandes */}
+          <div className="text-left sm:text-center px-4 sm:px-8 lg:px-32 xl:px-40 2xl:px-48 3xl:px-56">
+            <p className="text-xs sm:text-sm md:text-base text-slate-700">
+              Explora los mejores recursos y guías para convertirte en un experto en ingeniería metalúrgica. Cada tarjeta representa un roadmap único con recursos valiosos.
+            </p>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 sm:px-8 lg:px-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-32 xl:px-40 2xl:px-48 3xl:px-56">
         {/* Grid de roadmaps organizados por categorías */}
         <div className="p-0">
-          {/* Línea y título "Ciencias Básicas" */}
-          <div className="relative mb-8">
-            <div className="absolute top-1/2 left-0 right-0 border-t border-indigo-400" style={{left: 'calc(-50vw + 50%)', right: 'calc(-50vw + 50%)'}}></div>
-            <div className="text-center">
-              <h2 className="text-sm sm:text-base font-bold text-indigo-800 border border-indigo-400 rounded-xl px-3 py-1 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 inline-block relative z-10">Ciencias Básicas</h2>
-            </div>
-          </div>
-          
-          {/* Ciencias Básicas */}
-          <div className="mb-8">
-            <div className="grid grid-cols-1 gap-4 px-2 sm:grid-cols-2 sm:px-0 lg:grid-cols-3">
-              {data.slice(0, 12).map((item, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => handleCardClick(item)}
-                  className={`p-3 sm:p-2 rounded-xl shadow-lg hover:shadow-xl transition cursor-pointer transform hover:scale-105 duration-200 border ${
-                    item.status === 'coming-soon' ? 'bg-slate-100 border-slate-300 opacity-90' : 'bg-white border-indigo-200'
-                  }`}
-                >
-                  <h2 className={`text-base sm:text-lg font-semibold mb-1 ${
-                    item.status === 'coming-soon' ? 'text-slate-600' : 'text-slate-900'
-                  }`}>
-                    <span className={item.status === 'coming-soon' ? 'grayscale' : ''}>{item.icon}</span> {item.title}
-                  </h2>
-                  <p className={`text-xs mb-2 ${
-                    item.status === 'coming-soon' ? 'text-slate-500' : 'text-slate-600'
-                  }`}>
-                    {item.description.length > 80 ? item.description.slice(0, 80) + '...' : item.description}
-                  </p>
-                  {item.status === "active" ? (
-                    <div className="mt-2 text-xs text-indigo-600 font-medium">
-                      ✨ Haz click para explorar
-                    </div>
-                  ) : (
-                    <div className="mt-2 text-xs text-slate-500 font-medium">
-                      
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-            {/* Botón Crear Roadmap al final de Ciencias Básicas */}
-            {!user && (
-              <div className="flex justify-center mt-6">
-                <button
-                  onClick={() => setShowAuth(true)}
-                  className="inline-flex items-center px-4 sm:px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105 text-sm sm:text-base"
-                >
-                  <span className="mr-2">✨</span>
-                  <span className="hidden sm:inline">Crear Mi Roadmap en Ciencias Básicas</span>
-                  <span className="sm:hidden">Crear Roadmap</span>
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Línea y título "Ingeniería Metalúrgica Extractiva" */}
-          <div className="relative mb-8">
-            <div className="absolute top-1/2 left-0 right-0 border-t border-indigo-400" style={{left: 'calc(-50vw + 50%)', right: 'calc(-50vw + 50%)'}}></div>
-            <div className="text-center">
-              <h2 className="text-sm sm:text-base font-bold text-indigo-800 border border-indigo-400 rounded-xl px-3 py-1 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 inline-block relative z-10">Ingeniería Metalúrgica Extractiva</h2>
-            </div>
-          </div>
-          
-          {/* Ingeniería Metalúrgica Extractiva */}
-          <div className="mb-8">
-            <div className="grid grid-cols-1 gap-4 px-2 sm:grid-cols-2 sm:px-0 lg:grid-cols-3">
-              {data.slice(12, 22).map((item, idx) => (
-                <div
-                  key={idx + 12}
-                  onClick={() => handleCardClick(item)}
-                  className={`p-3 sm:p-2 rounded-xl shadow-lg hover:shadow-xl transition cursor-pointer transform hover:scale-105 duration-200 border ${
-                    item.status === 'coming-soon' ? 'bg-slate-100 border-slate-300 opacity-90' : 'bg-white border-indigo-200'
-                  }`}
-                >
-                  <h2 className={`text-base sm:text-lg font-semibold mb-1 ${
-                    item.status === 'coming-soon' ? 'text-slate-600' : 'text-slate-900'
-                  }`}>
-                    <span className={item.status === 'coming-soon' ? 'grayscale' : ''}>{item.icon}</span> {item.title}
-                  </h2>
-                  <p className={`text-xs mb-2 ${
-                    item.status === 'coming-soon' ? 'text-slate-500' : 'text-slate-600'
-                  }`}>
-                    {item.description.length > 80 ? item.description.slice(0, 80) + '...' : item.description}
-                  </p>
-                  {item.status === "active" ? (
-                    <div className="mt-2 text-xs text-indigo-600 font-medium">
-                      ✨ Haz click para explorar
-                    </div>
-                  ) : (
-                    <div className="mt-2 text-xs text-slate-500 font-medium">
-                      
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-            {/* Botón Crear Roadmap al final de Extractiva */}
-            {!user && (
-              <div className="flex justify-center mt-6">
-                <button
-                  onClick={() => setShowAuth(true)}
-                  className="inline-flex items-center px-4 sm:px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105 text-sm sm:text-base"
-                >
-                  <span className="mr-2">✨</span>
-                  <span className="hidden sm:inline">Crear Mi Roadmap en Extractiva</span>
-                  <span className="sm:hidden">Crear Roadmap</span>
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Línea y título "Ingeniería Metalúrgica Transformativa" */}
-          <div className="relative mb-8">
-            <div className="absolute top-1/2 left-0 right-0 border-t border-indigo-400" style={{left: 'calc(-50vw + 50%)', right: 'calc(-50vw + 50%)'}}></div>
-            <div className="text-center">
-              <h2 className="text-sm sm:text-base font-bold text-indigo-800 border border-indigo-400 rounded-xl px-3 py-1 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 inline-block relative z-10">Ingeniería Metalúrgica Transformativa</h2>
-            </div>
-          </div>
-          
-          {/* Ingeniería Metalúrgica Transformativa */}
-          <div className="mb-8">
-            <div className="grid grid-cols-1 gap-4 px-2 sm:grid-cols-2 sm:px-0 lg:grid-cols-3">
-              {data.slice(22, 32).map((item, idx) => (
-                <div
-                  key={idx + 22}
-                  onClick={() => handleCardClick(item)}
-                  className={`p-3 sm:p-2 rounded-xl shadow-lg hover:shadow-xl transition cursor-pointer transform hover:scale-105 duration-200 border ${
-                    item.status === 'coming-soon' ? 'bg-slate-100 border-slate-300 opacity-90' : 'bg-white border-indigo-200'
-                  }`}
-                >
-                  <h2 className={`text-base sm:text-lg font-semibold mb-1 ${
-                    item.status === 'coming-soon' ? 'text-slate-600' : 'text-slate-900'
-                  }`}>
-                    <span className={item.status === 'coming-soon' ? 'grayscale' : ''}>{item.icon}</span> {item.title}
-                  </h2>
-                  <p className={`text-xs mb-2 ${
-                    item.status === 'coming-soon' ? 'text-slate-500' : 'text-slate-600'
-                  }`}>
-                    {item.description.length > 80 ? item.description.slice(0, 80) + '...' : item.description}
-                  </p>
-                  {item.status === "active" ? (
-                    <div className="mt-2 text-xs text-indigo-600 font-medium">
-                      ✨ Haz click para explorar
-                    </div>
-                  ) : (
-                    <div className="mt-2 text-xs text-slate-500 font-medium">
-                      
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-            {/* Botón Crear Roadmap al final de Transformativa */}
-            {!user && (
-              <div className="flex justify-center mt-6">
-                <button
-                  onClick={() => setShowAuth(true)}
-                  className="inline-flex items-center px-4 sm:px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105 text-sm sm:text-base"
-                >
-                  <span className="mr-2">✨</span>
-                  <span className="hidden sm:inline">Crear Mi Roadmap en Transformativa</span>
-                  <span className="sm:hidden">Crear Roadmap</span>
-                </button>
-              </div>
-            )}
-          </div>
+          {/* Renderizar cada categoría en el orden especificado */}
+          {renderCategory("Ciencias Básicas", categories["Ciencias Básicas"] || [])}
+          {renderCategory("Extractiva", categories["Extractiva"] || [])}
+          {renderCategory("Transformativa", categories["Transformativa"] || [])}
+          {renderCategory("Herramientas Extractivas", categories["Herramientas Extractivas"] || [])}
+          {renderCategory("Herramientas Transformativas", categories["Herramientas Transformativas"] || [])}
         </div>
       </div>
 
-      {/* Modal de Auth para login flotante */}
+      {/* Modal de autenticación */}
       {showAuth && (
-        <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black bg-opacity-40">
-          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md relative">
-            <button onClick={() => setShowAuth(false)} className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-3xl font-bold leading-none focus:outline-none" style={{lineHeight: '1', width: '2.5rem', height: '2.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>&times;</button>
-            <Auth />
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md relative">
+            <button 
+              onClick={() => setShowAuth(false)} 
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-3xl font-bold leading-none focus:outline-none"
+              style={{lineHeight: '1', width: '2.5rem', height: '2.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
+            >
+              &times;
+            </button>
+            <Auth onClose={() => setShowAuth(false)} />
           </div>
         </div>
       )}

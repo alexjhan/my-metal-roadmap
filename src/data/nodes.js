@@ -1,4 +1,5 @@
 export const nodes = [
+  // Nodo central - Termodinámica (NIVEL 0)
   {
     id: 'termodinamica',
     type: 'custom',
@@ -10,10 +11,12 @@ export const nodes = [
       icon: '🔥'
     }
   },
+  
+  // NIVEL 1 - Conceptos principales (círculo interno)
   {
     id: 'sistemas',
     type: 'custom',
-    position: { x: 0, y: 0 },
+    position: { x: -200, y: -150 },
     data: {
       label: 'Sistemas',
       description: 'Sistemas termodinámicos y sus propiedades fundamentales',
@@ -24,7 +27,7 @@ export const nodes = [
   {
     id: 'primera-ley',
     type: 'custom',
-    position: { x: 0, y: 0 },
+    position: { x: 200, y: -150 },
     data: {
       label: 'Primera Ley',
       description: 'Conservación de la energía en sistemas termodinámicos',
@@ -35,7 +38,7 @@ export const nodes = [
   {
     id: 'segunda-ley',
     type: 'custom',
-    position: { x: 0, y: 0 },
+    position: { x: 200, y: 150 },
     data: {
       label: 'Segunda Ley',
       description: 'Entropía y espontaneidad de los procesos',
@@ -46,7 +49,7 @@ export const nodes = [
   {
     id: 'energia-gibbs',
     type: 'custom',
-    position: { x: 0, y: 0 },
+    position: { x: -200, y: 150 },
     data: {
       label: 'Energía de Gibbs',
       description: 'Criterio de espontaneidad para reacciones químicas',
@@ -57,7 +60,7 @@ export const nodes = [
   {
     id: 'equilibrio',
     type: 'custom',
-    position: { x: 0, y: 0 },
+    position: { x: 0, y: -250 },
     data: {
       label: 'Equilibrio',
       description: 'Estados de equilibrio termodinámico',
@@ -65,10 +68,13 @@ export const nodes = [
       icon: '⚖️'
     }
   },
+  
+  // NIVEL 2 - Subconceptos (círculo externo)
+  // Conectados a Sistemas
   {
     id: 'sistema-abierto',
     type: 'custom',
-    position: { x: 0, y: 0 },
+    position: { x: -350, y: -250 },
     data: {
       label: 'Sistema Abierto',
       description: 'Intercambia materia y energía con el entorno',
@@ -79,7 +85,7 @@ export const nodes = [
   {
     id: 'sistema-cerrado',
     type: 'custom',
-    position: { x: 0, y: 0 },
+    position: { x: -350, y: -50 },
     data: {
       label: 'Sistema Cerrado',
       description: 'Solo intercambia energía, no materia',
@@ -90,7 +96,7 @@ export const nodes = [
   {
     id: 'sistema-aislado',
     type: 'custom',
-    position: { x: 0, y: 0 },
+    position: { x: -350, y: 150 },
     data: {
       label: 'Sistema Aislado',
       description: 'No intercambia ni materia ni energía',
@@ -98,10 +104,12 @@ export const nodes = [
       icon: '🛡️'
     }
   },
+  
+  // Conectados a Primera Ley
   {
     id: 'energia-interna',
     type: 'custom',
-    position: { x: 0, y: 0 },
+    position: { x: 350, y: -250 },
     data: {
       label: 'Energía Interna',
       description: 'Energía total del sistema termodinámico',
@@ -112,7 +120,7 @@ export const nodes = [
   {
     id: 'trabajo',
     type: 'custom',
-    position: { x: 0, y: 0 },
+    position: { x: 350, y: -50 },
     data: {
       label: 'Trabajo',
       description: 'Transferencia de energía por fuerzas mecánicas',
@@ -123,7 +131,7 @@ export const nodes = [
   {
     id: 'calor',
     type: 'custom',
-    position: { x: 0, y: 0 },
+    position: { x: 350, y: 150 },
     data: {
       label: 'Calor',
       description: 'Transferencia de energía por diferencia de temperatura',
@@ -131,10 +139,12 @@ export const nodes = [
       icon: '🌡️'
     }
   },
+  
+  // Conectados a Segunda Ley
   {
     id: 'entropia',
     type: 'custom',
-    position: { x: 0, y: 0 },
+    position: { x: 350, y: 250 },
     data: {
       label: 'Entropía',
       description: 'Medida del desorden molecular del sistema',
@@ -145,7 +155,7 @@ export const nodes = [
   {
     id: 'espontaneidad',
     type: 'custom',
-    position: { x: 0, y: 0 },
+    position: { x: 200, y: 300 },
     data: {
       label: 'Espontaneidad',
       description: 'Criterios para reacciones espontáneas',
@@ -153,10 +163,12 @@ export const nodes = [
       icon: '🎯'
     }
   },
+  
+  // Conectados a Energía de Gibbs
   {
     id: 'delta-g',
     type: 'custom',
-    position: { x: 0, y: 0 },
+    position: { x: -350, y: 250 },
     data: {
       label: 'ΔG = ΔH - TΔS',
       description: 'Ecuación fundamental de la energía libre de Gibbs',
@@ -167,7 +179,7 @@ export const nodes = [
   {
     id: 'aplicaciones-metalurgicas',
     type: 'custom',
-    position: { x: 0, y: 0 },
+    position: { x: -200, y: 300 },
     data: {
       label: 'Aplicaciones Metalúrgicas',
       description: 'Uso de termodinámica en procesos metalúrgicos',
@@ -175,10 +187,12 @@ export const nodes = [
       icon: '🏭'
     }
   },
+  
+  // Conectados a Equilibrio
   {
     id: 'equilibrio-quimico',
     type: 'custom',
-    position: { x: 0, y: 0 },
+    position: { x: -100, y: -400 },
     data: {
       label: 'Equilibrio Químico',
       description: 'Reacciones químicas en estado de equilibrio',
@@ -189,7 +203,7 @@ export const nodes = [
   {
     id: 'equilibrio-fase',
     type: 'custom',
-    position: { x: 0, y: 0 },
+    position: { x: 100, y: -400 },
     data: {
       label: 'Equilibrio de Fases',
       description: 'Coexistencia de diferentes fases en equilibrio',
