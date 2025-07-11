@@ -36,6 +36,151 @@ export default function RoadmapLayout({
     }
   };
 
+  const handlePrint = () => {
+    // Ocultar elementos que no queremos imprimir
+    const elementsToHide = document.querySelectorAll('.no-print');
+    elementsToHide.forEach(el => {
+      el.style.display = 'none';
+    });
+
+    // Agregar estilos de impresión
+    const printStyles = document.createElement('style');
+    printStyles.textContent = `
+      @media print {
+        body { margin: 0; padding: 0; }
+        .print-container { 
+          width: 100% !important; 
+          height: auto !important; 
+          max-width: none !important;
+          margin: 0 !important;
+          padding: 20px !important;
+        }
+        .print-header {
+          background: white !important;
+          color: black !important;
+          padding: 20px !important;
+          margin-bottom: 20px !important;
+          border: 1px solid #ccc !important;
+          border-radius: 8px !important;
+        }
+        .print-content {
+          background: white !important;
+          color: black !important;
+          padding: 20px !important;
+          border: 1px solid #ccc !important;
+          border-radius: 8px !important;
+          min-height: 600px !important;
+        }
+        .print-title {
+          font-size: 24px !important;
+          font-weight: bold !important;
+          margin-bottom: 10px !important;
+          color: black !important;
+        }
+        .print-description {
+          font-size: 16px !important;
+          color: #666 !important;
+          margin-bottom: 20px !important;
+        }
+        .print-info {
+          font-size: 12px !important;
+          color: #888 !important;
+          margin-top: 20px !important;
+          text-align: center !important;
+        }
+        @page { margin: 1cm; }
+      }
+    `;
+    document.head.appendChild(printStyles);
+
+    // Crear contenido de impresión
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>${title} - MetalRoadmap</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+            .print-container { 
+              width: 100%; 
+              max-width: 800px; 
+              margin: 0 auto; 
+              padding: 20px; 
+            }
+            .print-header {
+              background: white;
+              color: black;
+              padding: 20px;
+              margin-bottom: 20px;
+              border: 1px solid #ccc;
+              border-radius: 8px;
+            }
+            .print-content {
+              background: white;
+              color: black;
+              padding: 20px;
+              border: 1px solid #ccc;
+              border-radius: 8px;
+              min-height: 600px;
+            }
+            .print-title {
+              font-size: 24px;
+              font-weight: bold;
+              margin-bottom: 10px;
+              color: black;
+            }
+            .print-description {
+              font-size: 16px;
+              color: #666;
+              margin-bottom: 20px;
+            }
+            .print-info {
+              font-size: 12px;
+              color: #888;
+              margin-top: 20px;
+              text-align: center;
+            }
+            @media print {
+              @page { margin: 1cm; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="print-container">
+            <div class="print-header">
+              <div class="print-title">${icon} ${title}</div>
+              <div class="print-description">${description}</div>
+              <div class="print-info">
+                Impreso desde MetalRoadmap - ${new Date().toLocaleDateString()}
+              </div>
+            </div>
+            <div class="print-content">
+              <h3>Mapa Mental Interactivo</h3>
+              <p>Este roadmap contiene un mapa mental interactivo que se puede explorar en la versión digital.</p>
+              <p>Para acceder al contenido completo, visita: ${window.location.href}</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+
+    // Imprimir y limpiar
+    setTimeout(() => {
+      printWindow.print();
+      printWindow.close();
+      
+      // Restaurar elementos ocultos
+      elementsToHide.forEach(el => {
+        el.style.display = '';
+      });
+      
+      // Remover estilos de impresión
+      document.head.removeChild(printStyles);
+    }, 500);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Espacio superior reducido para móviles */}
@@ -65,7 +210,7 @@ export default function RoadmapLayout({
                 {showPrintButton && (
                   <button
                     className="flex items-center px-2 sm:px-3 py-2 bg-orange-500 text-white rounded-md text-xs font-semibold hover:bg-orange-600 transition"
-                    onClick={() => window.print()}
+                    onClick={handlePrint}
                     title="Imprimir"
                   >
                     <FiPrinter className="mr-1" />
