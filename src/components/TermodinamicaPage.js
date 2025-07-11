@@ -1,9 +1,19 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiPrinter, FiShare2, FiMessageSquare } from 'react-icons/fi';
 import GraphLayout from './GraphLayout';
 
 export default function TermodinamicaPage() {
+  const navigate = useNavigate();
+
+  const handleAllRoadmaps = () => {
+    navigate('/');
+    // Forzar recarga de la página después de un pequeño delay
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Espacio superior igual al margen entre cajas */}
@@ -17,11 +27,14 @@ export default function TermodinamicaPage() {
             <div className="flex items-center justify-between mb-4">
               {/* All Roadmaps - Extremo izquierdo */}
               <div className="flex items-center">
-                <Link to="/" className="flex items-center px-3 py-2 bg-gray-200 text-gray-700 rounded-md text-sm font-semibold hover:bg-gray-300 transition">
+                <button
+                  onClick={handleAllRoadmaps}
+                  className="flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-300 transition-all duration-300 shadow-sm hover:shadow-md"
+                >
                   <FiArrowLeft className="mr-2" />
                   <span className="hidden sm:inline">All Roadmaps</span>
                   <span className="sm:hidden">All</span>
-                </Link>
+                </button>
               </div>
 
               {/* Botones de acción - Extremo derecho */}
