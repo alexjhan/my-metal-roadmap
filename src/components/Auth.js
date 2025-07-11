@@ -113,7 +113,7 @@ export default function Auth() {
       <button
         onClick={handleGoogleAuth}
         disabled={loading}
-        className="flex items-center justify-center w-full mb-4 px-4 py-2 text-base bg-white border border-gray-300 rounded-lg shadow hover:bg-gray-50 transition-colors disabled:bg-gray-200 font-medium text-gray-700"
+        className="flex items-center justify-center w-full mb-4 px-6 py-3 text-base bg-white border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed font-medium text-gray-700"
       >
         <span className="flex items-center mr-3">
           <svg width="24" height="24" viewBox="0 0 48 48" style={{ display: 'block' }}>
@@ -140,7 +140,7 @@ export default function Auth() {
             placeholder="Nombre"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="px-3 py-2 text-base border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-400 focus:border-gray-400 transition-all duration-300"
             required
           />
         )}
@@ -149,7 +149,7 @@ export default function Auth() {
           placeholder="Correo electrónico"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="px-3 py-2 text-base border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-400 focus:border-gray-400 transition-all duration-300"
           required
         />
         <input
@@ -157,13 +157,13 @@ export default function Auth() {
           placeholder="Contraseña"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="px-3 py-2 text-base border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-400 focus:border-gray-400 transition-all duration-300"
           required
         />
         <button
           type="submit"
           disabled={loading}
-          className="w-full px-4 py-2 text-base bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-gray-300"
+          className="w-full px-6 py-3 text-base bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-all duration-300 shadow-sm hover:shadow-md disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
           {loading ? 'Cargando...' : (isSignUp ? 'Registrarse' : 'Iniciar sesión')}
         </button>

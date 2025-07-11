@@ -71,6 +71,14 @@ export default function Navbar() {
           </h1>
         </Link>
         
+        {/* Texto IA Tutor Pronto - siempre visible */}
+        <div className="hidden md:block">
+          <div className="flex items-center space-x-2">
+            <span className="text-2xl filter grayscale">🤖</span>
+            <span className="text-gray-500 text-sm font-medium underline">IA Tutor Pronto</span>
+          </div>
+        </div>
+        
         {/* Navegación para usuarios autenticados */}
         {user && (
           <div className="flex items-center space-x-4">
@@ -82,7 +90,7 @@ export default function Navbar() {
             </Link>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="inline-flex items-center px-5 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105 text-sm"
+              className="inline-flex items-center px-5 py-2 bg-white text-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-sm font-medium"
               style={{ minWidth: '140px', justifyContent: 'center' }}
             >
               <span className="mr-2">✨</span>
@@ -96,13 +104,13 @@ export default function Navbar() {
           <div className="flex items-center space-x-4">
             <button
               onClick={() => setShowAuth(true)}
-              className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+              className="px-6 py-3 text-sm font-medium bg-white text-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 hover:border-gray-300 hover:bg-gray-50"
             >
               Iniciar sesión
             </button>
             <button
               onClick={() => setShowAuth(true)}
-              className="px-4 py-2 text-sm bg-gray-200 text-blue-700 rounded hover:bg-gray-300 transition-colors"
+              className="px-6 py-3 text-sm font-medium bg-gray-900 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 hover:bg-gray-800"
             >
               Registrarse
             </button>
