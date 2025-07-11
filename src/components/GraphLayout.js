@@ -248,8 +248,8 @@ const GraphLayout = () => {
           elementsSelectable={true}
           panOnScroll={false}
           zoomOnScroll={false}
-          panOnDrag={false}
-          zoomOnPinch={false}
+          panOnDrag={true}
+          zoomOnPinch={true}
           attributionPosition="bottom-left"
           preventScrolling={false}
           zoomOnDoubleClick={false}
