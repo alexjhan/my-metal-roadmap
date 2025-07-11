@@ -2,6 +2,17 @@ import React from 'react';
 import { FiAlertCircle, FiExternalLink } from 'react-icons/fi';
 
 export default function ConfigAlert() {
+  // Verificar si las variables de entorno están configuradas
+  const isConfigured = process.env.REACT_APP_SUPABASE_URL && 
+                       process.env.REACT_APP_SUPABASE_ANON_KEY &&
+                       process.env.REACT_APP_SUPABASE_URL !== 'tu_url_de_supabase' &&
+                       process.env.REACT_APP_SUPABASE_ANON_KEY !== 'tu_anon_key_de_supabase';
+
+  // Si está configurado, no mostrar nada
+  if (isConfigured) {
+    return null;
+  }
+
   return (
     <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
       <div className="flex items-start">
