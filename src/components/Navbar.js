@@ -49,16 +49,17 @@ export default function Navbar() {
           <img
             src="/assets/logo.png"
             alt="MetalRoadmap"
-            className="transition duration-500"
+            className="transition duration-500 cursor-pointer"
             style={{
               height: "3rem",
               width: "auto",
               objectFit: "contain",
               padding: "0.3rem",
             }}
+            onClick={() => navigate('/')}
           />
           <h1
-            className="text-4xl font-bold transition-all duration-500"
+            className="text-4xl font-bold transition-all duration-500 cursor-pointer"
             style={{
               fontFamily: "'Great Vibes', cursive",
               fontSize: "1.5rem",
@@ -66,6 +67,7 @@ export default function Navbar() {
               color: "#001f3f",
               padding: "0.3rem",
             }}
+            onClick={() => navigate('/')}
           >
            San Antonio Abad
           </h1>
