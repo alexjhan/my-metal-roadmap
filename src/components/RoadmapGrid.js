@@ -81,14 +81,14 @@ export default function RoadmapGrid() {
               ))}
             </div>
             {/* Botón Crear Roadmap al final de Ciencias Básicas */}
-            {user && (
+            {!user && (
               <div className="flex justify-center mt-6">
                 <button
-                  onClick={() => navigate('/create')}
+                  onClick={() => setShowAuth(true)}
                   className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105"
                 >
                   <span className="mr-2">✨</span>
-                  Crear Roadmap en Ciencias Básicas
+                  Crear Mi Roadmap en Ciencias Básicas
                 </button>
               </div>
             )}
@@ -136,14 +136,14 @@ export default function RoadmapGrid() {
               ))}
             </div>
             {/* Botón Crear Roadmap al final de Extractiva */}
-            {user && (
+            {!user && (
               <div className="flex justify-center mt-6">
                 <button
-                  onClick={() => navigate('/create')}
+                  onClick={() => setShowAuth(true)}
                   className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105"
                 >
                   <span className="mr-2">✨</span>
-                  Crear Roadmap en Extractiva
+                  Crear Mi Roadmap en Extractiva
                 </button>
               </div>
             )}
@@ -191,14 +191,14 @@ export default function RoadmapGrid() {
               ))}
             </div>
             {/* Botón Crear Roadmap al final de Transformativa */}
-            {user && (
+            {!user && (
               <div className="flex justify-center mt-6">
                 <button
-                  onClick={() => navigate('/create')}
+                  onClick={() => setShowAuth(true)}
                   className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105"
                 >
                   <span className="mr-2">✨</span>
-                  Crear Roadmap en Transformativa
+                  Crear Mi Roadmap en Transformativa
                 </button>
               </div>
             )}
