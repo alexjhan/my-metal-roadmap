@@ -21,6 +21,10 @@ import LiveView from './LiveView';
 import CustomNode from './CustomNode';
 import { nodes as termodinamicaNodes } from '../data/nodes';
 import { edges as termodinamicaEdges } from '../data/edges';
+import { devConfig } from '../config/dev';
+
+// Modo de desarrollo - permite acceso sin autenticación en localhost
+const isDevelopment = devConfig.isDevelopment;
 
 // Datos de roadmaps
 const roadmapData = {
@@ -289,7 +293,8 @@ const EditRoadmap = () => {
   const selectedNode = nodes.find(n => n.id === selectedNodeId);
 
   const handleCreateProposal = async () => {
-    if (!user) {
+    // En modo desarrollo, permitir crear propuestas sin autenticación
+    if (!isDevelopment && !user) {
       alert('Debes iniciar sesión para crear propuestas');
       return;
     }
@@ -338,7 +343,9 @@ const EditRoadmap = () => {
         return;
       }
 
-      await proposalService.createProposal(roadmapType, user.id, changes, proposalDescription);
+      // En modo desarrollo, usar un ID de usuario simulado
+      const userId = isDevelopment ? devConfig.devUser.id : user.id;
+      await proposalService.createProposal(roadmapType, userId, changes, proposalDescription);
       
       setSaveStatus('saved');
       setHasUnsavedChanges(false);
@@ -360,7 +367,9 @@ const EditRoadmap = () => {
 
   const handleVote = async (proposalId, vote, comment) => {
     try {
-      await proposalService.voteOnProposal(proposalId, user.id, vote, comment);
+      // En modo desarrollo, usar un ID de usuario simulado
+      const userId = isDevelopment ? devConfig.devUser.id : user.id;
+      await proposalService.voteOnProposal(proposalId, userId, vote, comment);
       // Recargar propuestas
       const proposalsData = await proposalService.getProposals(roadmapType);
       setProposals(proposalsData);
@@ -483,6 +492,14 @@ const EditRoadmap = () => {
           <div>
             <h1 className="text-xl font-bold text-gray-900">{roadmapInfo.title}</h1>
             <p className="text-sm text-gray-600">{roadmapInfo.description}</p>
+            {isDevelopment && (
+              <div className="flex items-center mt-1">
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                  <span className="w-2 h-2 bg-yellow-400 rounded-full mr-1"></span>
+                  Modo Desarrollo
+                </span>
+              </div>
+            )}
           </div>
         </div>
 

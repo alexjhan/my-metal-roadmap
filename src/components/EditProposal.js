@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { useUser } from '../UserContext';
+import { devConfig } from '../config/dev';
+
+// Modo de desarrollo - permite acceso sin autenticación en localhost
+const isDevelopment = devConfig.isDevelopment;
 
 const EditProposal = ({ proposal, onVote, onClose }) => {
   const { user } = useUser();
@@ -7,7 +11,8 @@ const EditProposal = ({ proposal, onVote, onClose }) => {
   const [comment, setComment] = useState('');
 
   const handleVote = (voteType) => {
-    if (!user) {
+    // En modo desarrollo, permitir votar sin autenticación
+    if (!isDevelopment && !user) {
       alert('Debes iniciar sesión para votar');
       return;
     }
