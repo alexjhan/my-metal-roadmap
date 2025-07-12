@@ -219,6 +219,20 @@ const EditRoadmap = () => {
     loadProposals();
   }, [roadmapType]);
 
+  const handleNodeClick = (id) => {
+    setSelectedNodeId(id);
+    setShowPropertiesPanel(true);
+    // Scroll suave al panel si está en móvil
+    if (window.innerWidth < 768) {
+      setTimeout(() => {
+        const panel = document.querySelector('.properties-panel');
+        if (panel) {
+          panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }, 100);
+    }
+  };
+
   // Pasar función de click a cada nodo
   const nodesWithClick = nodes.map(node => ({
     ...node,
@@ -450,20 +464,6 @@ const EditRoadmap = () => {
       };
       setNodes((nds) => [...nds, newNode]);
       setHasUnsavedChanges(true);
-    }
-  };
-
-  const handleNodeClick = (id) => {
-    setSelectedNodeId(id);
-    setShowPropertiesPanel(true);
-    // Scroll suave al panel si está en móvil
-    if (window.innerWidth < 768) {
-      setTimeout(() => {
-        const panel = document.querySelector('.properties-panel');
-        if (panel) {
-          panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-      }, 100);
     }
   };
 
