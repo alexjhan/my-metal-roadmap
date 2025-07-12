@@ -211,7 +211,6 @@ const GraphLayout = () => {
     }))
   );
   const [selectedNodeId, setSelectedNodeId] = useState(null);
-  const [isEditMode, setIsEditMode] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const { user } = useUser();
   const navigate = useNavigate();
