@@ -238,8 +238,12 @@ const GraphLayout = () => {
     if (!user) {
       setShowAuth(true);
     } else {
-      // Redirigir al entorno de edición
+      // Redirigir al entorno de edición y recargar la página
       navigate('/edit/termodinamica');
+      // Recargar la página después de un breve delay para asegurar la navegación
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
     }
   };
 
