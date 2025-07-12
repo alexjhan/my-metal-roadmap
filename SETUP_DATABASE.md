@@ -63,6 +63,19 @@ CREATE TABLE resources (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Tabla de personalizaciones de roadmaps (NUEVA)
+CREATE TABLE roadmap_customizations (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  roadmap_type TEXT NOT NULL,
+  node_positions JSONB DEFAULT '{}',
+  user_notes JSONB DEFAULT '{}',
+  custom_connections JSONB DEFAULT '[]',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(user_id, roadmap_type)
+);
+
 -- Políticas RLS para roadmaps
 CREATE POLICY "Users can view their own roadmaps" ON roadmaps
   FOR SELECT USING (auth.uid() = user_id);
@@ -115,6 +128,19 @@ CREATE POLICY "Users can insert resources to their nodes" ON resources
       AND roadmaps.user_id = auth.uid()
     )
   );
+
+-- Políticas RLS para personalizaciones (NUEVAS)
+CREATE POLICY "Users can view their own customizations" ON roadmap_customizations
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own customizations" ON roadmap_customizations
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own customizations" ON roadmap_customizations
+  FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own customizations" ON roadmap_customizations
+  FOR DELETE USING (auth.uid() = user_id);
 ```
 
 ### 5. Configurar Vercel
@@ -130,10 +156,30 @@ CREATE POLICY "Users can insert resources to their nodes" ON resources
 - ✅ Guardar nodos y conceptos
 - ✅ Seguridad con RLS (Row Level Security)
 - ✅ Integración con Vercel
+- ✅ Sistema híbrido de almacenamiento (estático + personalizaciones)
+- ✅ Optimización de espacio en base de datos
 
 ### 7. Próximos pasos
 - [ ] Visualizar roadmaps creados
 - [ ] Compartir roadmaps públicos
 - [ ] Editar roadmaps existentes
 - [ ] Agregar recursos a los nodos
-- [ ] Sistema de likes y comentarios 
+- [ ] Sistema de likes y comentarios
+
+### 8. Estimación de Uso de Almacenamiento
+
+**Datos Estáticos (Gratis - no en BD):**
+- 30 roadmaps = ~150KB
+- Contenido base de todos los roadmaps
+
+**Datos Dinámicos (en BD - cuenta contra límite):**
+- Personalizaciones por usuario: ~4KB por roadmap
+- 100 usuarios × 30 roadmaps = ~12MB
+- **Límite de Supabase: 500MB**
+- **Margen disponible: ~488MB**
+
+**Optimizaciones implementadas:**
+- ✅ Solo guardar cambios del usuario
+- ✅ Datos base en archivos estáticos
+- ✅ Comprimir posiciones y notas
+- ✅ Eliminar redundancias 
