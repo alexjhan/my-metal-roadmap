@@ -12,7 +12,7 @@ import CreateRoadmap from './components/CreateRoadmap';
 import MyRoadmaps from './components/MyRoadmaps';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import AuthCallback from './components/AuthCallback';
-import EditTermodinamica from './components/EditTermodinamica';
+import EditRoadmap from './components/EditRoadmap';
 
 
 function App() {
@@ -29,7 +29,7 @@ function App() {
           </>
         } />
         <Route path="/termodinamica" element={<TermodinamicaPage />} />
-        <Route path="/edit/termodinamica" element={<EditTermodinamica />} />
+        <Route path="/edit/:roadmapType" element={<EditRoadmap />} />
         <Route path="/graph" element={<GraphLayout />} />
         <Route path="/create" element={<CreateRoadmap />} />
         <Route path="/my-roadmaps" element={<MyRoadmaps />} />
