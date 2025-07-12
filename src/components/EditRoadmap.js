@@ -453,11 +453,6 @@ const EditRoadmap = () => {
     }
   };
 
-  const filteredComponents = availableComponents.filter(component =>
-    component.name.toLowerCase().includes(searchComponents.toLowerCase()) ||
-    component.description.toLowerCase().includes(searchComponents.toLowerCase())
-  );
-
   const handleNodeClick = (id) => {
     setSelectedNodeId(id);
     setShowPropertiesPanel(true);
@@ -471,6 +466,12 @@ const EditRoadmap = () => {
       }, 100);
     }
   };
+
+  // Filtrar componentes basado en la búsqueda
+  const filteredComponents = availableComponents.filter(component =>
+    component.name.toLowerCase().includes(searchComponents.toLowerCase()) ||
+    component.description.toLowerCase().includes(searchComponents.toLowerCase())
+  );
 
   return (
     <div className="w-full h-screen bg-gray-50 flex flex-col">
