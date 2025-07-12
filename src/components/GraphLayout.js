@@ -15,6 +15,9 @@ import CustomNode from './CustomNode';
 import useLayout from '../hooks/useLayout';
 import { nodes as initialNodes } from '../data/nodes';
 import { edges as initialEdges } from '../data/edges';
+import Auth from './Auth';
+import { useUser } from '../UserContext';
+import { useNavigate } from 'react-router-dom';
 
 const nodeTypes = {
   custom: (props) => <CustomNode {...props} onClick={() => props.data.onNodeClick(props.id)} />,
@@ -208,6 +211,10 @@ const GraphLayout = () => {
     }))
   );
   const [selectedNodeId, setSelectedNodeId] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
+  const { user } = useUser();
+  const navigate = useNavigate();
 
   // Pasar función de click a cada nodo
   const nodesWithClick = nodes.map(node => ({
@@ -228,8 +235,32 @@ const GraphLayout = () => {
 
   const selectedNode = nodes.find(n => n.id === selectedNodeId);
 
+  const handleEditClick = () => {
+    if (!user) {
+      setShowAuth(true);
+    } else {
+      // Redirigir al entorno de edición
+      navigate('/edit/termodinamica');
+    }
+  };
+
   return (
     <div className="w-full h-full relative">
+      {/* Botón de edición */}
+      <div className="absolute top-4 right-4 z-10">
+        <button
+          onClick={handleEditClick}
+          className="px-4 py-2 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105 bg-blue-500 hover:bg-blue-600 text-white"
+        >
+          <div className="flex items-center space-x-2">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            <span className="text-sm font-medium">Editar</span>
+          </div>
+        </button>
+      </div>
+
       <div className="h-full">
         <ReactFlow
           nodes={nodesWithClick}
@@ -270,6 +301,22 @@ const GraphLayout = () => {
       </div>
       {/* Drawer lateral fullscreen */}
       <NodeDrawer node={selectedNode} onClose={() => setSelectedNodeId(null)} />
+      
+      {/* Modal de autenticación */}
+      {showAuth && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md relative">
+            <button 
+              onClick={() => setShowAuth(false)} 
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-3xl font-bold leading-none focus:outline-none"
+              style={{lineHeight: '1', width: '2.5rem', height: '2.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
+            >
+              &times;
+            </button>
+            <Auth onClose={() => setShowAuth(false)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
