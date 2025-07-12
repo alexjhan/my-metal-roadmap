@@ -224,10 +224,7 @@ const EditRoadmap = () => {
     ...node,
     data: {
       ...node.data,
-      onNodeClick: (id) => {
-        setSelectedNodeId(id);
-        setShowPropertiesPanel(true);
-      },
+      onNodeClick: handleNodeClick,
       onSave: (nodeData) => {
         console.log('Saving node data:', nodeData);
         setHasUnsavedChanges(true);
@@ -426,10 +423,54 @@ const EditRoadmap = () => {
     setHasUnsavedChanges(true);
   };
 
+  const handleDeleteNode = (nodeId) => {
+    if (window.confirm('¿Estás seguro de que quieres eliminar este nodo?')) {
+      setNodes((nds) => nds.filter(n => n.id !== nodeId));
+      setEdges((eds) => eds.filter(e => e.source !== nodeId && e.target !== nodeId));
+      setSelectedNodeId(null);
+      setShowPropertiesPanel(false);
+      setHasUnsavedChanges(true);
+    }
+  };
+
+  const handleDuplicateNode = (nodeId) => {
+    const nodeToDuplicate = nodes.find(n => n.id === nodeId);
+    if (nodeToDuplicate) {
+      const newNode = {
+        ...nodeToDuplicate,
+        id: `node-${Date.now()}`,
+        position: {
+          x: nodeToDuplicate.position.x + 50,
+          y: nodeToDuplicate.position.y + 50
+        },
+        data: {
+          ...nodeToDuplicate.data,
+          label: `${nodeToDuplicate.data.label} (copia)`
+        }
+      };
+      setNodes((nds) => [...nds, newNode]);
+      setHasUnsavedChanges(true);
+    }
+  };
+
   const filteredComponents = availableComponents.filter(component =>
     component.name.toLowerCase().includes(searchComponents.toLowerCase()) ||
     component.description.toLowerCase().includes(searchComponents.toLowerCase())
   );
+
+  const handleNodeClick = (id) => {
+    setSelectedNodeId(id);
+    setShowPropertiesPanel(true);
+    // Scroll suave al panel si está en móvil
+    if (window.innerWidth < 768) {
+      setTimeout(() => {
+        const panel = document.querySelector('.properties-panel');
+        if (panel) {
+          panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }, 100);
+    }
+  };
 
   return (
     <div className="w-full h-screen bg-gray-50 flex flex-col">
@@ -559,18 +600,41 @@ const EditRoadmap = () => {
 
         {/* Panel Derecho - Propiedades (desplegable) */}
         {showPropertiesPanel && selectedNode && (
-          <div className="w-96 bg-white border-l border-gray-200 flex flex-col">
+          <div className="w-96 bg-white border-l border-gray-200 flex flex-col properties-panel">
             <div className="p-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900">Propiedades del Nodo</h3>
-                <button
-                  onClick={() => setShowPropertiesPanel(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+                <h3 className="text-lg font-semibold text-gray-900">Editar Nodo</h3>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => handleDuplicateNode(selectedNode.id)}
+                    className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                    title="Duplicar nodo"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => handleDeleteNode(selectedNode.id)}
+                    className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                    title="Eliminar nodo"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => setShowPropertiesPanel(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div className="mt-2 text-sm text-gray-500">
+                ID: {selectedNode.id}
               </div>
             </div>
 
@@ -609,6 +673,35 @@ const EditRoadmap = () => {
                       onChange={(e) => handleUpdateNode(selectedNode.id, 'backgroundColor', e.target.value)}
                       className="w-full h-10 border border-gray-300 rounded-lg"
                     />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Tamaño de Fuente</label>
+                    <select
+                      value={selectedNode.data.fontSize || '16px'}
+                      onChange={(e) => handleUpdateNode(selectedNode.id, 'fontSize', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="12px">Pequeño (12px)</option>
+                      <option value="14px">Mediano (14px)</option>
+                      <option value="16px">Normal (16px)</option>
+                      <option value="18px">Grande (18px)</option>
+                      <option value="20px">Muy Grande (20px)</option>
+                      <option value="24px">Título (24px)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Peso de Fuente</label>
+                    <select
+                      value={selectedNode.data.fontWeight || 'normal'}
+                      onChange={(e) => handleUpdateNode(selectedNode.id, 'fontWeight', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="normal">Normal</option>
+                      <option value="semibold">Semibold</option>
+                      <option value="bold">Bold</option>
+                    </select>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
@@ -666,6 +759,17 @@ const EditRoadmap = () => {
                       rows={3}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="Un recurso por línea..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+                    <input
+                      type="text"
+                      value={selectedNode.data.tags?.join(', ') || ''}
+                      onChange={(e) => handleUpdateNode(selectedNode.id, 'tags', e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="tag1, tag2, tag3..."
                     />
                   </div>
                 </div>
