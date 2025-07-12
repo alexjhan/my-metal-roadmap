@@ -202,6 +202,7 @@ const EditRoadmap = () => {
   const [showLiveView, setShowLiveView] = useState(false);
   const [searchComponents, setSearchComponents] = useState('');
   const [showPropertiesPanel, setShowPropertiesPanel] = useState(false);
+  const [showComponentsPanel, setShowComponentsPanel] = useState(false);
 
   console.log('EditRoadmap state:', { 
     roadmapType, 
@@ -224,17 +225,9 @@ const EditRoadmap = () => {
   }, [roadmapType]);
 
   const handleNodeClick = (id) => {
+    console.log('Node clicked:', id);
     setSelectedNodeId(id);
     setShowPropertiesPanel(true);
-    // Scroll suave al panel si está en móvil
-    if (window.innerWidth < 768) {
-      setTimeout(() => {
-        const panel = document.querySelector('.properties-panel');
-        if (panel) {
-          panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-      }, 100);
-    }
   };
 
   // Pasar función de click a cada nodo
@@ -485,7 +478,7 @@ const EditRoadmap = () => {
   return (
     <div className="w-full h-screen bg-gray-50 flex flex-col">
       {/* Header Superior */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-50 relative">
         {/* Izquierda - Título y descripción */}
         <div className="flex items-center space-x-4">
           <span className="text-3xl">{roadmapInfo.icon}</span>
@@ -527,51 +520,38 @@ const EditRoadmap = () => {
         </div>
       </div>
 
+      {/* Sección delgada vertical con botón de componentes */}
+      <div className="absolute left-0 top-16 w-12 h-full bg-white border-r border-gray-200 z-40 flex flex-col items-center py-4">
+        <button
+          onClick={() => setShowComponentsPanel(!showComponentsPanel)}
+          className={`p-2 rounded-lg transition-colors flex flex-col items-center space-y-1 ${
+            showComponentsPanel 
+              ? 'bg-purple-100 text-purple-700 border border-purple-300' 
+              : 'bg-gray-100 text-gray-700 hover:bg-purple-100 hover:text-purple-700'
+          }`}
+          title="Componentes"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
+          <span className="text-xs">Comp</span>
+        </button>
+      </div>
+
       {/* Contenido Principal */}
-      <div className="flex-1 flex">
-        {/* Panel Izquierdo - Componentes */}
-        <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
-          {/* Búsqueda de componentes */}
-          <div className="p-4 border-b border-gray-200">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Buscar componentes..."
-                value={searchComponents}
-                onChange={(e) => setSearchComponents(e.target.value)}
-                className="w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <svg className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-          </div>
-
-          {/* Lista de componentes */}
-          <div className="flex-1 overflow-y-auto p-4">
-            <h3 className="text-sm font-medium text-gray-700 mb-4">Componentes Disponibles</h3>
-            <div className="space-y-2">
-              {filteredComponents.map((component) => (
-                <div
-                  key={component.id}
-                  className="p-3 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors cursor-pointer"
-                  onClick={() => handleAddComponent(component)}
-                >
-                  <div className="flex items-center space-x-3">
-                    <span className="text-2xl">{component.icon}</span>
-                    <div className="flex-1">
-                      <h4 className="font-medium text-gray-900">{component.name}</h4>
-                      <p className="text-sm text-gray-600">{component.description}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
+      <div className="flex-1 relative">
         {/* Área de edición */}
-        <div className="flex-1 relative">
+        <div 
+          className={`h-full ml-12 ${showPropertiesPanel ? 'mr-96' : ''} ${showComponentsPanel ? 'ml-80' : ''}`}
+          onClick={() => {
+            if (showPropertiesPanel) {
+              setShowPropertiesPanel(false);
+            }
+            if (showComponentsPanel) {
+              setShowComponentsPanel(false);
+            }
+          }}
+        >
           <ReactFlow
             nodes={nodesWithClick}
             edges={edges}
@@ -615,10 +595,86 @@ const EditRoadmap = () => {
             />
           </ReactFlow>
         </div>
+      </div>
 
-        {/* Panel Derecho - Propiedades (desplegable) */}
-        {showPropertiesPanel && selectedNode && (
-          <div className="w-96 bg-white border-l border-gray-200 flex flex-col properties-panel">
+      {/* Panel de Componentes - Fijo en el lado izquierdo */}
+      {showComponentsPanel && (
+                <div className="absolute left-12 w-80 bg-white shadow-xl border-r border-gray-200 z-35" style={{ top: '72px', bottom: '48px' }}>
+          {/* Botón X en la esquina superior */}
+          <button
+            onClick={() => setShowComponentsPanel(false)}
+            className="absolute -top-2 -left-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors z-40 shadow-lg"
+            title="Cerrar panel de componentes"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <div className="flex flex-col h-full">
+            {/* Header */}
+              <div className="p-4 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-gray-900">Componentes</h3>
+                  <button
+                    onClick={() => setShowComponentsPanel(false)}
+                    className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100"
+                    title="Cerrar panel"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {/* Búsqueda */}
+              <div className="p-4 border-b border-gray-200">
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Buscar componentes..."
+                    value={searchComponents}
+                    onChange={(e) => setSearchComponents(e.target.value)}
+                    className="w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <svg className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Lista de componentes */}
+              <div className="flex-1 overflow-y-auto p-4">
+                <div className="space-y-2">
+                  {filteredComponents.map((component) => (
+                    <div
+                      key={component.id}
+                      className="p-3 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors cursor-pointer"
+                      onClick={() => {
+                        handleAddComponent(component);
+                        setShowComponentsPanel(false);
+                      }}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <span className="text-2xl">{component.icon}</span>
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-900">{component.name}</h4>
+                          <p className="text-sm text-gray-600">{component.description}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+      )}
+
+      {/* Panel de Propiedades - Fijo debajo del header */}
+      {showPropertiesPanel && selectedNode && (
+        <div className="absolute right-0 w-96 bg-white shadow-xl border-l border-gray-200 z-35" style={{ top: '72px', bottom: '48px' }}>
+          <div className="flex flex-col h-full">
+            {/* Header */}
             <div className="p-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-900">Editar Nodo</h3>
@@ -656,6 +712,7 @@ const EditRoadmap = () => {
               </div>
             </div>
 
+            {/* Contenido */}
             <div className="flex-1 overflow-y-auto p-4">
               <div className="grid grid-cols-2 gap-4">
                 {/* Columna Izquierda - Propiedades */}
@@ -794,8 +851,8 @@ const EditRoadmap = () => {
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Modal de propuesta */}
       {showProposalModal && (

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 
-const CustomNode = ({ data, selected, onClick }) => {
+const CustomNode = ({ id, data, selected, onClick }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [nodeData, setNodeData] = useState({
     label: data.label,
@@ -11,8 +11,10 @@ const CustomNode = ({ data, selected, onClick }) => {
     backgroundColor: data.backgroundColor || '#f3f4f6'
   });
 
-  const handleDoubleClick = () => {
-    setIsEditing(true);
+  const handleDoubleClick = (e) => {
+    // Prevenir el doble click para evitar el modo de edición inline
+    e.preventDefault();
+    e.stopPropagation();
   };
 
   const handleSave = () => {
@@ -118,7 +120,7 @@ const CustomNode = ({ data, selected, onClick }) => {
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Título</label>
               <textarea
-                id={`node-${data.id}-label`}
+                id={`node-${id}-label`}
                 value={nodeData.label}
                 onChange={(e) => setNodeData(prev => ({ ...prev, label: e.target.value }))}
                 className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 resize-none"
@@ -202,7 +204,16 @@ const CustomNode = ({ data, selected, onClick }) => {
         className="w-2 h-2 sm:w-3 sm:h-3 bg-gray-400 border-2 border-white"
       />
       <button
-        onClick={onClick}
+        onClick={(e) => {
+          console.log('CustomNode clicked:', { id, data });
+          // Llamar a la función onNodeClick si existe, sino usar onClick por defecto
+          if (data.onNodeClick) {
+            console.log('Calling onNodeClick with id:', id);
+            data.onNodeClick(id);
+          } else if (onClick) {
+            onClick(e);
+          }
+        }}
         onDoubleClick={handleDoubleClick}
         type="button"
         className={`
@@ -222,7 +233,7 @@ const CustomNode = ({ data, selected, onClick }) => {
             dangerouslySetInnerHTML={{ __html: renderFormattedText(nodeData.label) }}
           />
           <div className="text-xs text-blue-600 font-medium">
-            Doble clic para editar
+            Click para editar
           </div>
         </div>
       </button>
