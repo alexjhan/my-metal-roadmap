@@ -12,207 +12,152 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useUser } from '../UserContext';
+import { roadmapStorage } from '../lib/roadmapStorage';
+import { proposalService } from '../lib/roadmapStorage';
+import EditProposal from './EditProposal';
+import LiveView from './LiveView';
 
 import CustomNode from './CustomNode';
 import { nodes as termodinamicaNodes } from '../data/nodes';
 import { edges as termodinamicaEdges } from '../data/edges';
 
+// Datos de roadmaps
+const roadmapData = {
+  termodinamica: {
+    title: "Termodinámica Metalúrgica",
+    description: "Mapa mental interactivo de conceptos fundamentales de termodinámica aplicada a procesos metalúrgicos",
+    icon: "🔥",
+    nodes: termodinamicaNodes,
+    edges: termodinamicaEdges
+  }
+};
+
 const nodeTypes = {
-  custom: (props) => <CustomNode {...props} onClick={() => props.data.onNodeClick(props.id)} />,
+  custom: CustomNode,
 };
 
 function FlowWithFitView() {
   const { fitView } = useReactFlow();
-  
   useEffect(() => {
-    const timer = setTimeout(() => {
-      fitView({ 
-        padding: 0.2, 
-        includeHiddenNodes: false,
-        duration: 800 
-      });
-    }, 100);
-
-    return () => clearTimeout(timer);
+    fitView({ padding: 0.2 });
   }, [fitView]);
-
   return null;
 }
 
-// Mapeo de roadmaps a sus datos
-const roadmapData = {
-  'termodinamica': {
-    title: 'Termodinámica',
-    nodes: termodinamicaNodes,
-    edges: termodinamicaEdges,
-    icon: '🔥'
+// Componentes disponibles para el roadmap
+const availableComponents = [
+  {
+    id: 'main-title',
+    name: 'Título Principal',
+    icon: '📋',
+    description: 'Título principal del concepto',
+    type: 'main-title',
+    defaultData: {
+      label: 'Nuevo Título Principal',
+      description: 'Descripción del título principal',
+      icon: '📋',
+      backgroundColor: '#3B82F6',
+      fontSize: '24px',
+      fontWeight: 'bold'
+    }
   },
-  // Aquí puedes agregar más roadmaps en el futuro
-  // 'matematicas': {
-  //   title: 'Matemáticas',
-  //   nodes: matematicasNodes,
-  //   edges: matematicasEdges,
-  //   icon: '📐'
-  // }
-};
-
-// Panel de herramientas lateral
-const ToolbarPanel = ({ onAddNode, onSave, onCancel, roadmapInfo }) => {
-  return (
-    <div className="fixed left-4 top-4 bottom-4 w-64 bg-white rounded-lg shadow-xl border border-gray-200 flex flex-col">
-      {/* Header */}
-      <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center space-x-3">
-          <span className="text-2xl">{roadmapInfo.icon}</span>
-          <div>
-            <h2 className="font-semibold text-gray-900">Editando</h2>
-            <p className="text-sm text-gray-600">{roadmapInfo.title}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Herramientas */}
-      <div className="flex-1 p-4 space-y-4">
-        <div>
-          <h3 className="text-sm font-medium text-gray-700 mb-3">Herramientas</h3>
-          <div className="space-y-2">
-            <button
-              onClick={onAddNode}
-              className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              <span>Agregar Nodo</span>
-            </button>
-            <button className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-              </svg>
-              <span>Conectar Nodos</span>
-            </button>
-            <button className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-              </svg>
-              <span>Organizar</span>
-            </button>
-          </div>
-        </div>
-
-        <div>
-          <h3 className="text-sm font-medium text-gray-700 mb-3">Vista</h3>
-          <div className="space-y-2">
-            <button className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <span>Buscar</span>
-            </button>
-            <button className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>Centrar Vista</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Acciones */}
-      <div className="p-4 border-t border-gray-200 space-y-2">
-        <button
-          onClick={onSave}
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-        >
-          Guardar Cambios
-        </button>
-        <button
-          onClick={onCancel}
-          className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors font-medium"
-        >
-          Cancelar
-        </button>
-      </div>
-    </div>
-  );
-};
-
-// Panel de propiedades del nodo seleccionado
-const PropertiesPanel = ({ selectedNode, onUpdateNode }) => {
-  if (!selectedNode) {
-    return (
-      <div className="fixed right-4 top-4 bottom-4 w-80 bg-white rounded-lg shadow-xl border border-gray-200 p-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Propiedades</h3>
-        <p className="text-gray-500 text-sm">Selecciona un nodo para editar sus propiedades</p>
-      </div>
-    );
+  {
+    id: 'subtitle',
+    name: 'Subtítulo',
+    icon: '📝',
+    description: 'Subtítulo o categoría',
+    type: 'subtitle',
+    defaultData: {
+      label: 'Nuevo Subtítulo',
+      description: 'Descripción del subtítulo',
+      icon: '📝',
+      backgroundColor: '#10B981',
+      fontSize: '18px',
+      fontWeight: 'semibold'
+    }
+  },
+  {
+    id: 'concept',
+    name: 'Concepto',
+    icon: '💡',
+    description: 'Concepto o idea principal',
+    type: 'concept',
+    defaultData: {
+      label: 'Nuevo Concepto',
+      description: 'Descripción del concepto',
+      icon: '💡',
+      backgroundColor: '#F59E0B',
+      fontSize: '16px',
+      fontWeight: 'normal'
+    }
+  },
+  {
+    id: 'type',
+    name: 'Tipo',
+    icon: '🏷️',
+    description: 'Clasificación o tipo',
+    type: 'type',
+    defaultData: {
+      label: 'Nuevo Tipo',
+      description: 'Descripción del tipo',
+      icon: '🏷️',
+      backgroundColor: '#8B5CF6',
+      fontSize: '14px',
+      fontWeight: 'normal'
+    }
+  },
+  {
+    id: 'comment',
+    name: 'Comentario',
+    icon: '💬',
+    description: 'Nota o comentario adicional',
+    type: 'comment',
+    defaultData: {
+      label: 'Nuevo Comentario',
+      description: 'Descripción del comentario',
+      icon: '💬',
+      backgroundColor: '#6B7280',
+      fontSize: '12px',
+      fontWeight: 'normal'
+    }
+  },
+  {
+    id: 'formula',
+    name: 'Fórmula',
+    icon: '🧮',
+    description: 'Fórmula matemática',
+    type: 'formula',
+    defaultData: {
+      label: 'Nueva Fórmula',
+      description: 'Descripción de la fórmula',
+      icon: '🧮',
+      backgroundColor: '#EF4444',
+      fontSize: '14px',
+      fontWeight: 'normal'
+    }
+  },
+  {
+    id: 'process',
+    name: 'Proceso',
+    icon: '⚙️',
+    description: 'Proceso o procedimiento',
+    type: 'process',
+    defaultData: {
+      label: 'Nuevo Proceso',
+      description: 'Descripción del proceso',
+      icon: '⚙️',
+      backgroundColor: '#06B6D4',
+      fontSize: '16px',
+      fontWeight: 'normal'
+    }
   }
-
-  return (
-    <div className="fixed right-4 top-4 bottom-4 w-80 bg-white rounded-lg shadow-xl border border-gray-200 p-4">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Propiedades del Nodo</h3>
-      
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Título</label>
-          <input
-            type="text"
-            value={selectedNode.data.label}
-            onChange={(e) => onUpdateNode(selectedNode.id, 'label', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
-          <textarea
-            value={selectedNode.data.description}
-            onChange={(e) => onUpdateNode(selectedNode.id, 'description', e.target.value)}
-            rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Icono</label>
-          <input
-            type="text"
-            value={selectedNode.data.icon}
-            onChange={(e) => onUpdateNode(selectedNode.id, 'icon', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="🔥"
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Posición X</label>
-            <input
-              type="number"
-              value={selectedNode.position.x}
-              onChange={(e) => onUpdateNode(selectedNode.id, 'positionX', parseInt(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Posición Y</label>
-            <input
-              type="number"
-              value={selectedNode.position.y}
-              onChange={(e) => onUpdateNode(selectedNode.id, 'positionY', parseInt(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+];
 
 const EditRoadmap = () => {
   const { roadmapType } = useParams();
   const navigate = useNavigate();
+  const { user } = useUser();
   
   console.log('EditRoadmap component rendering for:', roadmapType);
   
@@ -244,7 +189,15 @@ const EditRoadmap = () => {
     }))
   );
   const [selectedNodeId, setSelectedNodeId] = useState(null);
-  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [saveStatus, setSaveStatus] = useState('idle');
+  const [showProposalModal, setShowProposalModal] = useState(false);
+  const [proposals, setProposals] = useState([]);
+  const [selectedProposal, setSelectedProposal] = useState(null);
+  const [proposalDescription, setProposalDescription] = useState('');
+  const [showLiveView, setShowLiveView] = useState(false);
+  const [searchComponents, setSearchComponents] = useState('');
+  const [showPropertiesPanel, setShowPropertiesPanel] = useState(false);
 
   console.log('EditRoadmap state:', { 
     roadmapType, 
@@ -252,34 +205,166 @@ const EditRoadmap = () => {
     edges: edges.length 
   });
 
+  // Cargar propuestas existentes
+  useEffect(() => {
+    const loadProposals = async () => {
+      try {
+        const proposalsData = await proposalService.getProposals(roadmapType);
+        setProposals(proposalsData);
+      } catch (error) {
+        console.error('Error loading proposals:', error);
+      }
+    };
+
+    loadProposals();
+  }, [roadmapType]);
+
   // Pasar función de click a cada nodo
   const nodesWithClick = nodes.map(node => ({
     ...node,
     data: {
       ...node.data,
-      onNodeClick: (id) => setSelectedNodeId(id),
+      onNodeClick: (id) => {
+        setSelectedNodeId(id);
+        setShowPropertiesPanel(true);
+      },
+      onSave: (nodeData) => {
+        console.log('Saving node data:', nodeData);
+        setHasUnsavedChanges(true);
+        setNodes((nds) =>
+          nds.map((n) => {
+            if (n.id === node.id) {
+              return {
+                ...n,
+                data: {
+                  ...n.data,
+                  ...nodeData
+                }
+              };
+            }
+            return n;
+          })
+        );
+      },
+      onUpdateResources: (type, value) => {
+        console.log('Updating resources:', type, value);
+        setHasUnsavedChanges(true);
+        setNodes((nds) =>
+          nds.map((n) => {
+            if (n.id === node.id) {
+              return {
+                ...n,
+                data: {
+                  ...n.data,
+                  [`${type}Resources`]: value
+                }
+              };
+            }
+            return n;
+          })
+        );
+      }
     },
   }));
 
   const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
+    (params) => {
+      setEdges((eds) => addEdge(params, eds));
+      setHasUnsavedChanges(true);
+    },
     [setEdges]
   );
 
   const selectedNode = nodes.find(n => n.id === selectedNodeId);
 
-  const handleSave = () => {
-    setShowSaveModal(true);
-    console.log('Saving changes for roadmap:', roadmapType);
-    // Aquí puedes implementar la lógica para guardar los cambios
-    setTimeout(() => {
-      setShowSaveModal(false);
-      alert('Cambios guardados exitosamente');
-    }, 2000);
+  const handleCreateProposal = async () => {
+    if (!user) {
+      alert('Debes iniciar sesión para crear propuestas');
+      return;
+    }
+
+    if (!proposalDescription.trim()) {
+      alert('Debes agregar una descripción para la propuesta');
+      return;
+    }
+
+    setSaveStatus('saving');
+    setShowProposalModal(true);
+
+    try {
+      // Crear propuesta de edición
+      const changes = [];
+
+      // Detectar cambios en nodos
+      nodes.forEach(node => {
+        const originalNode = roadmapInfo.nodes.find(n => n.id === node.id);
+        if (originalNode && JSON.stringify(originalNode.data) !== JSON.stringify(node.data)) {
+          changes.push({
+            type: 'node',
+            nodeId: node.id,
+            action: 'update',
+            before: originalNode.data,
+            after: node.data
+          });
+        }
+      });
+
+      // Detectar nuevas conexiones
+      const newConnections = edges.filter(edge => !roadmapInfo.edges.find(e => e.id === edge.id));
+      newConnections.forEach(connection => {
+        changes.push({
+          type: 'connection',
+          action: 'add',
+          before: null,
+          after: connection
+        });
+      });
+
+      if (changes.length === 0) {
+        alert('No hay cambios para proponer');
+        setSaveStatus('idle');
+        setShowProposalModal(false);
+        return;
+      }
+
+      await proposalService.createProposal(roadmapType, user.id, changes, proposalDescription);
+      
+      setSaveStatus('saved');
+      setHasUnsavedChanges(false);
+      setProposalDescription('');
+      
+      setTimeout(async () => {
+        setShowProposalModal(false);
+        setSaveStatus('idle');
+        // Recargar propuestas
+        const proposalsData = await proposalService.getProposals(roadmapType);
+        setProposals(proposalsData);
+      }, 2000);
+    } catch (error) {
+      console.error('Error saving changes:', error);
+      setSaveStatus('error');
+      alert('Error al crear la propuesta: ' + error.message);
+    }
+  };
+
+  const handleVote = async (proposalId, vote, comment) => {
+    try {
+      await proposalService.voteOnProposal(proposalId, user.id, vote, comment);
+      // Recargar propuestas
+      const proposalsData = await proposalService.getProposals(roadmapType);
+      setProposals(proposalsData);
+    } catch (error) {
+      console.error('Error voting on proposal:', error);
+      alert('Error al votar: ' + error.message);
+    }
   };
 
   const handleCancel = () => {
-    if (window.confirm('¿Estás seguro de que quieres cancelar? Los cambios no guardados se perderán.')) {
+    if (hasUnsavedChanges) {
+      if (window.confirm('¿Estás seguro de que quieres cancelar? Los cambios no guardados se perderán.')) {
+        navigate(`/${roadmapType}`);
+      }
+    } else {
       navigate(`/${roadmapType}`);
     }
   };
@@ -291,110 +376,417 @@ const EditRoadmap = () => {
       position: { x: 100, y: 100 },
       data: {
         label: 'Nuevo Nodo',
-        description: 'Descripción del nuevo nodo',
+        description: 'Descripción del nodo',
         icon: '📝',
-        onNodeClick: (id) => setSelectedNodeId(id),
+        backgroundColor: '#3B82F6',
+        freeResources: [],
+        premiumResources: []
       }
     };
     setNodes((nds) => [...nds, newNode]);
+    setHasUnsavedChanges(true);
+  };
+
+  const handleAddComponent = (component) => {
+    const newNode = {
+      id: `node-${Date.now()}`,
+      type: 'custom',
+      position: { x: Math.random() * 400 + 100, y: Math.random() * 300 + 100 },
+      data: {
+        ...component.defaultData,
+        freeResources: [],
+        premiumResources: []
+      }
+    };
+    setNodes((nds) => [...nds, newNode]);
+    setHasUnsavedChanges(true);
   };
 
   const handleUpdateNode = (nodeId, property, value) => {
     setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id === nodeId) {
+      nds.map((n) => {
+        if (n.id === nodeId) {
           if (property === 'positionX') {
-            return { ...node, position: { ...node.position, x: value } };
+            return { ...n, position: { ...n.position, x: value } };
           } else if (property === 'positionY') {
-            return { ...node, position: { ...node.position, y: value } };
+            return { ...n, position: { ...n.position, y: value } };
           } else {
-            return { ...node, data: { ...node.data, [property]: value } };
+            return {
+              ...n,
+              data: {
+                ...n.data,
+                [property]: value
+              }
+            };
           }
         }
-        return node;
+        return n;
       })
     );
+    setHasUnsavedChanges(true);
   };
 
+  const filteredComponents = availableComponents.filter(component =>
+    component.name.toLowerCase().includes(searchComponents.toLowerCase()) ||
+    component.description.toLowerCase().includes(searchComponents.toLowerCase())
+  );
+
   return (
-    <div className="w-full h-screen bg-gray-50">
-      {/* Área de edición */}
-      <div className="h-full">
-        <ReactFlow
-          nodes={nodesWithClick}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          nodeTypes={nodeTypes}
-          fitView={false}
-          fitViewOptions={{ padding: 0.2, includeHiddenNodes: false }}
-          defaultViewport={{ x: 0, y: 0, zoom: 0.6 }}
-          minZoom={0.1}
-          maxZoom={2}
-          nodesDraggable={true}
-          nodesConnectable={true}
-          elementsSelectable={true}
-          panOnScroll={false}
-          zoomOnScroll={false}
-          panOnDrag={true}
-          zoomOnPinch={true}
-          panOnScrollMode="free"
-          attributionPosition="bottom-left"
-          preventScrolling={false}
-          zoomOnDoubleClick={false}
-          multiSelectionKeyCode={null}
-          deleteKeyCode="Delete"
-        >
-          <FlowWithFitView />
-          <Controls />
-          <Background 
-            variant="dots" 
-            gap={20} 
-            size={1} 
-            color="#e5e7eb"
-            style={{ backgroundColor: '#f9fafb' }}
-          />
-        </ReactFlow>
+    <div className="w-full h-screen bg-gray-50 flex flex-col">
+      {/* Header Superior */}
+      <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+        {/* Izquierda - Título y descripción */}
+        <div className="flex items-center space-x-4">
+          <span className="text-3xl">{roadmapInfo.icon}</span>
+          <div>
+            <h1 className="text-xl font-bold text-gray-900">{roadmapInfo.title}</h1>
+            <p className="text-sm text-gray-600">{roadmapInfo.description}</p>
+          </div>
+        </div>
+
+        {/* Derecha - Botones de acción */}
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={() => setShowLiveView(!showLiveView)}
+            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center space-x-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            <span>Live View</span>
+          </button>
+          <button
+            onClick={handleCreateProposal}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center space-x-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+            </svg>
+            <span>Guardar Roadmap</span>
+          </button>
+        </div>
       </div>
 
-      {/* Panel de herramientas lateral */}
-      <ToolbarPanel 
-        onAddNode={handleAddNode}
-        onSave={handleSave}
-        onCancel={handleCancel}
-        roadmapInfo={roadmapInfo}
-      />
-
-      {/* Panel de propiedades */}
-      <PropertiesPanel 
-        selectedNode={selectedNode}
-        onUpdateNode={handleUpdateNode}
-      />
-
-      {/* Modal de guardado */}
-      {showSaveModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
-            <div className="flex items-center space-x-3">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
-              <p className="text-gray-700">Guardando cambios...</p>
+      {/* Contenido Principal */}
+      <div className="flex-1 flex">
+        {/* Panel Izquierdo - Componentes */}
+        <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
+          {/* Búsqueda de componentes */}
+          <div className="p-4 border-b border-gray-200">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Buscar componentes..."
+                value={searchComponents}
+                onChange={(e) => setSearchComponents(e.target.value)}
+                className="w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <svg className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
             </div>
+          </div>
+
+          {/* Lista de componentes */}
+          <div className="flex-1 overflow-y-auto p-4">
+            <h3 className="text-sm font-medium text-gray-700 mb-4">Componentes Disponibles</h3>
+            <div className="space-y-2">
+              {filteredComponents.map((component) => (
+                <div
+                  key={component.id}
+                  className="p-3 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors cursor-pointer"
+                  onClick={() => handleAddComponent(component)}
+                >
+                  <div className="flex items-center space-x-3">
+                    <span className="text-2xl">{component.icon}</span>
+                    <div className="flex-1">
+                      <h4 className="font-medium text-gray-900">{component.name}</h4>
+                      <p className="text-sm text-gray-600">{component.description}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Área de edición */}
+        <div className="flex-1 relative">
+          <ReactFlow
+            nodes={nodesWithClick}
+            edges={edges}
+            onNodesChange={(changes) => {
+              onNodesChange(changes);
+              setHasUnsavedChanges(true);
+            }}
+            onEdgesChange={(changes) => {
+              onEdgesChange(changes);
+              setHasUnsavedChanges(true);
+            }}
+            onConnect={onConnect}
+            nodeTypes={nodeTypes}
+            fitView={false}
+            fitViewOptions={{ padding: 0.2, includeHiddenNodes: false }}
+            defaultViewport={{ x: 0, y: 0, zoom: 0.6 }}
+            minZoom={0.1}
+            maxZoom={2}
+            nodesDraggable={true}
+            nodesConnectable={true}
+            elementsSelectable={true}
+            panOnScroll={false}
+            zoomOnScroll={false}
+            panOnDrag={true}
+            zoomOnPinch={true}
+            panOnScrollMode="free"
+            attributionPosition="bottom-left"
+            preventScrolling={false}
+            zoomOnDoubleClick={false}
+            multiSelectionKeyCode={null}
+            deleteKeyCode="Delete"
+          >
+            <FlowWithFitView />
+            <Controls />
+            <Background 
+              variant="dots" 
+              gap={20} 
+              size={1} 
+              color="#e5e7eb"
+              style={{ backgroundColor: '#f9fafb' }}
+            />
+          </ReactFlow>
+        </div>
+
+        {/* Panel Derecho - Propiedades (desplegable) */}
+        {showPropertiesPanel && selectedNode && (
+          <div className="w-96 bg-white border-l border-gray-200 flex flex-col">
+            <div className="p-4 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">Propiedades del Nodo</h3>
+                <button
+                  onClick={() => setShowPropertiesPanel(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="grid grid-cols-2 gap-4">
+                {/* Columna Izquierda - Propiedades */}
+                <div className="space-y-4">
+                  <h4 className="font-medium text-gray-900">Propiedades</h4>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Título</label>
+                    <input
+                      type="text"
+                      value={selectedNode.data.label}
+                      onChange={(e) => handleUpdateNode(selectedNode.id, 'label', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Icono</label>
+                    <input
+                      type="text"
+                      value={selectedNode.data.icon}
+                      onChange={(e) => handleUpdateNode(selectedNode.id, 'icon', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="🔥"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Color de Fondo</label>
+                    <input
+                      type="color"
+                      value={selectedNode.data.backgroundColor}
+                      onChange={(e) => handleUpdateNode(selectedNode.id, 'backgroundColor', e.target.value)}
+                      className="w-full h-10 border border-gray-300 rounded-lg"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Posición X</label>
+                      <input
+                        type="number"
+                        value={selectedNode.position.x}
+                        onChange={(e) => handleUpdateNode(selectedNode.id, 'positionX', parseInt(e.target.value))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Posición Y</label>
+                      <input
+                        type="number"
+                        value={selectedNode.position.y}
+                        onChange={(e) => handleUpdateNode(selectedNode.id, 'positionY', parseInt(e.target.value))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Columna Derecha - Contenido y Links */}
+                <div className="space-y-4">
+                  <h4 className="font-medium text-gray-900">Contenido y Links</h4>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
+                    <textarea
+                      value={selectedNode.data.description}
+                      onChange={(e) => handleUpdateNode(selectedNode.id, 'description', e.target.value)}
+                      rows={3}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Recursos Gratuitos</label>
+                    <textarea
+                      value={selectedNode.data.freeResources?.join('\n') || ''}
+                      onChange={(e) => handleUpdateNode(selectedNode.id, 'freeResources', e.target.value.split('\n').filter(line => line.trim()))}
+                      rows={3}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Un recurso por línea..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Recursos Premium</label>
+                    <textarea
+                      value={selectedNode.data.premiumResources?.join('\n') || ''}
+                      onChange={(e) => handleUpdateNode(selectedNode.id, 'premiumResources', e.target.value.split('\n').filter(line => line.trim()))}
+                      rows={3}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Un recurso por línea..."
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Modal de propuesta */}
+      {showProposalModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md mx-4">
+            <div className="flex items-center space-x-3">
+              {saveStatus === 'saving' && (
+                <>
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+                  <p className="text-gray-700">Creando propuesta...</p>
+                </>
+              )}
+              {saveStatus === 'saved' && (
+                <>
+                  <div className="text-green-500">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <p className="text-gray-700">¡Propuesta creada exitosamente!</p>
+                </>
+              )}
+              {saveStatus === 'error' && (
+                <>
+                  <div className="text-red-500">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </div>
+                  <p className="text-gray-700">Error al crear propuesta</p>
+                </>
+              )}
+            </div>
+            {saveStatus === 'idle' && (
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Descripción de la propuesta:
+                </label>
+                <textarea
+                  value={proposalDescription}
+                  onChange={(e) => setProposalDescription(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  rows={4}
+                  placeholder="Describe los cambios que propones..."
+                />
+                <div className="mt-4 flex space-x-3">
+                  <button
+                    onClick={() => setShowProposalModal(false)}
+                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={handleCreateProposal}
+                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                  >
+                    Crear Propuesta
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
 
+      {/* Modal de propuesta seleccionada */}
+      {selectedProposal && (
+        <EditProposal
+          proposal={selectedProposal}
+          onVote={handleVote}
+          onClose={() => setSelectedProposal(null)}
+        />
+      )}
+
+      {/* Live View */}
+      {showLiveView && (
+        <LiveView
+          nodes={nodes}
+          edges={edges}
+          roadmapInfo={roadmapInfo}
+          onClose={() => setShowLiveView(false)}
+        />
+      )}
+
       {/* Barra de estado */}
-      <div className="fixed bottom-4 left-4 right-4 bg-white rounded-lg shadow-lg border border-gray-200 p-3">
+      <div className="bg-white border-t border-gray-200 p-3">
         <div className="flex items-center justify-between text-sm text-gray-600">
           <div className="flex items-center space-x-4">
             <span>Nodos: {nodes.length}</span>
             <span>Conexiones: {edges.length}</span>
             <span>Roadmap: {roadmapType}</span>
+            {hasUnsavedChanges && (
+              <span className="text-orange-600 font-medium">● Cambios sin guardar</span>
+            )}
+            <span>Propuestas: {proposals.filter(p => p.status === 'pending').length}</span>
           </div>
           <div className="flex items-center space-x-2">
-            <span className="text-green-600">●</span>
-            <span>Guardado automático</span>
+            {saveStatus === 'saved' ? (
+              <>
+                <span className="text-green-600">●</span>
+                <span>Propuesta creada</span>
+              </>
+            ) : hasUnsavedChanges ? (
+              <>
+                <span className="text-orange-600">●</span>
+                <span>Cambios pendientes</span>
+              </>
+            ) : (
+              <>
+                <span className="text-gray-400">●</span>
+                <span>Sin cambios</span>
+              </>
+            )}
           </div>
         </div>
       </div>

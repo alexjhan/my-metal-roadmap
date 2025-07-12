@@ -13,32 +13,42 @@ import MyRoadmaps from './components/MyRoadmaps';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import AuthCallback from './components/AuthCallback';
 import EditRoadmap from './components/EditRoadmap';
+import EditLayout from './components/EditLayout';
 
 
 function App() {
   return (
     <Router>
-      <Navbar />
       <Routes>
-        <Route path="/" element={
+        <Route path="/edit/:roadmapType" element={
+          <EditLayout>
+            <EditRoadmap />
+          </EditLayout>
+        } />
+        <Route path="*" element={
           <>
-            <HeroSection />
-            <RoadmapGrid />
-            <RoadmapsSection />
-            <FeaturesSection />
+            <Navbar />
+            <Routes>
+              <Route path="/" element={
+                <>
+                  <HeroSection />
+                  <RoadmapGrid />
+                  <RoadmapsSection />
+                  <FeaturesSection />
+                </>
+              } />
+              <Route path="/termodinamica" element={<TermodinamicaPage />} />
+              <Route path="/graph" element={<GraphLayout />} />
+              <Route path="/create" element={<CreateRoadmap />} />
+              <Route path="/my-roadmaps" element={<MyRoadmaps />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/privacidad" element={<PrivacyPolicy />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
+            </Routes>
+            <Footer />
           </>
         } />
-        <Route path="/termodinamica" element={<TermodinamicaPage />} />
-        <Route path="/edit/:roadmapType" element={<EditRoadmap />} />
-        <Route path="/graph" element={<GraphLayout />} />
-        <Route path="/create" element={<CreateRoadmap />} />
-        <Route path="/my-roadmaps" element={<MyRoadmaps />} />
-        <Route path="/privacy" element={<PrivacyPolicy />} />
-        <Route path="/privacidad" element={<PrivacyPolicy />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
-
       </Routes>
-      <Footer />
     </Router>
   );
 }

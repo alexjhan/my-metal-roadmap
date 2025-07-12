@@ -121,6 +121,145 @@ export const roadmapStorage = {
   }
 };
 
+// Sistema de propuestas de edición
+export const proposalService = {
+  // Crear una nueva propuesta de edición
+  async createProposal(roadmapType, userId, changes, description) {
+    const { data, error } = await supabase
+      .from('edit_proposals')
+      .insert({
+        roadmap_type: roadmapType,
+        user_id: userId,
+        changes: changes,
+        description: description,
+        status: 'pending',
+        votes: [],
+        comments: []
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  // Obtener propuestas de un roadmap
+  async getProposals(roadmapType) {
+    const { data, error } = await supabase
+      .from('edit_proposals')
+      .select(`
+        *,
+        author:users(name, email),
+        votes(
+          *,
+          voter:users(name, email)
+        ),
+        comments(
+          *,
+          author:users(name, email)
+        )
+      `)
+      .eq('roadmap_type', roadmapType)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data;
+  },
+
+  // Votar en una propuesta
+  async voteOnProposal(proposalId, userId, vote, comment = '') {
+    // Primero agregar el voto
+    const { data: voteData, error: voteError } = await supabase
+      .from('proposal_votes')
+      .upsert({
+        proposal_id: proposalId,
+        user_id: userId,
+        vote: vote,
+        comment: comment
+      })
+      .select()
+      .single();
+
+    if (voteError) throw voteError;
+
+    // Actualizar las estadísticas de la propuesta
+    const { data: proposal, error: proposalError } = await supabase
+      .from('edit_proposals')
+      .select('votes')
+      .eq('id', proposalId)
+      .single();
+
+    if (proposalError) throw proposalError;
+
+    // Calcular si la propuesta debe ser aprobada o rechazada
+    const totalVotes = proposal.votes.length;
+    const approveVotes = proposal.votes.filter(v => v.vote === 'approve').length;
+    const rejectVotes = proposal.votes.filter(v => v.vote === 'reject').length;
+
+    let newStatus = 'pending';
+    if (totalVotes >= 5) { // Mínimo 5 votos para decidir
+      if (approveVotes > rejectVotes && approveVotes >= totalVotes * 0.6) {
+        newStatus = 'approved';
+      } else if (rejectVotes > approveVotes) {
+        newStatus = 'rejected';
+      }
+    }
+
+    // Actualizar el estado de la propuesta
+    if (newStatus !== 'pending') {
+      const { error: updateError } = await supabase
+        .from('edit_proposals')
+        .update({ status: newStatus })
+        .eq('id', proposalId);
+
+      if (updateError) throw updateError;
+    }
+
+    return voteData;
+  },
+
+  // Aplicar una propuesta aprobada
+  async applyApprovedProposal(proposalId) {
+    const { data: proposal, error } = await supabase
+      .from('edit_proposals')
+      .select('*')
+      .eq('id', proposalId)
+      .eq('status', 'approved')
+      .single();
+
+    if (error) throw error;
+
+    // Aplicar los cambios al roadmap
+    for (const change of proposal.changes) {
+      if (change.type === 'node') {
+        // Actualizar nodo
+        await supabase
+          .from('roadmap_customizations')
+          .upsert({
+            roadmap_type: proposal.roadmap_type,
+            node_data: { [change.nodeId]: change.after }
+          });
+      } else if (change.type === 'connection') {
+        // Actualizar conexiones
+        await supabase
+          .from('roadmap_customizations')
+          .upsert({
+            roadmap_type: proposal.roadmap_type,
+            custom_connections: [change.after]
+          });
+      }
+    }
+
+    // Marcar la propuesta como aplicada
+    await supabase
+      .from('edit_proposals')
+      .update({ status: 'applied' })
+      .eq('id', proposalId);
+
+    return proposal;
+  }
+};
+
 // Estimación de uso de almacenamiento
 export const storageEstimates = {
   // Datos estáticos (no cuentan contra límite de BD)

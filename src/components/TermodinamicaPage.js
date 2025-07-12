@@ -1,6 +1,7 @@
 import React from 'react';
 import GraphLayout from './GraphLayout';
 import RoadmapLayout from './RoadmapLayout';
+import ProposalsSection from './ProposalsSection';
 
 export default function TermodinamicaPage() {
   return (
@@ -10,6 +11,9 @@ export default function TermodinamicaPage() {
       icon="🔥"
     >
       <GraphLayout />
+      <div className="mt-8">
+        <ProposalsSection roadmapType="termodinamica" />
+      </div>
     </RoadmapLayout>
   );
 } 

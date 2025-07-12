@@ -202,7 +202,7 @@ function FlowWithFitView() {
   return null;
 }
 
-const GraphLayout = () => {
+export default function GraphLayout() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(
     initialEdges.map(edge => ({
@@ -214,6 +214,7 @@ const GraphLayout = () => {
   const [showAuth, setShowAuth] = useState(false);
   const { user } = useUser();
   const navigate = useNavigate();
+  const [showEditWarning, setShowEditWarning] = useState(false);
 
   // Pasar función de click a cada nodo
   const nodesWithClick = nodes.map(node => ({
@@ -235,12 +236,16 @@ const GraphLayout = () => {
   const selectedNode = nodes.find(n => n.id === selectedNodeId);
 
   const handleEditClick = () => {
+    // Detectar si la pantalla es pequeña
+    if (window.innerWidth < 1024) {
+      setShowEditWarning(true);
+      return;
+    }
     if (!user) {
       setShowAuth(true);
     } else {
       // Redirigir al entorno de edición y recargar la página
       navigate('/edit/termodinamica');
-      // Recargar la página después de un breve delay para asegurar la navegación
       setTimeout(() => {
         window.location.reload();
       }, 100);
@@ -320,8 +325,7 @@ const GraphLayout = () => {
           </div>
         </div>
       )}
+      {showEditWarning && <EditWarningModal />}
     </div>
   );
-};
-
-export default GraphLayout; 
+} 

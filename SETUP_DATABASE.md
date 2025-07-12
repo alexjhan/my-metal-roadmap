@@ -76,6 +76,40 @@ CREATE TABLE roadmap_customizations (
   UNIQUE(user_id, roadmap_type)
 );
 
+-- Tabla de propuestas de edición (NUEVA)
+CREATE TABLE edit_proposals (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  roadmap_type TEXT NOT NULL,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  changes JSONB NOT NULL,
+  description TEXT,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected', 'applied')),
+  votes JSONB DEFAULT '[]',
+  comments JSONB DEFAULT '[]',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Tabla de votos en propuestas (NUEVA)
+CREATE TABLE proposal_votes (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  proposal_id UUID REFERENCES edit_proposals(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  vote TEXT NOT NULL CHECK (vote IN ('approve', 'reject')),
+  comment TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(proposal_id, user_id)
+);
+
+-- Tabla de comentarios en propuestas (NUEVA)
+CREATE TABLE proposal_comments (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  proposal_id UUID REFERENCES edit_proposals(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  text TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Políticas RLS para roadmaps
 CREATE POLICY "Users can view their own roadmaps" ON roadmaps
   FOR SELECT USING (auth.uid() = user_id);
@@ -141,6 +175,36 @@ CREATE POLICY "Users can update their own customizations" ON roadmap_customizati
 
 CREATE POLICY "Users can delete their own customizations" ON roadmap_customizations
   FOR DELETE USING (auth.uid() = user_id);
+
+-- Políticas RLS para propuestas de edición (NUEVAS)
+CREATE POLICY "Anyone can view proposals" ON edit_proposals
+  FOR SELECT USING (true);
+
+CREATE POLICY "Authenticated users can create proposals" ON edit_proposals
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Only proposal author can update" ON edit_proposals
+  FOR UPDATE USING (auth.uid() = user_id);
+
+-- Políticas RLS para votos en propuestas (NUEVAS)
+CREATE POLICY "Anyone can view proposal votes" ON proposal_votes
+  FOR SELECT USING (true);
+
+CREATE POLICY "Authenticated users can vote" ON proposal_votes
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own votes" ON proposal_votes
+  FOR UPDATE USING (auth.uid() = user_id);
+
+-- Políticas RLS para comentarios en propuestas (NUEVAS)
+CREATE POLICY "Anyone can view proposal comments" ON proposal_comments
+  FOR SELECT USING (true);
+
+CREATE POLICY "Authenticated users can comment" ON proposal_comments
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own comments" ON proposal_comments
+  FOR UPDATE USING (auth.uid() = user_id);
 ```
 
 ### 5. Configurar Vercel
