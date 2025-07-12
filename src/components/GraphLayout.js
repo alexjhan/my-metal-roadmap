@@ -18,6 +18,7 @@ import { edges as initialEdges } from '../data/edges';
 import Auth from './Auth';
 import { useUser } from '../UserContext';
 import { useNavigate } from 'react-router-dom';
+import EditWarningModal from './EditWarningModal';
 
 const nodeTypes = {
   custom: (props) => <CustomNode {...props} onClick={() => props.data.onNodeClick(props.id)} />,
@@ -325,7 +326,7 @@ export default function GraphLayout() {
           </div>
         </div>
       )}
-      {showEditWarning && <EditWarningModal />}
+      {showEditWarning && <EditWarningModal onClose={() => setShowEditWarning(false)} />}
     </div>
   );
 } 
