@@ -70,15 +70,7 @@ export default function RoadmapGrid() {
               }}>
                 {item.description}
               </p>
-              {item.status === "active" && item.title !== "Termodinámica" ? (
-                <div className="mt-1 text-xs text-indigo-600 font-medium">
-                  ✨ Haz click para explorar
-                </div>
-              ) : (
-                <div className="mt-1 text-xs text-slate-500 font-medium">
-                  
-                </div>
-              )}
+
             </div>
           ))}
         </div>
