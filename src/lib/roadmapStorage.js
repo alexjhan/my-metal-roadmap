@@ -149,15 +149,8 @@ export const proposalService = {
       .from('edit_proposals')
       .select(`
         *,
-        author:auth.users(name, email),
-        votes(
-          *,
-          voter:auth.users(name, email)
-        ),
-        comments(
-          *,
-          author:auth.users(name, email)
-        )
+        votes(*),
+        comments(*)
       `)
       .eq('roadmap_type', roadmapType)
       .order('created_at', { ascending: false });

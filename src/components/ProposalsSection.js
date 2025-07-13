@@ -129,12 +129,12 @@ const ProposalsSection = ({ roadmapType }) => {
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                             <span className="text-sm font-medium text-blue-600">
-                              {proposal.author?.name?.charAt(0) || 'U'}
+                              U
                             </span>
                           </div>
                           <div>
                             <p className="font-medium text-gray-900">
-                              {proposal.author?.name || 'Usuario'}
+                              Usuario
                             </p>
                             <p className="text-sm text-gray-500">
                               {new Date(proposal.created_at).toLocaleDateString('es-ES', {
@@ -178,12 +178,12 @@ const ProposalsSection = ({ roadmapType }) => {
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                             <span className="text-sm font-medium text-green-600">
-                              {proposal.author?.name?.charAt(0) || 'U'}
+                              U
                             </span>
                           </div>
                           <div>
                             <p className="font-medium text-gray-900">
-                              {proposal.author?.name || 'Usuario'}
+                              Usuario
                             </p>
                             <p className="text-sm text-gray-500">
                               {new Date(proposal.created_at).toLocaleDateString('es-ES', {
@@ -227,12 +227,12 @@ const ProposalsSection = ({ roadmapType }) => {
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
                             <span className="text-sm font-medium text-red-600">
-                              {proposal.author?.name?.charAt(0) || 'U'}
+                              U
                             </span>
                           </div>
                           <div>
                             <p className="font-medium text-gray-900">
-                              {proposal.author?.name || 'Usuario'}
+                              Usuario
                             </p>
                             <p className="text-sm text-gray-500">
                               {new Date(proposal.created_at).toLocaleDateString('es-ES', {

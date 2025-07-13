@@ -25,10 +25,7 @@ const TopVersionsSection = ({ roadmapType }) => {
       // Obtener versiones públicas ordenadas por votos
       const { data: versions, error } = await supabase
         .from('roadmap_versions')
-        .select(`
-          *,
-          user:auth.users(name, email)
-        `)
+        .select('*')
         .eq('roadmap_type', roadmapType)
         .eq('is_public', true)
         .order('total_votes', { ascending: false })
@@ -221,7 +218,7 @@ const TopVersionsSection = ({ roadmapType }) => {
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">
-                      Versión por {version.user?.name || 'Usuario'}
+                      Versión por Usuario
                     </p>
                     <p className="text-sm text-gray-500">
                       {new Date(version.created_at).toLocaleDateString('es-ES', {

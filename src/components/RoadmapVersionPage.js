@@ -21,10 +21,7 @@ const RoadmapVersionPage = () => {
       
       const { data: versionData, error } = await supabase
         .from('roadmap_versions')
-        .select(`
-          *,
-          user:auth.users(name, email)
-        `)
+        .select('*')
         .eq('id', versionId)
         .eq('is_public', true)
         .single();
@@ -70,7 +67,7 @@ const RoadmapVersionPage = () => {
 
   return (
     <RoadmapLayout
-      title={`${roadmapType.charAt(0).toUpperCase() + roadmapType.slice(1)} - Versión de ${version.user?.name || 'Usuario'}`}
+      title={`${roadmapType.charAt(0).toUpperCase() + roadmapType.slice(1)} - Versión de Usuario`}
       description={`Versión editada el ${new Date(version.created_at).toLocaleDateString('es-ES', {
         year: 'numeric',
         month: 'long',
@@ -86,12 +83,12 @@ const RoadmapVersionPage = () => {
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
               <span className="text-sm font-medium text-blue-600">
-                {version.user?.name?.charAt(0) || 'U'}
+                U
               </span>
             </div>
             <div>
               <p className="font-medium text-gray-900">
-                Versión por {version.user?.name || 'Usuario'}
+                Versión por Usuario
               </p>
               <p className="text-sm text-gray-600">
                 {new Date(version.created_at).toLocaleDateString('es-ES', {
