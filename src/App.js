@@ -7,12 +7,13 @@ import React from 'react';
 import RoadmapGrid from './components/RoadmapGrid';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import TermodinamicaPage from './components/TermodinamicaPage';
+import RoadmapPage from './components/RoadmapPage';
 import GraphLayout from './components/GraphLayout';
 import CreateRoadmap from './components/CreateRoadmap';
 import MyRoadmaps from './components/MyRoadmaps';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import AuthCallback from './components/AuthCallback';
-import EditRoadmap from './components/editor/EditRoadmapRefactored';
+import EditRoadmapRefactored from './components/editor/EditRoadmapRefactored';
 import EditLayout from './components/EditLayout';
 
 
@@ -22,7 +23,7 @@ function App() {
       <Routes>
         <Route path="/edit/:roadmapType" element={
           <EditLayout>
-            <EditRoadmap />
+            <EditRoadmapRefactored />
           </EditLayout>
         } />
         <Route path="*" element={
@@ -38,6 +39,7 @@ function App() {
                 </>
               } />
               <Route path="/termodinamica" element={<TermodinamicaPage />} />
+              <Route path="/roadmap/:roadmapType" element={<RoadmapPage />} />
               <Route path="/graph" element={<GraphLayout />} />
               <Route path="/create" element={<CreateRoadmap />} />
               <Route path="/my-roadmaps" element={<MyRoadmaps />} />

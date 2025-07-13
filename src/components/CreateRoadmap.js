@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import ReactFlow, { MiniMap, Controls, Background, addEdge, useNodesState, useEdgesState } from 'react-flow-renderer';
+import ReactFlow, { MiniMap, Controls, Background, addEdge, useNodesState, useEdgesState } from 'reactflow';
 import { FiPlus, FiTrash2, FiSave } from 'react-icons/fi';
 import { supabase, roadmapService } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';

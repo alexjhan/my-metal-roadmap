@@ -15,19 +15,10 @@ const ComponentsPanel = ({
   };
 
   return (
-    <div className="fixed left-16 top-20 w-80 h-[calc(100vh-5rem)] bg-white border-r border-gray-100 z-40 flex flex-col shadow-none">
+    <div className="fixed left-12 top-[4.5rem] w-80 h-[calc(100vh-5rem)] bg-white border-l border-gray-200 z-40 flex flex-col shadow-none">
       {/* Header minimalista */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+      <div className="flex items-center px-4 py-3 border-b border-gray-100">
         <span className="font-medium text-gray-700 text-base">Componentes</span>
-        <button
-          onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100"
-          title="Cerrar panel"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
       </div>
       
       {/* Buscador */}

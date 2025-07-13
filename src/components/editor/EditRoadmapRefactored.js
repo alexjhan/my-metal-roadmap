@@ -8,6 +8,9 @@ import ReactFlow, {
   addEdge,
   MarkerType,
   useReactFlow,
+  getBezierPath,
+  getStraightPath,
+  getSmoothStepPath,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -19,6 +22,7 @@ import LiveView from '../LiveView';
 import CustomNode from '../CustomNode';
 import { nodes as termodinamicaNodes } from '../../data/nodes';
 import { edges as termodinamicaEdges } from '../../data/edges';
+import { allRoadmapsData } from '../../data/allRoadmaps';
 import { devConfig } from '../../config/dev';
 
 // Importar componentes del editor
@@ -32,19 +36,84 @@ import { availableComponents, allRoadmaps } from './constants';
 // Modo de desarrollo - permite acceso sin autenticación en localhost
 const isDevelopment = devConfig.isDevelopment;
 
-// Datos de roadmaps
-const roadmapData = {
-  termodinamica: {
-    title: "Termodinámica Metalúrgica",
-    description: "Mapa mental interactivo de conceptos fundamentales de termodinámica aplicada a procesos metalúrgicos",
-    icon: "🔥",
-    nodes: termodinamicaNodes,
-    edges: termodinamicaEdges
-  }
+// Edge types personalizados
+const StraightEdge = ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style = {}, markerEnd, markerStart }) => {
+  const [edgePath] = getStraightPath({
+    sourceX,
+    sourceY,
+    sourcePosition,
+    targetX,
+    targetY,
+    targetPosition,
+  });
+
+  return (
+    <path
+      id={id}
+      style={style}
+      className="react-flow__edge-path"
+      d={edgePath}
+      markerEnd={markerEnd}
+      markerStart={markerStart}
+    />
+  );
 };
+
+const AngleEdge = ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style = {}, markerEnd, markerStart }) => {
+  const [edgePath] = getSmoothStepPath({
+    sourceX,
+    sourceY,
+    sourcePosition,
+    targetX,
+    targetY,
+    targetPosition,
+  });
+
+  return (
+    <path
+      id={id}
+      style={style}
+      className="react-flow__edge-path"
+      d={edgePath}
+      markerEnd={markerEnd}
+      markerStart={markerStart}
+    />
+  );
+};
+
+const CurvedEdge = ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style = {}, markerEnd, markerStart }) => {
+  const [edgePath] = getBezierPath({
+    sourceX,
+    sourceY,
+    sourcePosition,
+    targetX,
+    targetY,
+    targetPosition,
+  });
+
+  return (
+    <path
+      id={id}
+      style={style}
+      className="react-flow__edge-path"
+      d={edgePath}
+      markerEnd={markerEnd}
+      markerStart={markerStart}
+    />
+  );
+};
+
+// Datos de roadmaps
+const roadmapData = allRoadmapsData;
 
 const nodeTypes = {
   custom: CustomNode,
+};
+
+const edgeTypes = {
+  straight: StraightEdge,
+  angle: AngleEdge,
+  curved: CurvedEdge,
 };
 
 function FlowWithFitView() {
@@ -85,10 +154,16 @@ const EditRoadmapRefactored = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(
     roadmapInfo.edges.map(edge => ({
       ...edge,
-      markerEnd: { type: MarkerType.ArrowClosed }
+      type: 'straight', // Tipo por defecto
+      markerEnd: { 
+        type: MarkerType.ArrowClosed,
+        color: '#1e3a8a' // Color inicial de la flecha
+      },
+      style: { stroke: '#1e3a8a', strokeWidth: 3 }
     }))
   );
   const [selectedNodeId, setSelectedNodeId] = useState(null);
+  const [selectedEdgeId, setSelectedEdgeId] = useState(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [saveStatus, setSaveStatus] = useState('idle');
   const [showProposalModal, setShowProposalModal] = useState(false);
@@ -128,6 +203,15 @@ const EditRoadmapRefactored = () => {
     ), [searchComponents]
   );
 
+  // Obtener nodo y flecha seleccionados
+  const selectedNode = useMemo(() => 
+    selectedNodeId ? nodes.find(node => node.id === selectedNodeId) : null
+  , [selectedNodeId, nodes]);
+
+  const selectedEdge = useMemo(() => 
+    selectedEdgeId ? edges.find(edge => edge.id === selectedEdgeId) : null
+  , [selectedEdgeId, edges]);
+
   // Cargar propuestas existentes
   useEffect(() => {
     const loadProposals = async () => {
@@ -151,8 +235,42 @@ const EditRoadmapRefactored = () => {
   // Handlers principales
   const handleNodeClick = useCallback((id) => {
     setSelectedNodeId(id);
+    setSelectedEdgeId(null);
     setShowPropertiesPanel(true);
   }, []);
+
+  const handleEdgeClick = useCallback((event, edge) => {
+    setSelectedEdgeId(edge.id);
+    setSelectedNodeId(null);
+    setShowPropertiesPanel(true);
+  }, []);
+
+  const handleUpdateEdge = useCallback((edgeId, property, value) => {
+    setEdges((eds) =>
+      eds.map((edge) => {
+        if (edge.id === edgeId) {
+          const updatedEdge = { ...edge, [property]: value };
+          
+          // Si se está actualizando el lineStyle, también actualizar el tipo de edge
+          if (property === 'data' && value.lineStyle) {
+            updatedEdge.type = value.lineStyle;
+          }
+          
+          // Si se está actualizando el color de la línea, también actualizar el color de la flecha
+          if (property === 'style' && value.stroke) {
+            updatedEdge.markerEnd = {
+              ...updatedEdge.markerEnd,
+              color: value.stroke
+            };
+          }
+          
+          return updatedEdge;
+        }
+        return edge;
+      })
+    );
+    setHasUnsavedChanges(true);
+  }, [setEdges]);
 
   const handleDrop = useCallback(
     (event) => {
@@ -539,25 +657,24 @@ const EditRoadmapRefactored = () => {
 
   const onConnect = useCallback(
     (params) => {
-      setEdges((eds) => addEdge(params, eds));
+      const newEdge = {
+        ...params,
+        markerEnd: { type: MarkerType.ArrowClosed },
+        style: { stroke: '#1e3a8a', strokeWidth: 3 }
+      };
+      setEdges((eds) => addEdge(newEdge, eds));
       setHasUnsavedChanges(true);
     },
     [setEdges]
   );
 
-  const selectedNode = useMemo(() => 
-    nodes.find(n => n.id === selectedNodeId), [nodes, selectedNodeId]
-  );
+
 
   return (
     <div className={`w-full h-screen bg-white flex flex-col ${presentationMode ? 'presentation-mode' : ''}`}>
       {/* Header */}
       <EditorHeader
         roadmapInfo={roadmapInfo}
-        zoomLevel={zoomLevel}
-        onZoomIn={handleZoomIn}
-        onZoomOut={handleZoomOut}
-        onFitView={handleFitView}
         onShowToolsPanel={() => setShowToolsPanel(!showToolsPanel)}
         showToolsPanel={showToolsPanel}
         onPresentationMode={handlePresentationMode}
@@ -565,6 +682,7 @@ const EditRoadmapRefactored = () => {
         onShowLiveView={() => setShowLiveView(!showLiveView)}
         onSave={handleCreateProposal}
         onEditModal={() => setShowEditModal(true)}
+        onExit={() => navigate('/')}
       />
 
       {/* Sidebar */}
@@ -586,7 +704,7 @@ const EditRoadmapRefactored = () => {
       {/* Contenido Principal */}
       <div className="flex-1 relative">
         <div 
-          className={`h-full ${presentationMode ? '' : 'ml-20'} ${showPropertiesPanel ? 'mr-96' : ''} ${showComponentsPanel || showRoadmapsPanel || showToolsPanel ? 'ml-80' : ''}`}
+          className={`h-full ${presentationMode ? '' : 'ml-12'} ${showPropertiesPanel ? 'mr-80' : ''} ${showComponentsPanel || showRoadmapsPanel || showToolsPanel ? 'ml-80' : ''}`}
           onClick={() => {
             if (showPropertiesPanel) setShowPropertiesPanel(false);
             if (showComponentsPanel) setShowComponentsPanel(false);
@@ -605,10 +723,12 @@ const EditRoadmapRefactored = () => {
               onEdgesChange(changes);
               setHasUnsavedChanges(true);
             }}
+            onEdgeClick={handleEdgeClick}
             onConnect={onConnect}
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             nodeTypes={nodeTypes}
+            edgeTypes={edgeTypes}
             fitView={false}
             fitViewOptions={{ padding: 0.2, includeHiddenNodes: false }}
             defaultViewport={{ x: 0, y: 0, zoom: zoomLevel }}
@@ -627,6 +747,9 @@ const EditRoadmapRefactored = () => {
             zoomOnDoubleClick={false}
             multiSelectionKeyCode={null}
             deleteKeyCode={presentationMode ? null : "Delete"}
+            connectionMode="loose"
+            snapToGrid={false}
+            snapGrid={[15, 15]}
           >
             <FlowWithFitView />
             <Controls />
@@ -672,27 +795,20 @@ const EditRoadmapRefactored = () => {
       <PropertiesPanel
         showPropertiesPanel={showPropertiesPanel}
         selectedNode={selectedNode}
+        selectedEdge={selectedEdge}
         onClose={() => setShowPropertiesPanel(false)}
         onUpdateNode={handleUpdateNode}
+        onUpdateEdge={handleUpdateEdge}
         propertiesTab={propertiesTab}
         onTabChange={setPropertiesTab}
       />
 
       {/* Panel de Roadmaps */}
       {showRoadmapsPanel && (
-        <div className="fixed left-16 top-20 w-80 h-[calc(100vh-5rem)] bg-white border-r border-gray-100 z-40 flex flex-col shadow-none">
+        <div className="fixed left-12 top-[4.5rem] w-80 h-[calc(100vh-5rem)] bg-white border-l border-gray-200 z-40 flex flex-col shadow-none">
           {/* Header minimalista */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+          <div className="flex items-center px-4 py-3 border-b border-gray-100">
             <span className="font-medium text-gray-700 text-base">Roadmaps</span>
-            <button
-              onClick={() => setShowRoadmapsPanel(false)}
-              className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100"
-              title="Cerrar panel"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
           </div>
           {/* Buscador */}
           <div className="p-4 border-b border-gray-100">

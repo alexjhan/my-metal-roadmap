@@ -15,6 +15,7 @@ import CustomNode from './CustomNode';
 import useLayout from '../hooks/useLayout';
 import { nodes as initialNodes } from '../data/nodes';
 import { edges as initialEdges } from '../data/edges';
+import { allRoadmapsData } from '../data/allRoadmaps';
 import Auth from './Auth';
 import { useUser } from '../UserContext';
 import { useNavigate } from 'react-router-dom';
@@ -203,10 +204,15 @@ function FlowWithFitView() {
   return null;
 }
 
-export default function GraphLayout() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+export default function GraphLayout({ roadmapType = 'termodinamica' }) {
+  // Obtener datos del roadmap específico
+  const roadmapInfo = allRoadmapsData[roadmapType];
+  const initialRoadmapNodes = roadmapInfo ? roadmapInfo.nodes : initialNodes;
+  const initialRoadmapEdges = roadmapInfo ? roadmapInfo.edges : initialEdges;
+  
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialRoadmapNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(
-    initialEdges.map(edge => ({
+    initialRoadmapEdges.map(edge => ({
       ...edge,
       markerEnd: { type: MarkerType.ArrowClosed }
     }))
@@ -246,7 +252,7 @@ export default function GraphLayout() {
       setShowAuth(true);
     } else {
       // Redirigir al entorno de edición y recargar la página
-      navigate('/edit/termodinamica');
+      navigate(`/edit/${roadmapType}`);
       setTimeout(() => {
         window.location.reload();
       }, 100);

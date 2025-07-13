@@ -20,7 +20,7 @@ const ToolsPanel = ({
   if (!showToolsPanel) return null;
 
   return (
-    <div className="fixed left-16 top-20 w-80 h-[calc(100vh-5rem)] bg-white border-r border-gray-100 z-40 flex flex-col shadow-none">
+    <div className="fixed left-12 top-[4.5rem] w-80 h-[calc(100vh-5rem)] bg-white border-l border-gray-200 z-40 flex flex-col shadow-none">
       {/* Header minimalista */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
         <span className="font-medium text-gray-700 text-base">Herramientas</span>

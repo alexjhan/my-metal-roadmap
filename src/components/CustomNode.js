@@ -1,76 +1,25 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Handle, Position } from 'reactflow';
+import { Handle, Position, useReactFlow } from 'reactflow';
 
 const CustomNode = ({ id, data, selected, onClick }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [nodeData, setNodeData] = useState({
-    label: data.label,
-    description: data.description,
-    icon: data.icon,
-    color: data.color || '#ffffff',
-    backgroundColor: data.backgroundColor || '#f3f4f6'
-  });
+  const { getConnectionLineStyle, getNode, getViewport } = useReactFlow();
+  const [isConnectionActive, setIsConnectionActive] = useState(false);
 
-  const handleDoubleClick = (e) => {
-    // Activar modo de edición
-    e.preventDefault();
-    e.stopPropagation();
-    setIsEditing(true);
-  };
+  // Detectar cuando se está creando una conexión usando un intervalo
+  useEffect(() => {
+    const checkConnectionActive = () => {
+      const connectionLine = document.querySelector('.react-flow__connection-line');
+      setIsConnectionActive(!!connectionLine);
+    };
 
-  const handleEdit = (e) => {
-    e.stopPropagation();
-    setIsEditing(true);
-  };
-
-  const handleSave = () => {
-    setIsEditing(false);
-    // Actualizar los datos del nodo
-    if (data.onUpdateNode) {
-      data.onUpdateNode(id, 'label', nodeData.label);
-      data.onUpdateNode(id, 'description', nodeData.description);
-      data.onUpdateNode(id, 'icon', nodeData.icon);
-      data.onUpdateNode(id, 'backgroundColor', nodeData.backgroundColor);
-      data.onUpdateNode(id, 'color', nodeData.color);
-    }
-  };
-
-  const handleCancel = () => {
-    setIsEditing(false);
-    setNodeData({
-      label: data.label,
-      description: data.description,
-      icon: data.icon,
-      color: data.color || '#ffffff',
-      backgroundColor: data.backgroundColor || '#f3f4f6'
-    });
-  };
+    const interval = setInterval(checkConnectionActive, 100);
+    
+    return () => clearInterval(interval);
+  }, []);
 
 
 
-  const toggleFormat = (format) => {
-    const textarea = document.getElementById(`node-${data.id}-label`);
-    if (textarea) {
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const text = textarea.value;
-      
-      let newText = text;
-      if (format === 'bold') {
-        newText = text.substring(0, start) + `**${text.substring(start, end)}**` + text.substring(end);
-      } else if (format === 'italic') {
-        newText = text.substring(0, start) + `*${text.substring(start, end)}*` + text.substring(end);
-      }
-      
-      setNodeData(prev => ({ ...prev, label: newText }));
-      
-      // Restaurar selección
-      setTimeout(() => {
-        textarea.setSelectionRange(start + (format === 'bold' ? 2 : 1), end + (format === 'bold' ? 2 : 1));
-        textarea.focus();
-      }, 0);
-    }
-  };
+  // Eliminada la función toggleFormat ya que no se usa más
 
   const renderFormattedText = (text) => {
     // Renderizar texto con formato markdown básico
@@ -169,14 +118,36 @@ const CustomNode = ({ id, data, selected, onClick }) => {
       case 'horizontal-line':
         return (
           <div className="w-full flex justify-center items-center">
-            <div className="w-full h-1 bg-gray-300 rounded-full"></div>
+            <div 
+              className="rounded-full"
+              style={{
+                height: `${data.lineWidth || 2}px`,
+                width: `${data.lineSize || 100}px`,
+                backgroundColor: data.lineStyle === 'solid' ? (data.lineColor || '#6B7280') : 'transparent',
+                border: data.lineStyle !== 'solid' ? `${data.lineWidth || 2}px ${data.lineStyle || 'solid'} ${data.lineColor || '#6B7280'}` : 'none',
+                borderStyle: data.lineStyle || 'solid',
+                borderWidth: data.lineStyle !== 'solid' ? `${data.lineWidth || 2}px` : '0px',
+                borderColor: data.lineColor || '#6B7280'
+              }}
+            ></div>
           </div>
         );
 
       case 'vertical-line':
         return (
           <div className="h-full flex flex-col justify-center items-center">
-            <div className="w-1 h-full bg-gray-300 rounded-full"></div>
+            <div 
+              className="rounded-full"
+              style={{
+                width: `${data.lineWidth || 2}px`,
+                height: `${data.lineSize || 100}px`,
+                backgroundColor: data.lineStyle === 'solid' ? (data.lineColor || '#6B7280') : 'transparent',
+                border: data.lineStyle !== 'solid' ? `${data.lineWidth || 2}px ${data.lineStyle || 'solid'} ${data.lineColor || '#6B7280'}` : 'none',
+                borderStyle: data.lineStyle || 'solid',
+                borderWidth: data.lineStyle !== 'solid' ? `${data.lineWidth || 2}px` : '0px',
+                borderColor: data.lineColor || '#6B7280'
+              }}
+            ></div>
           </div>
         );
 
@@ -193,212 +164,8 @@ const CustomNode = ({ id, data, selected, onClick }) => {
     }
   };
 
-  if (isEditing) {
-    return (
-      <div className={`relative ${selected ? 'ring-2 ring-blue-500' : ''}`}>
-        <Handle
-          type="target"
-          position={Position.Top}
-          className="w-2 h-2 sm:w-3 sm:h-3 bg-gray-400 border-2 border-white"
-        />
-        <div
-          className="bg-white border-2 border-gray-300 rounded-lg shadow-md p-3 sm:p-4 min-w-[200px] sm:min-w-[220px] max-w-[300px]"
-          style={{
-            backgroundColor: nodeData.backgroundColor,
-            color: nodeData.color
-          }}
-        >
-          {/* Barra de herramientas de formato */}
-          <div className="flex items-center space-x-2 mb-2 p-1 bg-gray-100 rounded">
-            <button
-              onClick={() => toggleFormat('bold')}
-              className="px-2 py-1 text-xs font-bold hover:bg-gray-200 rounded"
-              title="Negrita"
-            >
-              B
-            </button>
-            <button
-              onClick={() => toggleFormat('italic')}
-              className="px-2 py-1 text-xs italic hover:bg-gray-200 rounded"
-              title="Cursiva"
-            >
-              I
-            </button>
-            <input
-              type="color"
-              value={nodeData.backgroundColor}
-              onChange={(e) => setNodeData(prev => ({ ...prev, backgroundColor: e.target.value }))}
-              className="w-6 h-6 rounded border"
-              title="Color de fondo"
-            />
-          </div>
-
-          {/* Formulario de edición */}
-          <div className="space-y-2">
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Icono</label>
-              <input
-                type="text"
-                value={nodeData.icon}
-                onChange={(e) => setNodeData(prev => ({ ...prev, icon: e.target.value }))}
-                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
-                placeholder="🔥"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Título</label>
-              <textarea
-                id={`node-${id}-label`}
-                value={nodeData.label}
-                onChange={(e) => setNodeData(prev => ({ ...prev, label: e.target.value }))}
-                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 resize-none"
-                rows={2}
-                placeholder="Título del concepto"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Descripción</label>
-              <textarea
-                value={nodeData.description}
-                onChange={(e) => setNodeData(prev => ({ ...prev, description: e.target.value }))}
-                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 resize-none"
-                rows={3}
-                placeholder="Descripción del concepto"
-              />
-            </div>
-
-            {/* Propiedades específicas según el tipo de nodo */}
-            {(data.nodeType || data.type) === 'button' && (
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">URL del enlace</label>
-                <input
-                  type="url"
-                  value={data.url || ''}
-                  onChange={(e) => {
-                    if (data.onUpdateNode) {
-                      data.onUpdateNode(id, 'url', e.target.value);
-                    }
-                  }}
-                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
-                  placeholder="https://ejemplo.com"
-                />
-              </div>
-            )}
-
-            {(data.nodeType || data.type) === 'todo' && (
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Estado</label>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={data.completed || false}
-                    onChange={(e) => {
-                      if (data.onUpdateNode) {
-                        data.onUpdateNode(id, 'completed', e.target.checked);
-                      }
-                    }}
-                    className="rounded border-gray-300 text-blue-600"
-                  />
-                  <span className="text-xs text-gray-600">Marcado como completado</span>
-                </div>
-              </div>
-            )}
-
-            {/* Propiedades de estilo */}
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Color de fondo</label>
-              <input
-                type="color"
-                value={nodeData.backgroundColor}
-                onChange={(e) => setNodeData(prev => ({ ...prev, backgroundColor: e.target.value }))}
-                className="w-full h-8 border border-gray-300 rounded"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Color del texto</label>
-              <input
-                type="color"
-                value={nodeData.color}
-                onChange={(e) => setNodeData(prev => ({ ...prev, color: e.target.value }))}
-                className="w-full h-8 border border-gray-300 rounded"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Tamaño de fuente</label>
-              <input
-                type="number"
-                value={data.fontSize ? parseInt(data.fontSize) : 14}
-                onChange={(e) => {
-                  if (data.onUpdateNode) {
-                    data.onUpdateNode(id, 'fontSize', `${e.target.value}px`);
-                  }
-                }}
-                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
-                min="8"
-                max="48"
-                step="1"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Referencias Gratuitas</label>
-              <textarea
-                value={data.freeResources || ''}
-                onChange={(e) => {
-                  if (data.onUpdateResources) {
-                    data.onUpdateResources('free', e.target.value);
-                  }
-                }}
-                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 resize-none"
-                rows={2}
-                placeholder="Referencias gratuitas (una por línea)"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Referencias Premium</label>
-              <textarea
-                value={data.premiumResources || ''}
-                onChange={(e) => {
-                  if (data.onUpdateResources) {
-                    data.onUpdateResources('premium', e.target.value);
-                  }
-                }}
-                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 resize-none"
-                rows={2}
-                placeholder="Referencias premium (una por línea)"
-              />
-            </div>
-          </div>
-
-          {/* Botones de acción */}
-          <div className="flex justify-end space-x-2 mt-4">
-            <button
-              onClick={handleCancel}
-              className="px-3 py-1 text-xs text-gray-600 hover:text-gray-800"
-            >
-              Cancelar
-            </button>
-            <button
-              onClick={handleSave}
-              className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              Guardar
-            </button>
-          </div>
-        </div>
-        <Handle
-          type="source"
-          position={Position.Bottom}
-          className="w-2 h-2 sm:w-3 sm:h-3 bg-gray-400 border-2 border-white"
-        />
-      </div>
-    );
-  }
+  // Eliminado el modo de edición inline
+  // La edición ahora se maneja a través del off-canvas
 
   // Determinar estilos del nodo según el tipo
   const getNodeStyles = () => {
@@ -458,7 +225,7 @@ const CustomNode = ({ id, data, selected, onClick }) => {
       case 'paragraph':
         return {
           ...baseStyles,
-          backgroundColor: 'transparent',
+          backgroundColor: data.backgroundColor || 'transparent',
           border: 'none',
           boxShadow: 'none',
           fontSize: data.fontSize || '14px',
@@ -490,9 +257,12 @@ const CustomNode = ({ id, data, selected, onClick }) => {
           backgroundColor: 'transparent',
           border: 'none',
           boxShadow: 'none',
-          height: '4px',
-          minHeight: '4px',
-          maxHeight: '4px'
+          height: `${data.lineWidth || 2}px`,
+          minHeight: `${data.lineWidth || 2}px`,
+          maxHeight: `${data.lineWidth || 2}px`,
+          width: `${data.lineSize || 100}px`,
+          minWidth: `${data.lineSize || 100}px`,
+          maxWidth: `${data.lineSize || 100}px`
         };
       case 'vertical-line':
         return {
@@ -500,9 +270,12 @@ const CustomNode = ({ id, data, selected, onClick }) => {
           backgroundColor: 'transparent',
           border: 'none',
           boxShadow: 'none',
-          width: '4px',
-          minWidth: '4px',
-          maxWidth: '4px'
+          width: `${data.lineWidth || 2}px`,
+          minWidth: `${data.lineWidth || 2}px`,
+          maxWidth: `${data.lineWidth || 2}px`,
+          height: `${data.lineSize || 100}px`,
+          minHeight: `${data.lineSize || 100}px`,
+          maxHeight: `${data.lineSize || 100}px`
         };
       default:
         return {
@@ -517,13 +290,94 @@ const CustomNode = ({ id, data, selected, onClick }) => {
 
   const nodeStyles = getNodeStyles();
 
+  const nodeType = data.nodeType || data.type || 'default';
+  const isLine = nodeType === 'horizontal-line' || nodeType === 'vertical-line';
+
   return (
     <div className={`relative ${selected ? 'ring-2 ring-blue-500' : ''}`}>
-      <Handle
-        type="target"
-        position={Position.Top}
-        className="w-2 h-2 sm:w-3 sm:h-3 bg-gray-400 border-2 border-white"
-      />
+      {/* 4 handles de conexión para nodos que no son líneas */}
+      {!isLine && (
+        <>
+          {/* Área de captura sombreada cuando se está creando una conexión */}
+          {isConnectionActive && (
+            <>
+              <div 
+                className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-blue-200 rounded-full opacity-50 pointer-events-none"
+                style={{ zIndex: 1 }}
+              />
+              <div 
+                className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-8 h-8 bg-blue-200 rounded-full opacity-50 pointer-events-none"
+                style={{ zIndex: 1 }}
+              />
+              <div 
+                className="absolute left-0 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-blue-200 rounded-full opacity-50 pointer-events-none"
+                style={{ zIndex: 1 }}
+              />
+              <div 
+                className="absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-blue-200 rounded-full opacity-50 pointer-events-none"
+                style={{ zIndex: 1 }}
+              />
+            </>
+          )}
+          
+          <Handle
+            id="top"
+            type="target"
+            position={Position.Top}
+            className={`transition-all duration-200 ease-in-out border-2 border-white ${
+              isConnectionActive ? 'w-6 h-6' : 'w-3 h-3'
+            } bg-navy-600`}
+            style={{ 
+              backgroundColor: '#1e3a8a',
+              transform: isConnectionActive ? 'scale(1.5)' : 'scale(1)',
+              boxShadow: isConnectionActive ? '0 0 10px rgba(30, 58, 138, 0.5)' : 'none',
+              zIndex: 2
+            }}
+          />
+          <Handle
+            id="bottom"
+            type="source"
+            position={Position.Bottom}
+            className={`transition-all duration-200 ease-in-out border-2 border-white ${
+              isConnectionActive ? 'w-6 h-6' : 'w-3 h-3'
+            } bg-navy-600`}
+            style={{ 
+              backgroundColor: '#1e3a8a',
+              transform: isConnectionActive ? 'scale(1.5)' : 'scale(1)',
+              boxShadow: isConnectionActive ? '0 0 10px rgba(30, 58, 138, 0.5)' : 'none',
+              zIndex: 2
+            }}
+          />
+          <Handle
+            id="left"
+            type="source"
+            position={Position.Left}
+            className={`transition-all duration-200 ease-in-out border-2 border-white ${
+              isConnectionActive ? 'w-6 h-6' : 'w-3 h-3'
+            } bg-navy-600`}
+            style={{ 
+              backgroundColor: '#1e3a8a',
+              transform: isConnectionActive ? 'scale(1.5)' : 'scale(1)',
+              boxShadow: isConnectionActive ? '0 0 10px rgba(30, 58, 138, 0.5)' : 'none',
+              zIndex: 2
+            }}
+          />
+          <Handle
+            id="right"
+            type="source"
+            position={Position.Right}
+            className={`transition-all duration-200 ease-in-out border-2 border-white ${
+              isConnectionActive ? 'w-6 h-6' : 'w-3 h-3'
+            } bg-navy-600`}
+            style={{ 
+              backgroundColor: '#1e3a8a',
+              transform: isConnectionActive ? 'scale(1.5)' : 'scale(1)',
+              boxShadow: isConnectionActive ? '0 0 10px rgba(30, 58, 138, 0.5)' : 'none',
+              zIndex: 2
+            }}
+          />
+        </>
+      )}
       
       <div
         className="node-button"
@@ -537,12 +391,9 @@ const CustomNode = ({ id, data, selected, onClick }) => {
             onClick(e);
           }
         }}
-        onDoubleClick={handleDoubleClick}
       >
         {renderNodeContent()}
       </div>
-
-
     </div>
   );
 };

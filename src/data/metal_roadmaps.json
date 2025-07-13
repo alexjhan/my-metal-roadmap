@@ -3,48 +3,48 @@
     "title": "Matemáticas",
     "description": "Fundamentos matemáticos necesarios para la ingeniería metalúrgica. Álgebra, cálculo, ecuaciones diferenciales.",
     "icon": "📐",
-    "status": "coming-soon",
-    "link": "/matematicas",
+    "status": "active",
+    "link": "/roadmap/matematicas",
     "category": "Ciencias Básicas"
   },
   {
     "title": "Física",
     "description": "Principios físicos fundamentales aplicados a procesos metalúrgicos. Mecánica, electromagnetismo, óptica.",
     "icon": "⚛️",
-    "status": "coming-soon",
-    "link": "/fisica",
+    "status": "active",
+    "link": "/roadmap/fisica",
     "category": "Ciencias Básicas"
   },
   {
     "title": "Química",
     "description": "Fundamentos químicos para entender reacciones y transformaciones en metalurgia.",
     "icon": "🧪",
-    "status": "coming-soon",
-    "link": "/quimica",
+    "status": "active",
+    "link": "/roadmap/quimica",
     "category": "Ciencias Básicas"
   },
   {
     "title": "Ciencia de Materiales",
     "description": "Estudio de la estructura, propiedades y comportamiento de los materiales.",
     "icon": "🔬",
-    "status": "coming-soon",
-    "link": "/ciencia-materiales",
+    "status": "active",
+    "link": "/roadmap/cienciaMateriales",
     "category": "Ciencias Básicas"
   },
   {
     "title": "Estadística y Probabilidad",
     "description": "Métodos estadísticos para análisis de datos y control de calidad en metalurgia.",
     "icon": "📊",
-    "status": "coming-soon",
-    "link": "/estadistica-probabilidad",
+    "status": "active",
+    "link": "/roadmap/estadistica",
     "category": "Ciencias Básicas"
   },
   {
     "title": "Métodos Numéricos",
     "description": "Técnicas computacionales para resolver problemas complejos en metalurgia.",
     "icon": "💻",
-    "status": "coming-soon",
-    "link": "/metodos-numericos",
+    "status": "active",
+    "link": "/roadmap/metodosNumericos",
     "category": "Ciencias Básicas"
   },
   {
@@ -52,791 +52,791 @@
     "description": "Fundamentos de termodinámica aplicada a procesos metalúrgicos.",
     "icon": "🔥",
     "status": "active",
-    "link": "/termodinamica",
+    "link": "/roadmap/termodinamica",
     "category": "Ciencias Básicas"
   },
   {
     "title": "Mecánica",
     "description": "Principios mecánicos aplicados a procesos de conformado y deformación.",
     "icon": "⚙️",
-    "status": "coming-soon",
-    "link": "/mecanica",
+    "status": "active",
+    "link": "/roadmap/mecanica",
     "category": "Ciencias Básicas"
   },
   {
     "title": "Transferencia de Calor",
     "description": "Mecanismos de transferencia de calor en procesos metalúrgicos.",
     "icon": "🌡️",
-    "status": "coming-soon",
-    "link": "/transferencia-calor",
+    "status": "active",
+    "link": "/roadmap/transferenciaCalor",
     "category": "Ciencias Básicas"
   },
   {
     "title": "Electromagnetismo",
     "description": "Principios electromagnéticos aplicados a procesos metalúrgicos.",
     "icon": "⚡",
-    "status": "coming-soon",
-    "link": "/electromagnetismo",
+    "status": "active",
+    "link": "/roadmap/electromagnetismo",
     "category": "Ciencias Básicas"
   },
   {
     "title": "Fisicoquímica",
     "description": "Interfase entre física y química en procesos metalúrgicos.",
     "icon": "🔬",
-    "status": "coming-soon",
-    "link": "/fisicoquimica",
+    "status": "active",
+    "link": "/roadmap/fisicoquimica",
     "category": "Ciencias Básicas"
   },
   {
     "title": "Electroquímica",
     "description": "Procesos electroquímicos en metalurgia y corrosión.",
     "icon": "⚡",
-    "status": "coming-soon",
-    "link": "/electroquimica",
+    "status": "active",
+    "link": "/roadmap/electroquimica",
     "category": "Ciencias Básicas"
   },
   {
     "title": "Estructura Cristalina",
     "description": "Organización atómica y estructura cristalina de materiales metálicos.",
     "icon": "💎",
-    "status": "coming-soon",
-    "link": "/estructura-cristalina",
+    "status": "active",
+    "link": "/roadmap/estructuraCristalina",
     "category": "Ciencias Básicas"
   },
   {
     "title": "Diagramas de Fase",
     "description": "Representación gráfica de fases en equilibrio en sistemas metálicos.",
     "icon": "📈",
-    "status": "coming-soon",
-    "link": "/diagramas-fase",
+    "status": "active",
+    "link": "/roadmap/diagramasFase",
     "category": "Ciencias Básicas"
   },
   {
     "title": "Difusión",
     "description": "Procesos de difusión atómica en materiales metálicos.",
     "icon": "🔄",
-    "status": "coming-soon",
-    "link": "/difusion",
+    "status": "active",
+    "link": "/roadmap/difusion",
     "category": "Ciencias Básicas"
   },
   {
     "title": "Transformaciones de Fase",
     "description": "Cambios de fase y transformaciones microestructurales en metales.",
     "icon": "🔄",
-    "status": "coming-soon",
-    "link": "/transformaciones-fase",
+    "status": "active",
+    "link": "/roadmap/transformacionesFase",
     "category": "Ciencias Básicas"
   },
   {
     "title": "Propiedades Mecánicas",
     "description": "Características mecánicas de materiales metálicos.",
     "icon": "💪",
-    "status": "coming-soon",
-    "link": "/propiedades-mecanicas",
+    "status": "active",
+    "link": "/roadmap/propiedadesMecanicas",
     "category": "Ciencias Básicas"
   },
   {
     "title": "Mineralogía de Menas",
     "description": "Identificación y caracterización de minerales en menas metálicas.",
     "icon": "⛏️",
-    "status": "coming-soon",
-    "link": "/mineralogia-menas",
+    "status": "active",
+    "link": "/roadmap/mineralogiaMenas",
     "category": "Extractiva"
   },
   {
     "title": "Preparación de Minerales",
     "description": "Procesos de preparación y acondicionamiento de minerales.",
     "icon": "🏔️",
-    "status": "coming-soon",
-    "link": "/preparacion-minerales",
+    "status": "active",
+    "link": "/roadmap/preparacionMinerales",
     "category": "Extractiva"
   },
   {
     "title": "Conminución",
     "description": "Reducción de tamaño de partículas minerales.",
     "icon": "🔨",
-    "status": "coming-soon",
-    "link": "/conminucion",
+    "status": "active",
+    "link": "/roadmap/conminucion",
     "category": "Extractiva"
   },
   {
     "title": "Concentración por Flotación",
     "description": "Separación de minerales por flotación espumosa.",
     "icon": "🫧",
-    "status": "coming-soon",
-    "link": "/concentracion-flotacion",
+    "status": "active",
+    "link": "/roadmap/concentracionFlotacion",
     "category": "Extractiva"
   },
   {
     "title": "Separación Magnética",
     "description": "Concentración de minerales magnéticos.",
     "icon": "🧲",
-    "status": "coming-soon",
-    "link": "/separacion-magnetica",
+    "status": "active",
+    "link": "/roadmap/separacionMagnetica",
     "category": "Extractiva"
   },
   {
     "title": "Separación Gravimétrica",
     "description": "Concentración por diferencias de densidad.",
     "icon": "⚖️",
-    "status": "coming-soon",
-    "link": "/separacion-gravimetrica",
+    "status": "active",
+    "link": "/roadmap/separacionGravimétrica",
     "category": "Extractiva"
   },
   {
     "title": "Pirometalurgia",
     "description": "Procesos metalúrgicos a altas temperaturas.",
     "icon": "🔥",
-    "status": "coming-soon",
-    "link": "/pirometalurgia",
+    "status": "active",
+    "link": "/roadmap/pirometalurgia",
     "category": "Extractiva"
   },
   {
     "title": "Calcinación y Tostación",
     "description": "Procesos de calentamiento en presencia de aire.",
     "icon": "🔥",
-    "status": "coming-soon",
-    "link": "/calcinacion-tostacion",
+    "status": "active",
+    "link": "/roadmap/calcinacionTostacion",
     "category": "Extractiva"
   },
   {
     "title": "Fusión de Matas",
     "description": "Procesos de fusión para separación de metales.",
     "icon": "🔥",
-    "status": "coming-soon",
-    "link": "/fusion-matas",
+    "status": "active",
+    "link": "/roadmap/fusionMatas",
     "category": "Extractiva"
   },
   {
     "title": "Reducción Carbotérmica",
     "description": "Reducción de óxidos metálicos con carbono.",
     "icon": "⚡",
-    "status": "coming-soon",
-    "link": "/reduccion-carbotermica",
+    "status": "active",
+    "link": "/roadmap/reduccionCarbotermica",
     "category": "Extractiva"
   },
   {
     "title": "Refinación Pirometalúrgica",
     "description": "Purificación de metales por procesos térmicos.",
     "icon": "🔥",
-    "status": "coming-soon",
-    "link": "/refinacion-pirometalurgica",
+    "status": "active",
+    "link": "/roadmap/refinacionPirometalurgica",
     "category": "Extractiva"
   },
   {
     "title": "Hidrometalurgia",
     "description": "Procesos metalúrgicos en medio acuoso.",
     "icon": "💧",
-    "status": "coming-soon",
-    "link": "/hidrometalurgia",
+    "status": "active",
+    "link": "/roadmap/hidrometalurgia",
     "category": "Extractiva"
   },
   {
     "title": "Lixiviación",
     "description": "Disolución selectiva de metales en soluciones acuosas.",
     "icon": "💧",
-    "status": "coming-soon",
-    "link": "/lixiviacion",
+    "status": "active",
+    "link": "/roadmap/lixiviacion",
     "category": "Extractiva"
   },
   {
     "title": "Separación Líquido-Sólido",
     "description": "Técnicas de separación de fases líquidas y sólidas.",
     "icon": "🔍",
-    "status": "coming-soon",
-    "link": "/separacion-liquido-solido",
+    "status": "active",
+    "link": "/roadmap/separacionLiquidoSolido",
     "category": "Extractiva"
   },
   {
     "title": "Purificación de Soluciones",
     "description": "Limpieza y purificación de soluciones metalúrgicas.",
     "icon": "🧪",
-    "status": "coming-soon",
-    "link": "/purificacion-soluciones",
+    "status": "active",
+    "link": "/roadmap/purificacionSoluciones",
     "category": "Extractiva"
   },
   {
     "title": "Precipitación",
     "description": "Separación de metales por precipitación química.",
     "icon": "🌊",
-    "status": "coming-soon",
-    "link": "/precipitacion",
+    "status": "active",
+    "link": "/roadmap/precipitacion",
     "category": "Extractiva"
   },
   {
     "title": "Electrometalurgia",
     "description": "Procesos metalúrgicos que involucran electricidad.",
     "icon": "⚡",
-    "status": "coming-soon",
-    "link": "/electrometalurgia",
+    "status": "active",
+    "link": "/roadmap/electrometalurgia",
     "category": "Extractiva"
   },
   {
     "title": "Electrodeposición",
     "description": "Deposición de metales por procesos electrolíticos.",
     "icon": "⚡",
-    "status": "coming-soon",
-    "link": "/electrodeposicion",
+    "status": "active",
+    "link": "/roadmap/electrodeposicion",
     "category": "Extractiva"
   },
   {
     "title": "Electrólisis",
     "description": "Descomposición de compuestos por corriente eléctrica.",
     "icon": "⚡",
-    "status": "coming-soon",
-    "link": "/electrolisis",
+    "status": "active",
+    "link": "/roadmap/electrolisis",
     "category": "Extractiva"
   },
   {
     "title": "Corrosión Electroquímica",
     "description": "Mecanismos de corrosión en medios electroquímicos.",
     "icon": "🛡️",
-    "status": "coming-soon",
-    "link": "/corrosion-electroquimica",
+    "status": "active",
+    "link": "/roadmap/corrosionElectroquimica",
     "category": "Extractiva"
   },
   {
     "title": "Fundición",
     "description": "Procesos de fundición y colada de metales.",
     "icon": "🔥",
-    "status": "coming-soon",
-    "link": "/fundicion",
+    "status": "active",
+    "link": "/roadmap/fundicion",
     "category": "Transformativa"
   },
   {
     "title": "Diseño de Aleaciones",
     "description": "Desarrollo y diseño de aleaciones metálicas.",
     "icon": "🔧",
-    "status": "coming-soon",
-    "link": "/diseno-aleaciones",
+    "status": "active",
+    "link": "/roadmap/disenoAleaciones",
     "category": "Transformativa"
   },
   {
     "title": "Procesos de Fundición",
     "description": "Técnicas y procesos de fundición metalúrgica.",
     "icon": "🔥",
-    "status": "coming-soon",
-    "link": "/procesos-fundicion",
+    "status": "active",
+    "link": "/roadmap/procesosFundicion",
     "category": "Transformativa"
   },
   {
     "title": "Defectos de Fundición",
     "description": "Identificación y control de defectos en piezas fundidas.",
     "icon": "🔍",
-    "status": "coming-soon",
-    "link": "/defectos-fundicion",
+    "status": "active",
+    "link": "/roadmap/defectosFundicion",
     "category": "Transformativa"
   },
   {
     "title": "Tratamientos de Modificación",
     "description": "Modificación de microestructuras en metales fundidos.",
     "icon": "🔧",
-    "status": "coming-soon",
-    "link": "/tratamientos-modificacion",
+    "status": "active",
+    "link": "/roadmap/tratamientosModificacion",
     "category": "Transformativa"
   },
   {
     "title": "Conformado Mecánico",
     "description": "Procesos de deformación plástica de metales.",
     "icon": "🔨",
-    "status": "coming-soon",
-    "link": "/conformado-mecanico",
+    "status": "active",
+    "link": "/roadmap/conformadoMecanico",
     "category": "Transformativa"
   },
   {
     "title": "Laminación",
     "description": "Proceso de conformado por laminación.",
     "icon": "📏",
-    "status": "coming-soon",
-    "link": "/laminacion",
+    "status": "active",
+    "link": "/roadmap/laminacion",
     "category": "Transformativa"
   },
   {
     "title": "Forja",
     "description": "Conformado por deformación plástica a alta temperatura.",
     "icon": "🔨",
-    "status": "coming-soon",
-    "link": "/forja",
+    "status": "active",
+    "link": "/roadmap/forja",
     "category": "Transformativa"
   },
   {
     "title": "Extrusión",
     "description": "Proceso de conformado por extrusión.",
     "icon": "🔧",
-    "status": "coming-soon",
-    "link": "/extrusion",
+    "status": "active",
+    "link": "/roadmap/extrusion",
     "category": "Transformativa"
   },
   {
     "title": "Trefilado",
     "description": "Reducción de diámetro de alambres y barras.",
     "icon": "🔧",
-    "status": "coming-soon",
-    "link": "/trefilado",
+    "status": "active",
+    "link": "/roadmap/trefilado",
     "category": "Transformativa"
   },
   {
     "title": "Conformado de Chapas",
     "description": "Procesos de conformado de láminas metálicas.",
     "icon": "📋",
-    "status": "coming-soon",
-    "link": "/conformado-chapas",
+    "status": "active",
+    "link": "/roadmap/conformadoChapas",
     "category": "Transformativa"
   },
   {
     "title": "Tratamientos Térmicos",
     "description": "Procesos de calentamiento y enfriamiento controlado.",
     "icon": "🔥",
-    "status": "coming-soon",
-    "link": "/tratamientos-termicos",
+    "status": "active",
+    "link": "/roadmap/tratamientosTermicos",
     "category": "Transformativa"
   },
   {
     "title": "Recocido",
     "description": "Tratamiento térmico de recocido para ablandamiento.",
     "icon": "🔥",
-    "status": "coming-soon",
-    "link": "/recocido",
+    "status": "active",
+    "link": "/roadmap/recocido",
     "category": "Transformativa"
   },
   {
     "title": "Normalizado",
     "description": "Tratamiento térmico de normalizado.",
     "icon": "🔥",
-    "status": "coming-soon",
-    "link": "/normalizado",
+    "status": "active",
+    "link": "/roadmap/normalizado",
     "category": "Transformativa"
   },
   {
     "title": "Temple",
     "description": "Tratamiento térmico de temple para endurecimiento.",
     "icon": "🔥",
-    "status": "coming-soon",
-    "link": "/temple",
+    "status": "active",
+    "link": "/roadmap/temple",
     "category": "Transformativa"
   },
   {
     "title": "Revenido",
     "description": "Tratamiento térmico de revenido para ajuste de propiedades.",
     "icon": "🔥",
-    "status": "coming-soon",
-    "link": "/revenido",
+    "status": "active",
+    "link": "/roadmap/revenido",
     "category": "Transformativa"
   },
   {
     "title": "Tratamientos Termoquímicos",
     "description": "Procesos de difusión de elementos en superficie.",
     "icon": "🔥",
-    "status": "coming-soon",
-    "link": "/tratamientos-termoquimicos",
+    "status": "active",
+    "link": "/roadmap/tratamientosTermoquimicos",
     "category": "Transformativa"
   },
   {
     "title": "Soldadura y Unión",
     "description": "Técnicas de unión de materiales metálicos.",
     "icon": "🔗",
-    "status": "coming-soon",
-    "link": "/soldadura-union",
+    "status": "active",
+    "link": "/roadmap/soldaduraUnion",
     "category": "Transformativa"
   },
   {
     "title": "Procesos de Soldadura",
     "description": "Diferentes procesos y técnicas de soldadura.",
     "icon": "🔗",
-    "status": "coming-soon",
-    "link": "/procesos-soldadura",
+    "status": "active",
+    "link": "/roadmap/procesosSoldadura",
     "category": "Transformativa"
   },
   {
     "title": "Metalurgia de la Soldadura",
     "description": "Cambios metalúrgicos durante procesos de soldadura.",
     "icon": "🔗",
-    "status": "coming-soon",
-    "link": "/metalurgia-soldadura",
+    "status": "active",
+    "link": "/roadmap/metalurgiaSoldadura",
     "category": "Transformativa"
   },
   {
     "title": "MATLAB",
     "description": "Software de computación numérica y análisis de datos para ingeniería metalúrgica.",
     "icon": "💻",
-    "status": "coming-soon",
-    "link": "/matlab",
+    "status": "active",
+    "link": "/roadmap/matlab",
     "category": "Herramientas Extractivas"
   },
   {
     "title": "Python",
     "description": "Lenguaje de programación para análisis de datos y modelado en metalurgia.",
     "icon": "🐍",
-    "status": "coming-soon",
-    "link": "/python",
+    "status": "active",
+    "link": "/roadmap/python",
     "category": "Herramientas Extractivas"
   },
   {
     "title": "R",
     "description": "Lenguaje de programación para análisis estadístico y visualización de datos.",
     "icon": "📊",
-    "status": "coming-soon",
-    "link": "/r",
+    "status": "active",
+    "link": "/roadmap/r",
     "category": "Herramientas Extractivas"
   },
   {
     "title": "Minitab",
     "description": "Software estadístico para control de calidad y diseño de experimentos.",
     "icon": "📈",
-    "status": "coming-soon",
-    "link": "/minitab",
+    "status": "active",
+    "link": "/roadmap/minitab",
     "category": "Herramientas Extractivas"
   },
   {
     "title": "JMP",
     "description": "Software de análisis estadístico y visualización de datos.",
     "icon": "📊",
-    "status": "coming-soon",
-    "link": "/jmp",
+    "status": "active",
+    "link": "/roadmap/jmp",
     "category": "Herramientas Extractivas"
   },
   {
     "title": "Excel Avanzado",
     "description": "Herramientas avanzadas de Excel para análisis de datos metalúrgicos.",
     "icon": "📊",
-    "status": "coming-soon",
-    "link": "/excel-avanzado",
+    "status": "active",
+    "link": "/roadmap/excelAvanzado",
     "category": "Herramientas Extractivas"
   },
   {
     "title": "HSC Chemistry",
     "description": "Software para cálculos termodinámicos y equilibrios químicos.",
     "icon": "🧪",
-    "status": "coming-soon",
-    "link": "/hsc-chemistry",
+    "status": "active",
+    "link": "/roadmap/hscChemistry",
     "category": "Herramientas Extractivas"
   },
   {
     "title": "METSIM",
     "description": "Software de simulación de procesos metalúrgicos.",
     "icon": "🏭",
-    "status": "coming-soon",
-    "link": "/metsim",
+    "status": "active",
+    "link": "/roadmap/metsim",
     "category": "Herramientas Extractivas"
   },
   {
     "title": "USIM PAC",
     "description": "Software de simulación y optimización de procesos metalúrgicos.",
     "icon": "⚙️",
-    "status": "coming-soon",
-    "link": "/usim-pac",
+    "status": "active",
+    "link": "/roadmap/usimPac",
     "category": "Herramientas Extractivas"
   },
   {
     "title": "LIMN",
     "description": "Software de simulación de flujos de fluidos en procesos metalúrgicos.",
     "icon": "🌊",
-    "status": "coming-soon",
-    "link": "/limn",
+    "status": "active",
+    "link": "/roadmap/limn",
     "category": "Herramientas Extractivas"
   },
   {
     "title": "Whittle",
     "description": "Software de optimización de pit mining y planificación minera.",
     "icon": "⛏️",
-    "status": "coming-soon",
-    "link": "/whittle",
+    "status": "active",
+    "link": "/roadmap/whittle",
     "category": "Herramientas Extractivas"
   },
   {
     "title": "Análisis Multivariante",
     "description": "Técnicas estadísticas para análisis de múltiples variables en metalurgia.",
     "icon": "📊",
-    "status": "coming-soon",
-    "link": "/analisis-multivariante",
+    "status": "active",
+    "link": "/roadmap/analisisMultivariante",
     "category": "Herramientas Extractivas"
   },
   {
     "title": "Optimización Lineal",
     "description": "Métodos de optimización lineal aplicados a procesos metalúrgicos.",
     "icon": "📐",
-    "status": "coming-soon",
-    "link": "/optimizacion-lineal",
+    "status": "active",
+    "link": "/roadmap/optimizacionLineal",
     "category": "Herramientas Extractivas"
   },
   {
     "title": "Redes Neuronales",
     "description": "Inteligencia artificial para modelado y predicción en metalurgia.",
     "icon": "🧠",
-    "status": "coming-soon",
-    "link": "/redes-neuronales",
+    "status": "active",
+    "link": "/roadmap/redesNeuronales",
     "category": "Herramientas Extractivas"
   },
   {
     "title": "Algoritmos Genéticos",
     "description": "Algoritmos de optimización inspirados en evolución biológica.",
     "icon": "🧬",
-    "status": "coming-soon",
-    "link": "/algoritmos-geneticos",
+    "status": "active",
+    "link": "/roadmap/algoritmosGeneticos",
     "category": "Herramientas Extractivas"
   },
   {
     "title": "Control Estadístico",
     "description": "Técnicas de control estadístico de procesos metalúrgicos.",
     "icon": "📊",
-    "status": "coming-soon",
-    "link": "/control-estadistico",
+    "status": "active",
+    "link": "/roadmap/controlEstadistico",
     "category": "Herramientas Extractivas"
   },
   {
     "title": "Sistemas SCADA",
     "description": "Sistemas de supervisión, control y adquisición de datos.",
     "icon": "🖥️",
-    "status": "coming-soon",
-    "link": "/sistemas-scada",
+    "status": "active",
+    "link": "/roadmap/sistemasScada",
     "category": "Herramientas Extractivas"
   },
   {
     "title": "DCS",
     "description": "Sistemas de control distribuido para procesos industriales.",
     "icon": "⚙️",
-    "status": "coming-soon",
-    "link": "/dcs",
+    "status": "active",
+    "link": "/roadmap/dcs",
     "category": "Herramientas Extractivas"
   },
   {
     "title": "Sensores",
     "description": "Tecnologías de sensores para monitoreo de procesos metalúrgicos.",
     "icon": "📡",
-    "status": "coming-soon",
-    "link": "/sensores",
+    "status": "active",
+    "link": "/roadmap/sensores",
     "category": "Herramientas Extractivas"
   },
   {
     "title": "Analizadores en Línea",
     "description": "Equipos de análisis automático en procesos metalúrgicos.",
     "icon": "🔬",
-    "status": "coming-soon",
-    "link": "/analizadores-linea",
+    "status": "active",
+    "link": "/roadmap/analizadoresLinea",
     "category": "Herramientas Extractivas"
   },
   {
     "title": "Controladores PID",
     "description": "Controladores proporcional-integral-derivativo para procesos metalúrgicos.",
     "icon": "🎛️",
-    "status": "coming-soon",
-    "link": "/controladores-pid",
+    "status": "active",
+    "link": "/roadmap/controladoresPid",
     "category": "Herramientas Extractivas"
   },
   {
     "title": "AutoCAD",
     "description": "Software de diseño asistido por computadora para ingeniería metalúrgica.",
     "icon": "📐",
-    "status": "coming-soon",
-    "link": "/autocad",
+    "status": "active",
+    "link": "/roadmap/autocad",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "SolidWorks",
     "description": "Software de diseño 3D y modelado paramétrico.",
     "icon": "🔧",
-    "status": "coming-soon",
-    "link": "/solidworks",
+    "status": "active",
+    "link": "/roadmap/solidworks",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "CATIA",
     "description": "Software de diseño y fabricación asistida por computadora.",
     "icon": "🏭",
-    "status": "coming-soon",
-    "link": "/catia",
+    "status": "active",
+    "link": "/roadmap/catia",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "Inventor",
     "description": "Software de diseño 3D y simulación de productos.",
     "icon": "🔧",
-    "status": "coming-soon",
-    "link": "/inventor",
+    "status": "active",
+    "link": "/roadmap/inventor",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "Fusion 360",
     "description": "Software de diseño 3D y fabricación en la nube.",
     "icon": "☁️",
-    "status": "coming-soon",
-    "link": "/fusion-360",
+    "status": "active",
+    "link": "/roadmap/fusion360",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "ANSYS",
     "description": "Software de análisis por elementos finitos para ingeniería.",
     "icon": "⚡",
-    "status": "coming-soon",
-    "link": "/ansys",
+    "status": "active",
+    "link": "/roadmap/ansys",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "ABAQUS",
     "description": "Software de análisis por elementos finitos y simulación.",
     "icon": "🔬",
-    "status": "coming-soon",
-    "link": "/abaqus",
+    "status": "active",
+    "link": "/roadmap/abaqus",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "COMSOL",
     "description": "Software de simulación multiphysics para ingeniería.",
     "icon": "🌐",
-    "status": "coming-soon",
-    "link": "/comsol",
+    "status": "active",
+    "link": "/roadmap/comsol",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "LS-DYNA",
     "description": "Software de análisis dinámico no lineal por elementos finitos.",
     "icon": "💥",
-    "status": "coming-soon",
-    "link": "/ls-dyna",
+    "status": "active",
+    "link": "/roadmap/lsDyna",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "DEFORM",
     "description": "Software de simulación de conformado de metales.",
     "icon": "🔨",
-    "status": "coming-soon",
-    "link": "/deform",
+    "status": "active",
+    "link": "/roadmap/deform",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "ProCAST",
     "description": "Software de simulación de procesos de fundición.",
     "icon": "🔥",
-    "status": "coming-soon",
-    "link": "/procast",
+    "status": "active",
+    "link": "/roadmap/procast",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "MAGMA",
     "description": "Software de simulación de fundición y solidificación.",
     "icon": "🔥",
-    "status": "coming-soon",
-    "link": "/magma",
+    "status": "active",
+    "link": "/roadmap/magma",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "FLOW-3D",
     "description": "Software de simulación de flujos de fluidos y metal fundido.",
     "icon": "🌊",
-    "status": "coming-soon",
-    "link": "/flow-3d",
+    "status": "active",
+    "link": "/roadmap/flow3d",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "AnyCasting",
     "description": "Software de simulación de procesos de fundición.",
     "icon": "🔥",
-    "status": "coming-soon",
-    "link": "/anycasting",
+    "status": "active",
+    "link": "/roadmap/anycasting",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "NovaFlow",
     "description": "Software de simulación de flujos en procesos metalúrgicos.",
     "icon": "🌊",
-    "status": "coming-soon",
-    "link": "/novaflow",
+    "status": "active",
+    "link": "/roadmap/novaflow",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "DICTRA",
     "description": "Software de simulación de difusión en materiales.",
     "icon": "🔄",
-    "status": "coming-soon",
-    "link": "/dictra",
+    "status": "active",
+    "link": "/roadmap/dictra",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "Thermo-Calc",
     "description": "Software de cálculos termodinámicos y diagramas de fase.",
     "icon": "📈",
-    "status": "coming-soon",
-    "link": "/thermo-calc",
+    "status": "active",
+    "link": "/roadmap/thermocalc",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "JMatPro",
     "description": "Software de cálculo de propiedades de materiales.",
     "icon": "🔬",
-    "status": "coming-soon",
-    "link": "/jmatpro",
+    "status": "active",
+    "link": "/roadmap/jmatpro",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "MTDATA",
     "description": "Software de bases de datos termodinámicas.",
     "icon": "📊",
-    "status": "coming-soon",
-    "link": "/mtdata",
+    "status": "active",
+    "link": "/roadmap/mtdata",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "PANDAT",
     "description": "Software de cálculo de diagramas de fase multicomponente.",
     "icon": "📈",
-    "status": "coming-soon",
-    "link": "/pandat",
+    "status": "active",
+    "link": "/roadmap/pandat",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "Metalografía Digital",
     "description": "Técnicas digitales de análisis microestructural de metales.",
     "icon": "🔬",
-    "status": "coming-soon",
-    "link": "/metalografia-digital",
+    "status": "active",
+    "link": "/roadmap/metalografiaDigital",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "Ensayos Mecánicos",
     "description": "Técnicas de caracterización mecánica de materiales metálicos.",
     "icon": "💪",
-    "status": "coming-soon",
-    "link": "/ensayos-mecanicos",
+    "status": "active",
+    "link": "/roadmap/ensayosMecanicos",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "Ensayos No Destructivos",
     "description": "Técnicas de inspección sin dañar el material.",
     "icon": "🔍",
-    "status": "coming-soon",
-    "link": "/ensayos-no-destructivos",
+    "status": "active",
+    "link": "/roadmap/ensayosNoDestructivos",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "MES",
     "description": "Sistemas de ejecución de manufactura para control de producción.",
     "icon": "🏭",
-    "status": "coming-soon",
-    "link": "/mes",
+    "status": "active",
+    "link": "/roadmap/mes",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "ERP",
     "description": "Sistemas de planificación de recursos empresariales.",
     "icon": "💼",
-    "status": "coming-soon",
-    "link": "/erp",
+    "status": "active",
+    "link": "/roadmap/erp",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "Lean Manufacturing",
     "description": "Metodologías de manufactura esbelta para optimización de procesos.",
     "icon": "⚡",
-    "status": "coming-soon",
-    "link": "/lean-manufacturing",
+    "status": "active",
+    "link": "/roadmap/leanManufacturing",
     "category": "Herramientas Transformativas"
   },
   {
     "title": "Six Sigma",
     "description": "Metodología de mejora de procesos y control de calidad.",
     "icon": "📊",
-    "status": "coming-soon",
-    "link": "/six-sigma",
+    "status": "active",
+    "link": "/roadmap/sixSigma",
     "category": "Herramientas Transformativas"
   }
-] 
+]
