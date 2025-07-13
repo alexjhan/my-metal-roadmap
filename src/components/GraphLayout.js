@@ -216,6 +216,11 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
   const initialRoadmapNodes = customNodes || (savedRoadmap ? savedRoadmap.nodes : (roadmapInfo ? roadmapInfo.nodes : initialNodes));
   const initialRoadmapEdges = customEdges || (savedRoadmap ? savedRoadmap.edges : (roadmapInfo ? roadmapInfo.edges : initialEdges));
   
+  console.log('GraphLayout - customNodes:', customNodes);
+  console.log('GraphLayout - customEdges:', customEdges);
+  console.log('GraphLayout - initialRoadmapNodes:', initialRoadmapNodes);
+  console.log('GraphLayout - initialRoadmapEdges:', initialRoadmapEdges);
+  
   const [nodes, setNodes, onNodesChange] = useNodesState(initialRoadmapNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(
     initialRoadmapEdges.map(edge => ({
@@ -223,6 +228,25 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
       markerEnd: { type: MarkerType.ArrowClosed }
     }))
   );
+  
+  // Si hay nodos personalizados, asegurarse de que se usen
+  useEffect(() => {
+    if (customNodes && customNodes.length > 0) {
+      console.log('Aplicando nodos personalizados:', customNodes);
+      setNodes(customNodes);
+    }
+  }, [customNodes, setNodes]);
+  
+  // Si hay edges personalizados, asegurarse de que se usen
+  useEffect(() => {
+    if (customEdges && customEdges.length > 0) {
+      console.log('Aplicando edges personalizados:', customEdges);
+      setEdges(customEdges.map(edge => ({
+        ...edge,
+        markerEnd: { type: MarkerType.ArrowClosed }
+      })));
+    }
+  }, [customEdges, setEdges]);
   const [selectedNodeId, setSelectedNodeId] = useState(null);
   const [showAuth, setShowAuth] = useState(false);
   const { user } = useUser();
@@ -238,8 +262,10 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
     },
   }));
 
-  // Layout radial
-  useLayout(nodes, edges, setNodes);
+  // Layout radial - solo si no hay nodos personalizados y no estamos en modo readOnly
+  if (!customNodes && !readOnly) {
+    useLayout(nodes, edges, setNodes);
+  }
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),

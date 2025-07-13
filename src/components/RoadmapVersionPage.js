@@ -19,6 +19,8 @@ const RoadmapVersionPage = () => {
     try {
       setLoading(true);
       
+      console.log('Cargando versión con ID:', versionId);
+      
       const { data: versionData, error } = await supabase
         .from('roadmap_versions')
         .select('*')
@@ -26,7 +28,13 @@ const RoadmapVersionPage = () => {
         .eq('is_public', true)
         .single();
 
+      console.log('Consulta ejecutada, resultado:', { versionData, error });
+
       if (error) throw error;
+      
+      console.log('RoadmapVersionPage - versionData:', versionData);
+      console.log('RoadmapVersionPage - nodes:', versionData.nodes);
+      console.log('RoadmapVersionPage - edges:', versionData.edges);
       
       setVersion(versionData);
     } catch (error) {
@@ -130,6 +138,7 @@ const RoadmapVersionPage = () => {
 
       {/* Gráfico del roadmap */}
       <div className="bg-white rounded-lg shadow-lg p-6">
+        {console.log('Renderizando GraphLayout con:', { roadmapType, customNodes: version.nodes, customEdges: version.edges })}
         <GraphLayout 
           roadmapType={roadmapType} 
           customNodes={version.nodes}
