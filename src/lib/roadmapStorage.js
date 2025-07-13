@@ -149,14 +149,14 @@ export const proposalService = {
       .from('edit_proposals')
       .select(`
         *,
-        author:users(name, email),
+        author:auth.users(name, email),
         votes(
           *,
-          voter:users(name, email)
+          voter:auth.users(name, email)
         ),
         comments(
           *,
-          author:users(name, email)
+          author:auth.users(name, email)
         )
       `)
       .eq('roadmap_type', roadmapType)

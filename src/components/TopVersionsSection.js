@@ -27,7 +27,7 @@ const TopVersionsSection = ({ roadmapType }) => {
         .from('roadmap_versions')
         .select(`
           *,
-          user:users(name, email)
+          user:auth.users(name, email)
         `)
         .eq('roadmap_type', roadmapType)
         .eq('is_public', true)
@@ -43,6 +43,7 @@ const TopVersionsSection = ({ roadmapType }) => {
       }
       
       console.log('Versiones encontradas:', versions);
+      console.log('Query ejecutada correctamente');
       setTopVersions(versions || []);
     } catch (error) {
       console.error('Error loading top versions:', error);
@@ -84,6 +85,13 @@ const TopVersionsSection = ({ roadmapType }) => {
       const existingVote = userVotes[versionId];
       
       if (existingVote === voteType) {
+        // Obtener la versión actual para calcular los nuevos contadores
+        const { data: currentVersion } = await supabase
+          .from('roadmap_versions')
+          .select('total_votes, up_votes, down_votes')
+          .eq('id', versionId)
+          .single();
+        
         // Remover voto
         await supabase
           .from('roadmap_votes')
@@ -95,8 +103,8 @@ const TopVersionsSection = ({ roadmapType }) => {
         await supabase
           .from('roadmap_versions')
           .update({ 
-            total_votes: supabase.raw(`total_votes - 1`),
-            [voteType === 'up' ? 'up_votes' : 'down_votes']: supabase.raw(`${voteType === 'up' ? 'up_votes' : 'down_votes'} - 1`)
+            total_votes: (currentVersion?.total_votes || 0) - 1,
+            [voteType === 'up' ? 'up_votes' : 'down_votes']: (currentVersion?.[voteType === 'up' ? 'up_votes' : 'down_votes'] || 0) - 1
           })
           .eq('id', versionId);
         
@@ -106,6 +114,13 @@ const TopVersionsSection = ({ roadmapType }) => {
           return newVotes;
         });
       } else {
+        // Obtener la versión actual para calcular los nuevos contadores
+        const { data: currentVersion } = await supabase
+          .from('roadmap_versions')
+          .select('total_votes, up_votes, down_votes')
+          .eq('id', versionId)
+          .single();
+        
         // Agregar o cambiar voto
         await supabase
           .from('roadmap_votes')
@@ -115,26 +130,33 @@ const TopVersionsSection = ({ roadmapType }) => {
             vote_type: voteType
           });
         
-        // Actualizar contadores
-        const updateData = { total_votes: supabase.raw(`total_votes + 1`) };
+        // Calcular nuevos contadores
+        let newTotalVotes = (currentVersion?.total_votes || 0) + 1;
+        let newUpVotes = currentVersion?.up_votes || 0;
+        let newDownVotes = currentVersion?.down_votes || 0;
+        
         if (voteType === 'up') {
-          updateData.up_votes = supabase.raw('up_votes + 1');
+          newUpVotes += 1;
         } else {
-          updateData.down_votes = supabase.raw('down_votes + 1');
+          newDownVotes += 1;
         }
         
         // Si había un voto previo, ajustar contadores
         if (existingVote) {
           if (existingVote === 'up') {
-            updateData.up_votes = supabase.raw('up_votes - 1');
+            newUpVotes -= 1;
           } else {
-            updateData.down_votes = supabase.raw('down_votes - 1');
+            newDownVotes -= 1;
           }
         }
         
         await supabase
           .from('roadmap_versions')
-          .update(updateData)
+          .update({
+            total_votes: newTotalVotes,
+            up_votes: newUpVotes,
+            down_votes: newDownVotes
+          })
           .eq('id', versionId);
         
         setUserVotes(prev => ({

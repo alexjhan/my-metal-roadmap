@@ -23,7 +23,7 @@ const RoadmapVersionPage = () => {
         .from('roadmap_versions')
         .select(`
           *,
-          user:users(name, email)
+          user:auth.users(name, email)
         `)
         .eq('id', versionId)
         .eq('is_public', true)
