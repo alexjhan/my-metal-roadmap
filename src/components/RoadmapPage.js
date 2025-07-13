@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import GraphLayout from './GraphLayout';
 import RoadmapLayout from './RoadmapLayout';
@@ -8,10 +8,15 @@ import DebugVersions from './DebugVersions';
 import VerifyTables from './VerifyTables';
 import { allRoadmapsData } from '../data/allRoadmaps';
 import { roadmapStorageService } from '../lib/roadmapStorage';
+import { supabase } from '../lib/supabase';
 
 export default function RoadmapPage() {
   const { roadmapType } = useParams();
   const navigate = useNavigate();
+  
+  // Estados para la versión mejor votada
+  const [topVersion, setTopVersion] = useState(null);
+  const [loadingTopVersion, setLoadingTopVersion] = useState(true);
   
   // Obtener datos del roadmap
   const roadmapInfo = allRoadmapsData[roadmapType];
@@ -19,6 +24,37 @@ export default function RoadmapPage() {
   // Verificar si hay datos guardados
   const hasSavedData = roadmapStorageService.hasSavedRoadmap(roadmapType);
   const savedData = roadmapStorageService.loadRoadmap(roadmapType);
+  
+  // Cargar la versión mejor votada
+  useEffect(() => {
+    const loadTopVersion = async () => {
+      try {
+        setLoadingTopVersion(true);
+        
+        const { data: versions, error } = await supabase
+          .from('roadmap_versions')
+          .select('*')
+          .eq('roadmap_type', roadmapType)
+          .eq('is_public', true)
+          .order('total_votes', { ascending: false })
+          .limit(1)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error cargando versión mejor votada:', error);
+        } else if (versions) {
+          console.log('Versión mejor votada cargada:', versions);
+          setTopVersion(versions);
+        }
+      } catch (error) {
+        console.error('Error cargando versión mejor votada:', error);
+      } finally {
+        setLoadingTopVersion(false);
+      }
+    };
+
+    loadTopVersion();
+  }, [roadmapType]);
   
   if (!roadmapInfo) {
     return (
