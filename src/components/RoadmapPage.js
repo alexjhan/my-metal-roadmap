@@ -34,7 +34,14 @@ export default function RoadmapPage() {
         
         const { data: versions, error } = await supabase
           .from('roadmap_versions')
-          .select('*')
+          .select(`
+            *,
+            user:user_id (
+              id,
+              email,
+              user_metadata
+            )
+          `)
           .eq('roadmap_type', roadmapType)
           .eq('is_public', true)
           .order('total_votes', { ascending: false })
@@ -176,6 +183,7 @@ export default function RoadmapPage() {
         customNodes={currentVersion ? currentVersion.nodes : null}
         customEdges={currentVersion ? currentVersion.edges : null}
         readOnly={true}
+        topVersion={topVersion}
       />
       <div className="mt-8 space-y-8">
         <VerifyTables />

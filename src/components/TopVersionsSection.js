@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useUser } from '../UserContext';
 import { supabase } from '../lib/supabase';
 
 const TopVersionsSection = ({ roadmapType, onVersionSelect }) => {
-  const navigate = useNavigate();
   const { user } = useUser();
   const [topVersions, setTopVersions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -170,9 +168,7 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect }) => {
     }
   };
 
-  const handleViewVersion = (version) => {
-    navigate(`/roadmap/${roadmapType}/version/${version.id}`);
-  };
+
 
   if (loading) {
     return (
@@ -279,16 +275,10 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect }) => {
                   </button>
                 </div>
                 <div className="flex space-x-2">
-                  <button
-                    onClick={() => handleViewVersion(version)}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
-                  >
-                    Ver Versión
-                  </button>
                   {onVersionSelect && (
                     <button
                       onClick={() => onVersionSelect(version)}
-                      className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm"
+                      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
                     >
                       Mostrar Aquí
                     </button>

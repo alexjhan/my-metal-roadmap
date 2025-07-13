@@ -12,6 +12,7 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 
 import CustomNode from './CustomNode';
+import RecognitionPanel from './RecognitionPanel';
 import useLayout from '../hooks/useLayout';
 import { nodes as initialNodes } from '../data/nodes';
 import { edges as initialEdges } from '../data/edges';
@@ -205,7 +206,7 @@ function FlowWithFitView() {
   return null;
 }
 
-export default function GraphLayout({ roadmapType = 'termodinamica', customNodes, customEdges, readOnly = false }) {
+export default function GraphLayout({ roadmapType = 'termodinamica', customNodes, customEdges, readOnly = false, topVersion = null }) {
   // Obtener datos del roadmap específico
   const roadmapInfo = allRoadmapsData[roadmapType];
   
@@ -295,7 +296,7 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
     <div className="w-full h-full relative">
       {/* Botón de edición */}
       {!readOnly && (
-        <div className="absolute top-4 right-4 z-10">
+        <div className="absolute top-4 left-4 z-10">
           <button
             onClick={handleEditClick}
             className="px-4 py-2 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105 bg-blue-500 hover:bg-blue-600 text-white"
@@ -308,6 +309,11 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
             </div>
           </button>
         </div>
+      )}
+
+      {/* Panel de reconocimiento */}
+      {readOnly && topVersion && (
+        <RecognitionPanel topVersion={topVersion} />
       )}
 
       <div className="h-full">
