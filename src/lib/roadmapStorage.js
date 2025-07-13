@@ -278,4 +278,79 @@ export const storageEstimates = {
     // Total por usuario: ~4KB por roadmap
     // 100 usuarios × 30 roadmaps = ~12MB (dentro del límite de 500MB)
   }
+};
+
+// Funciones para guardar y cargar roadmaps
+export const roadmapStorageService = {
+  // Guardar roadmap en localStorage
+  saveRoadmap: (roadmapType, nodes, edges) => {
+    try {
+      const roadmapData = {
+        nodes: nodes,
+        edges: edges,
+        lastModified: new Date().toISOString(),
+        version: '1.0'
+      };
+      localStorage.setItem(`roadmap_${roadmapType}`, JSON.stringify(roadmapData));
+      console.log(`Roadmap ${roadmapType} guardado en localStorage`);
+      return true;
+    } catch (error) {
+      console.error('Error guardando roadmap:', error);
+      return false;
+    }
+  },
+
+  // Cargar roadmap desde localStorage
+  loadRoadmap: (roadmapType) => {
+    try {
+      const savedData = localStorage.getItem(`roadmap_${roadmapType}`);
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        console.log(`Roadmap ${roadmapType} cargado desde localStorage`);
+        return {
+          nodes: parsedData.nodes || [],
+          edges: parsedData.edges || [],
+          lastModified: parsedData.lastModified,
+          version: parsedData.version
+        };
+      }
+      return null;
+    } catch (error) {
+      console.error('Error cargando roadmap:', error);
+      return null;
+    }
+  },
+
+  // Verificar si existe un roadmap guardado
+  hasSavedRoadmap: (roadmapType) => {
+    return localStorage.getItem(`roadmap_${roadmapType}`) !== null;
+  },
+
+  // Obtener todos los roadmaps guardados
+  getAllSavedRoadmaps: () => {
+    const savedRoadmaps = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('roadmap_')) {
+        const roadmapType = key.replace('roadmap_', '');
+        const savedData = roadmapStorageService.loadRoadmap(roadmapType);
+        if (savedData) {
+          savedRoadmaps[roadmapType] = savedData;
+        }
+      }
+    }
+    return savedRoadmaps;
+  },
+
+  // Eliminar roadmap guardado
+  deleteRoadmap: (roadmapType) => {
+    try {
+      localStorage.removeItem(`roadmap_${roadmapType}`);
+      console.log(`Roadmap ${roadmapType} eliminado de localStorage`);
+      return true;
+    } catch (error) {
+      console.error('Error eliminando roadmap:', error);
+      return false;
+    }
+  }
 }; 

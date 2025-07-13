@@ -16,6 +16,7 @@ import useLayout from '../hooks/useLayout';
 import { nodes as initialNodes } from '../data/nodes';
 import { edges as initialEdges } from '../data/edges';
 import { allRoadmapsData } from '../data/allRoadmaps';
+import { roadmapStorageService } from '../lib/roadmapStorage';
 import Auth from './Auth';
 import { useUser } from '../UserContext';
 import { useNavigate } from 'react-router-dom';
@@ -207,8 +208,11 @@ function FlowWithFitView() {
 export default function GraphLayout({ roadmapType = 'termodinamica' }) {
   // Obtener datos del roadmap específico
   const roadmapInfo = allRoadmapsData[roadmapType];
-  const initialRoadmapNodes = roadmapInfo ? roadmapInfo.nodes : initialNodes;
-  const initialRoadmapEdges = roadmapInfo ? roadmapInfo.edges : initialEdges;
+  
+  // Intentar cargar datos guardados primero
+  const savedRoadmap = roadmapStorageService.loadRoadmap(roadmapType);
+  const initialRoadmapNodes = savedRoadmap ? savedRoadmap.nodes : (roadmapInfo ? roadmapInfo.nodes : initialNodes);
+  const initialRoadmapEdges = savedRoadmap ? savedRoadmap.edges : (roadmapInfo ? roadmapInfo.edges : initialEdges);
   
   const [nodes, setNodes, onNodesChange] = useNodesState(initialRoadmapNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(

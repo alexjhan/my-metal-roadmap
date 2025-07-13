@@ -17,6 +17,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useUser } from '../../UserContext';
 import { roadmapStorage } from '../../lib/roadmapStorage';
 import { proposalService } from '../../lib/roadmapStorage';
+import { roadmapStorageService } from '../../lib/roadmapStorage';
 import EditProposal from '../EditProposal';
 import LiveView from '../LiveView';
 import CustomNode from '../CustomNode';
@@ -317,6 +318,16 @@ const EditRoadmapRefactored = () => {
       
       // Simular tiempo de guardado
       setTimeout(() => {
+        // Guardar en localStorage
+        const saveSuccess = roadmapStorageService.saveRoadmap(roadmapType, nodes, edges);
+        
+        // Actualizar los datos del roadmap en memoria
+        if (roadmapData[roadmapType]) {
+          roadmapData[roadmapType].nodes = [...nodes];
+          roadmapData[roadmapType].edges = [...edges];
+          console.log('Roadmap actualizado:', roadmapType, roadmapData[roadmapType]);
+        }
+        
         setSaveStatus('saved');
         setHasUnsavedChanges(false);
         
