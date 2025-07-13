@@ -9,7 +9,9 @@ const EditorHeader = ({
   onShowLiveView, 
   onSave, 
   onEditModal,
-  onExit
+  onExit,
+  saveStatus = 'idle',
+  hasUnsavedChanges = false
 }) => {
   return (
     <div className="w-full bg-white border-b border-gray-100 px-6 py-4">
@@ -60,9 +62,38 @@ const EditorHeader = ({
           </button>
           <button
             onClick={onSave}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+            disabled={saveStatus === 'saving'}
+            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center space-x-2 ${
+              saveStatus === 'saving' 
+                ? 'bg-gray-400 cursor-not-allowed' 
+                : hasUnsavedChanges 
+                  ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                  : 'bg-green-600 hover:bg-green-700 text-white'
+            }`}
           >
-            Guardar
+            {saveStatus === 'saving' ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Guardando...</span>
+              </>
+            ) : hasUnsavedChanges ? (
+              <>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                </svg>
+                <span>Guardar</span>
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Guardado</span>
+              </>
+            )}
           </button>
           {/* Botón de salir */}
           <button
