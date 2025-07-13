@@ -43,13 +43,27 @@ export default function RoadmapPage() {
       {/* Indicador de datos guardados */}
       {hasSavedData && savedData && (
         <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-          <div className="flex items-center space-x-2">
-            <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="text-sm text-green-700 font-medium">
-              Mostrando versión guardada ({new Date(savedData.lastModified).toLocaleDateString()})
-            </span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <span className="text-sm text-green-700 font-medium">
+                Mostrando versión guardada ({new Date(savedData.lastModified).toLocaleDateString()})
+              </span>
+            </div>
+            <button
+              onClick={() => {
+                if (window.confirm('¿Estás seguro de que quieres restablecer el roadmap a su estado original?')) {
+                  roadmapStorageService.deleteRoadmap(roadmapType);
+                  window.location.reload();
+                }
+              }}
+              className="px-3 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
+              title="Restablecer a estado original"
+            >
+              Restablecer
+            </button>
           </div>
         </div>
       )}
