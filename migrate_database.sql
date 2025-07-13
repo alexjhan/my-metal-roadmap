@@ -1,9 +1,6 @@
 -- Migración de base de datos para sistema de versiones y votación
 -- Ejecutar este script en el editor SQL de Supabase
 
--- Habilitar RLS
-ALTER TABLE auth.users ENABLE ROW LEVEL SECURITY;
-
 -- Tabla de versiones de roadmaps
 CREATE TABLE IF NOT EXISTS roadmap_versions (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,

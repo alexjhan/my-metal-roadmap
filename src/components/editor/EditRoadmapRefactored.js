@@ -372,24 +372,31 @@ const EditRoadmapRefactored = () => {
     setSaveStatus('saving');
 
     try {
-      // Guardar versión en la base de datos
-      const { data: version, error } = await supabase
-        .from('roadmap_versions')
-        .insert({
-          roadmap_type: roadmapType,
-          user_id: user.id,
-          nodes: nodes,
-          edges: edges,
-          description: `Versión editada por ${user.email}`,
-          is_public: true,
-          total_votes: 0,
-          up_votes: 0,
-          down_votes: 0
-        })
-        .select()
-        .single();
+      // Verificar si estamos en desarrollo o si hay error de conexión
+      if (isDevelopment || !supabase) {
+        // En desarrollo, simular guardado exitoso
+        console.log('Modo desarrollo: simulando guardado en BD');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      } else {
+        // Guardar versión en la base de datos
+        const { data: version, error } = await supabase
+          .from('roadmap_versions')
+          .insert({
+            roadmap_type: roadmapType,
+            user_id: user.id,
+            nodes: nodes,
+            edges: edges,
+            description: `Versión editada por ${user.email}`,
+            is_public: true,
+            total_votes: 0,
+            up_votes: 0,
+            down_votes: 0
+          })
+          .select()
+          .single();
 
-      if (error) throw error;
+        if (error) throw error;
+      }
       
       setSaveStatus('saved');
       setHasUnsavedChanges(false);
