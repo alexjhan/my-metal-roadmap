@@ -373,12 +373,15 @@ const EditRoadmapRefactored = () => {
 
     try {
       // Verificar si estamos en desarrollo o si hay error de conexión
-      if (isDevelopment || !supabase) {
+      if (isDevelopment) {
         // En desarrollo, simular guardado exitoso
         console.log('Modo desarrollo: simulando guardado en BD');
         await new Promise(resolve => setTimeout(resolve, 1000));
       } else {
         // Guardar versión en la base de datos
+        console.log('Guardando versión en BD para roadmap:', roadmapType);
+        console.log('Datos a guardar:', { roadmapType, userId: user.id, nodesCount: nodes.length, edgesCount: edges.length });
+        
         const { data: version, error } = await supabase
           .from('roadmap_versions')
           .insert({
@@ -395,7 +398,12 @@ const EditRoadmapRefactored = () => {
           .select()
           .single();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error al guardar en BD:', error);
+          throw error;
+        }
+        
+        console.log('Versión guardada exitosamente:', version);
       }
       
       setSaveStatus('saved');

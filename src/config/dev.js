@@ -1,9 +1,7 @@
 // Configuración para desarrollo local
 export const devConfig = {
   // Indicar si estamos en modo desarrollo
-  isDevelopment: process.env.NODE_ENV === 'development' && 
-                 (window.location.hostname === 'localhost' || 
-                  window.location.hostname === '127.0.0.1'),
+  isDevelopment: false, // Forzar uso de BD real para testing
   
   // Configuración de Supabase para desarrollo
   supabase: {

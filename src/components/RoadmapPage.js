@@ -4,6 +4,8 @@ import GraphLayout from './GraphLayout';
 import RoadmapLayout from './RoadmapLayout';
 import ProposalsSection from './ProposalsSection';
 import TopVersionsSection from './TopVersionsSection';
+import DebugVersions from './DebugVersions';
+import VerifyTables from './VerifyTables';
 import { allRoadmapsData } from '../data/allRoadmaps';
 import { roadmapStorageService } from '../lib/roadmapStorage';
 
@@ -71,6 +73,8 @@ export default function RoadmapPage() {
       
       <GraphLayout roadmapType={roadmapType} />
       <div className="mt-8 space-y-8">
+        <VerifyTables />
+        <DebugVersions roadmapType={roadmapType} />
         <TopVersionsSection roadmapType={roadmapType} />
         <ProposalsSection roadmapType={roadmapType} />
       </div>

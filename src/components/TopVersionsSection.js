@@ -20,25 +20,34 @@ const TopVersionsSection = ({ roadmapType }) => {
   const loadTopVersions = async () => {
     try {
       setLoading(true);
+      console.log('Cargando versiones para roadmap:', roadmapType);
       
       // Obtener versiones públicas ordenadas por votos
       const { data: versions, error } = await supabase
         .from('roadmap_versions')
         .select(`
           *,
-          user:users(name, email),
-          votes:roadmap_votes(*)
+          user:users(name, email)
         `)
         .eq('roadmap_type', roadmapType)
         .eq('is_public', true)
         .order('total_votes', { ascending: false })
         .limit(5);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error en consulta Supabase:', error);
+        console.log('Detalles del error:', error.message, error.details, error.hint);
+        // No lanzar error, solo mostrar versión vacía
+        setTopVersions([]);
+        return;
+      }
       
+      console.log('Versiones encontradas:', versions);
       setTopVersions(versions || []);
     } catch (error) {
       console.error('Error loading top versions:', error);
+      // En caso de error, mostrar versión vacía
+      setTopVersions([]);
     } finally {
       setLoading(false);
     }
