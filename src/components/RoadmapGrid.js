@@ -5,11 +5,13 @@ import ConfigAlert from './ConfigAlert';
 import { supabase } from '../lib/supabase';
 import Auth from './Auth';
 import { useUser } from '../UserContext';
+import SelectRoadmapModal from './SelectRoadmapModal';
 
 export default function RoadmapGrid() {
   const navigate = useNavigate();
   const { user } = useUser();
   const [showAuth, setShowAuth] = useState(false);
+  const [showSelectRoadmapModal, setShowSelectRoadmapModal] = useState(false);
 
   const handleCardClick = (item) => {
     if (item.status === "active") {
@@ -74,16 +76,16 @@ export default function RoadmapGrid() {
             </div>
           ))}
         </div>
-        {/* Botón Crear Roadmap al final de cada categoría */}
+        {/* Botón Editar Roadmap al final de cada categoría */}
         {!user && (
           <div className="flex justify-center mt-4">
             <button
-              onClick={() => setShowAuth(true)}
+              onClick={() => setShowSelectRoadmapModal(true)}
               className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105 text-sm"
             >
               <span className="mr-2">✨</span>
-              <span className="hidden sm:inline">Crear Roadmap</span>
-              <span className="sm:hidden">Crear Roadmap</span>
+              <span className="hidden sm:inline">Editar Roadmap</span>
+              <span className="sm:hidden">Editar Roadmap</span>
             </button>
           </div>
         )}
@@ -143,6 +145,12 @@ export default function RoadmapGrid() {
           </div>
         </div>
       )}
+
+      {/* Modal de selección de roadmap */}
+      <SelectRoadmapModal 
+        isOpen={showSelectRoadmapModal}
+        onClose={() => setShowSelectRoadmapModal(false)}
+      />
     </div>
   );
 }
