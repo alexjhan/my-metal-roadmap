@@ -12,6 +12,16 @@ export default function RoadmapGrid() {
   const { user } = useUser();
   const [showAuth, setShowAuth] = useState(false);
   const [showSelectRoadmapModal, setShowSelectRoadmapModal] = useState(false);
+  const [pendingRoadmapSelection, setPendingRoadmapSelection] = useState(false);
+
+  // Efecto para abrir el modal de selección cuando el usuario se loguea
+  useEffect(() => {
+    if (user && pendingRoadmapSelection) {
+      setShowAuth(false);
+      setShowSelectRoadmapModal(true);
+      setPendingRoadmapSelection(false);
+    }
+  }, [user, pendingRoadmapSelection]);
 
   const handleCardClick = (item) => {
     if (item.status === "active") {
@@ -77,18 +87,23 @@ export default function RoadmapGrid() {
           ))}
         </div>
         {/* Botón Editar Roadmap al final de cada categoría */}
-        {!user && (
-          <div className="flex justify-center mt-4">
-            <button
-              onClick={() => setShowSelectRoadmapModal(true)}
-              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105 text-sm"
-            >
-              <span className="mr-2">✨</span>
-              <span className="hidden sm:inline">Editar Roadmap</span>
-              <span className="sm:hidden">Editar Roadmap</span>
-            </button>
-          </div>
-        )}
+        <div className="flex justify-center mt-4">
+          <button
+            onClick={() => {
+              if (!user) {
+                setPendingRoadmapSelection(true);
+                setShowAuth(true);
+              } else {
+                setShowSelectRoadmapModal(true);
+              }
+            }}
+            className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105 text-sm"
+          >
+            <span className="mr-2">✨</span>
+            <span className="hidden sm:inline">Editar Roadmap</span>
+            <span className="sm:hidden">Editar Roadmap</span>
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -135,13 +150,19 @@ export default function RoadmapGrid() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg p-6 w-full max-w-md relative">
             <button 
-              onClick={() => setShowAuth(false)} 
+              onClick={() => {
+                setShowAuth(false);
+                setPendingRoadmapSelection(false);
+              }} 
               className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-3xl font-bold leading-none focus:outline-none"
               style={{lineHeight: '1', width: '2.5rem', height: '2.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
             >
               &times;
             </button>
-            <Auth onClose={() => setShowAuth(false)} />
+            <Auth onClose={() => {
+              setShowAuth(false);
+              setPendingRoadmapSelection(false);
+            }} />
           </div>
         </div>
       )}
