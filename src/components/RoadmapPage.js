@@ -14,7 +14,8 @@ export default function RoadmapPage() {
   const { roadmapType } = useParams();
   const navigate = useNavigate();
   
-  // Estados para la versión mejor votada
+  // Estados para las versiones
+  const [currentVersion, setCurrentVersion] = useState(null);
   const [topVersion, setTopVersion] = useState(null);
   const [loadingTopVersion, setLoadingTopVersion] = useState(true);
   
@@ -45,6 +46,7 @@ export default function RoadmapPage() {
         } else if (versions) {
           console.log('Versión mejor votada cargada:', versions);
           setTopVersion(versions);
+          setCurrentVersion(versions); // Establecer como versión actual por defecto
         }
       } catch (error) {
         console.error('Error cargando versión mejor votada:', error);
@@ -55,6 +57,16 @@ export default function RoadmapPage() {
 
     loadTopVersion();
   }, [roadmapType]);
+  
+  // Función para cambiar a la versión mejor votada (original)
+  const handleShowTopVersion = () => {
+    setCurrentVersion(topVersion);
+  };
+  
+  // Función para cambiar a una versión específica
+  const handleShowVersion = (version) => {
+    setCurrentVersion(version);
+  };
   
   if (!roadmapInfo) {
     return (
@@ -117,42 +129,61 @@ export default function RoadmapPage() {
         </div>
       )}
       
-      {/* Mostrar indicador de versión mejor votada */}
-      {topVersion && !loadingTopVersion && (
-        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-              <span className="text-sm text-blue-700 font-medium">
-                Mostrando versión mejor votada ({topVersion.total_votes || 0} votos)
-              </span>
+      {/* Indicador de versión actual */}
+      {!loadingTopVersion && (
+        <div className="mb-4 p-3 border rounded-lg">
+          {currentVersion && currentVersion.id !== topVersion?.id ? (
+            <div className="bg-blue-50 border-blue-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  <span className="text-sm text-blue-700 font-medium">
+                    Mostrando versión de usuario ({currentVersion.total_votes || 0} votos)
+                  </span>
+                </div>
+                {topVersion && (
+                  <button
+                    onClick={handleShowTopVersion}
+                    className="px-3 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors"
+                    title="Ver versión principal"
+                  >
+                    Ver Principal ({topVersion.total_votes || 0} votos)
+                  </button>
+                )}
+              </div>
             </div>
-            <button
-              onClick={() => {
-                setTopVersion(null);
-                window.location.reload();
-              }}
-              className="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
-              title="Ver versión original"
-            >
-              Ver Original
-            </button>
-          </div>
+          ) : topVersion ? (
+            <div className="bg-green-50 border-green-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-sm text-green-700 font-medium">
+                    Mostrando versión principal ({topVersion.total_votes || 0} votos)
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : null}
         </div>
       )}
       
       <GraphLayout 
         roadmapType={roadmapType} 
-        customNodes={topVersion ? topVersion.nodes : null}
-        customEdges={topVersion ? topVersion.edges : null}
+        customNodes={currentVersion ? currentVersion.nodes : null}
+        customEdges={currentVersion ? currentVersion.edges : null}
         readOnly={true}
       />
       <div className="mt-8 space-y-8">
         <VerifyTables />
         <DebugVersions roadmapType={roadmapType} />
-        <TopVersionsSection roadmapType={roadmapType} />
+        <TopVersionsSection 
+          roadmapType={roadmapType} 
+          onVersionSelect={handleShowVersion}
+        />
         <ProposalsSection roadmapType={roadmapType} />
       </div>
     </RoadmapLayout>

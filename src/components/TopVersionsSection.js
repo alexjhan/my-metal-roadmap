@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUser } from '../UserContext';
 import { supabase } from '../lib/supabase';
 
-const TopVersionsSection = ({ roadmapType }) => {
+const TopVersionsSection = ({ roadmapType, onVersionSelect }) => {
   const navigate = useNavigate();
   const { user } = useUser();
   const [topVersions, setTopVersions] = useState([]);
@@ -278,12 +278,22 @@ const TopVersionsSection = ({ roadmapType }) => {
                     </svg>
                   </button>
                 </div>
-                <button
-                  onClick={() => handleViewVersion(version)}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
-                >
-                  Ver Versión
-                </button>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => handleViewVersion(version)}
+                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
+                  >
+                    Ver Versión
+                  </button>
+                  {onVersionSelect && (
+                    <button
+                      onClick={() => onVersionSelect(version)}
+                      className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm"
+                    >
+                      Mostrar Aquí
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           ))}
