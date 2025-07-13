@@ -61,3 +61,378 @@ html {
 .animate-gradient-x {
   animation: gradient-x 3s ease infinite;
 }
+
+/* Estilos personalizados para el editor */
+.presentation-mode {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.presentation-mode .react-flow__node {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.presentation-mode .react-flow__edge {
+  stroke-width: 3px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+/* Animaciones suaves */
+.react-flow__node {
+  transition: all 0.3s ease;
+}
+
+.react-flow__node:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilos para los paneles */
+.panel-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Estilos para el modo presentación */
+.presentation-controls {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  gap: 10px;
+}
+
+.presentation-controls button {
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.presentation-controls button:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: scale(1.1);
+}
+
+/* Estilos para los nodos en modo presentación */
+.presentation-mode .react-flow__node {
+  cursor: pointer;
+}
+
+.presentation-mode .react-flow__node:active {
+  transform: scale(0.98);
+}
+
+/* Estilos para el minimapa */
+.react-flow__minimap {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para los controles */
+.react-flow__controls {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.react-flow__controls button {
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  transition: all 0.2s ease;
+}
+
+.react-flow__controls button:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: scale(1.05);
+}
+
+/* Estilos para el fondo */
+.react-flow__background {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+/* Estilos para las conexiones */
+.react-flow__edge-path {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Estilos para los marcadores de flecha */
+.react-flow__edge-marker {
+  fill: #3b82f6;
+}
+
+/* Estilos para el panel de herramientas */
+.tools-panel {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+/* Estilos para los botones de acción */
+.action-button {
+  @apply px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200;
+}
+
+.action-button:active {
+  transform: scale(0.95);
+}
+
+/* Estilos para los inputs */
+.custom-input {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200;
+}
+
+.custom-input:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Estilos para los selectores */
+.custom-select {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200;
+}
+
+/* Estilos para los textareas */
+.custom-textarea {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none;
+}
+
+/* Estilos para los modales */
+.modal-overlay {
+  backdrop-filter: blur(5px);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Estilos para las notificaciones */
+.notification {
+  @apply fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg transition-all duration-300;
+}
+
+.notification.success {
+  @apply bg-green-500 text-white;
+}
+
+.notification.error {
+  @apply bg-red-500 text-white;
+}
+
+.notification.info {
+  @apply bg-blue-500 text-white;
+}
+
+/* Estilos para el scroll personalizado */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Estilos para los tooltips */
+.tooltip {
+  @apply absolute z-50 px-2 py-1 text-xs text-white bg-gray-900 rounded shadow-lg opacity-0 pointer-events-none transition-opacity duration-200;
+}
+
+.tooltip.show {
+  @apply opacity-100;
+}
+
+/* Estilos para las animaciones de carga */
+.loading-spinner {
+  @apply animate-spin rounded-full border-2 border-gray-300 border-t-blue-600;
+}
+
+/* Estilos para los badges */
+.badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.badge.primary {
+  @apply bg-blue-100 text-blue-800;
+}
+
+.badge.success {
+  @apply bg-green-100 text-green-800;
+}
+
+.badge.warning {
+  @apply bg-yellow-100 text-yellow-800;
+}
+
+.badge.error {
+  @apply bg-red-100 text-red-800;
+}
+
+/* Estilos para los cards */
+.card {
+  @apply bg-white rounded-lg shadow-sm border border-gray-200 p-4;
+}
+
+.card:hover {
+  @apply shadow-md transition-shadow duration-200;
+}
+
+/* Estilos para los botones de estado */
+.status-button {
+  @apply px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200;
+}
+
+.status-button.active {
+  @apply bg-blue-100 text-blue-600;
+}
+
+.status-button.inactive {
+  @apply bg-gray-100 text-gray-600 hover:bg-gray-200;
+}
+
+/* Estilos para el modo oscuro (futuro) */
+.dark-mode {
+  @apply bg-gray-900 text-white;
+}
+
+.dark-mode .card {
+  @apply bg-gray-800 border-gray-700;
+}
+
+.dark-mode .custom-input {
+  @apply bg-gray-800 border-gray-600 text-white;
+}
+
+/* Estilos para responsive */
+@media (max-width: 768px) {
+  .presentation-controls {
+    bottom: 10px;
+    right: 10px;
+  }
+  
+  .presentation-controls button {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Estilos para las transiciones suaves */
+.smooth-transition {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+/* Estilos para los efectos de hover */
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para los nodos */
+.node-button {
+  transition: all 0.3s ease;
+}
+
+.node-button:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.node-button:active {
+  transform: scale(0.98);
+}
+
+/* Permitir que el contenedor del nodo se adapte al contenido */
+.react-flow__node {
+  width: auto !important;
+  height: auto !important;
+}
+
+.react-flow__node .node-button {
+  width: auto !important;
+  height: auto !important;
+  min-width: 120px;
+  min-height: 60px;
+}
+
+/* Forzar el redimensionamiento */
+.node-button[style*="width"] {
+  width: var(--node-width) !important;
+  min-width: var(--node-width) !important;
+  max-width: var(--node-width) !important;
+}
+
+.node-button[style*="height"] {
+  height: var(--node-height) !important;
+  min-height: var(--node-height) !important;
+  max-height: var(--node-height) !important;
+}
+
+/* Estilos para los gradientes */
+.gradient-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gradient-secondary {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.gradient-success {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+/* Estilos para los bordes animados */
+.animated-border {
+  position: relative;
+  overflow: hidden;
+}
+
+.animated-border::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+  animation: border-slide 2s infinite;
+}
+
+@keyframes border-slide {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}

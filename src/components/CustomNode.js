@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Handle, Position } from 'reactflow';
 
 const CustomNode = ({ id, data, selected, onClick }) => {
@@ -12,16 +12,26 @@ const CustomNode = ({ id, data, selected, onClick }) => {
   });
 
   const handleDoubleClick = (e) => {
-    // Prevenir el doble click para evitar el modo de edición inline
+    // Activar modo de edición
     e.preventDefault();
     e.stopPropagation();
+    setIsEditing(true);
+  };
+
+  const handleEdit = (e) => {
+    e.stopPropagation();
+    setIsEditing(true);
   };
 
   const handleSave = () => {
     setIsEditing(false);
-    // Aquí puedes implementar la lógica para guardar los cambios
-    if (data.onSave) {
-      data.onSave(nodeData);
+    // Actualizar los datos del nodo
+    if (data.onUpdateNode) {
+      data.onUpdateNode(id, 'label', nodeData.label);
+      data.onUpdateNode(id, 'description', nodeData.description);
+      data.onUpdateNode(id, 'icon', nodeData.icon);
+      data.onUpdateNode(id, 'backgroundColor', nodeData.backgroundColor);
+      data.onUpdateNode(id, 'color', nodeData.color);
     }
   };
 
@@ -36,12 +46,14 @@ const CustomNode = ({ id, data, selected, onClick }) => {
     });
   };
 
+
+
   const toggleFormat = (format) => {
     const textarea = document.getElementById(`node-${data.id}-label`);
     if (textarea) {
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
-      const text = nodeData.label;
+      const text = textarea.value;
       
       let newText = text;
       if (format === 'bold') {
@@ -67,6 +79,120 @@ const CustomNode = ({ id, data, selected, onClick }) => {
       .replace(/\*(.*?)\*/g, '<em>$1</em>');
   };
 
+  const renderNodeContent = () => {
+    const nodeType = data.nodeType || data.type || 'default';
+    
+    switch (nodeType) {
+      case 'title':
+        return (
+          <div className="flex flex-col items-center text-center">
+            <h1 
+              className="font-bold text-gray-900 text-lg leading-tight"
+              style={{ fontSize: data.fontSize || '24px' }}
+              dangerouslySetInnerHTML={{ __html: renderFormattedText(data.label) }}
+            />
+          </div>
+        );
+
+      case 'topic':
+        return (
+          <div className="flex flex-col items-center text-center">
+            <h2 
+              className="font-semibold text-gray-900 text-base leading-tight"
+              style={{ fontSize: data.fontSize || '18px' }}
+              dangerouslySetInnerHTML={{ __html: renderFormattedText(data.label) }}
+            />
+          </div>
+        );
+
+      case 'subtopic':
+        return (
+          <div className="flex flex-col items-center text-center">
+            <h3 
+              className="font-medium text-gray-900 text-sm leading-tight"
+              style={{ fontSize: data.fontSize || '16px' }}
+              dangerouslySetInnerHTML={{ __html: renderFormattedText(data.label) }}
+            />
+          </div>
+        );
+
+      case 'paragraph':
+        return (
+          <div className="text-center">
+            <p 
+              className="text-sm text-gray-900 leading-relaxed"
+              style={{ fontSize: data.fontSize || '14px' }}
+              dangerouslySetInnerHTML={{ __html: renderFormattedText(data.label) }}
+            />
+          </div>
+        );
+
+      case 'button':
+        return (
+          <div className="w-full h-full flex flex-col items-center justify-center text-center">
+            <button 
+              className="w-full h-full bg-blue-800 text-white text-sm rounded hover:bg-blue-900 transition-colors flex items-center justify-center"
+              style={{ fontSize: data.fontSize || '14px' }}
+            >
+              {data.label}
+            </button>
+            {data.url && (
+              <a 
+                href={data.url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-xs text-blue-600 mt-1"
+              >
+                Abrir enlace
+              </a>
+            )}
+          </div>
+        );
+
+      case 'todo':
+        return (
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={data.completed || false}
+              readOnly
+              className="rounded border-gray-300 text-blue-600 flex-shrink-0"
+            />
+            <span 
+              className={`text-sm leading-tight flex-1 ${data.completed ? 'line-through text-gray-500' : 'text-gray-900'}`}
+              style={{ fontSize: data.fontSize || '14px' }}
+              dangerouslySetInnerHTML={{ __html: renderFormattedText(data.label) }}
+            />
+          </div>
+        );
+
+      case 'horizontal-line':
+        return (
+          <div className="w-full flex justify-center items-center">
+            <div className="w-full h-1 bg-gray-300 rounded-full"></div>
+          </div>
+        );
+
+      case 'vertical-line':
+        return (
+          <div className="h-full flex flex-col justify-center items-center">
+            <div className="w-1 h-full bg-gray-300 rounded-full"></div>
+          </div>
+        );
+
+      default:
+        return (
+          <div className="flex flex-col items-center text-center">
+            <h3 
+              className="font-medium text-gray-900 text-sm leading-tight"
+              style={{ fontSize: data.fontSize || '16px' }}
+              dangerouslySetInnerHTML={{ __html: renderFormattedText(data.label) }}
+            />
+          </div>
+        );
+    }
+  };
+
   if (isEditing) {
     return (
       <div className={`relative ${selected ? 'ring-2 ring-blue-500' : ''}`}>
@@ -77,7 +203,10 @@ const CustomNode = ({ id, data, selected, onClick }) => {
         />
         <div
           className="bg-white border-2 border-gray-300 rounded-lg shadow-md p-3 sm:p-4 min-w-[200px] sm:min-w-[220px] max-w-[300px]"
-          style={{ backgroundColor: nodeData.backgroundColor }}
+          style={{
+            backgroundColor: nodeData.backgroundColor,
+            color: nodeData.color
+          }}
         >
           {/* Barra de herramientas de formato */}
           <div className="flex items-center space-x-2 mb-2 p-1 bg-gray-100 rounded">
@@ -104,7 +233,7 @@ const CustomNode = ({ id, data, selected, onClick }) => {
             />
           </div>
 
-          {/* Contenido editable */}
+          {/* Formulario de edición */}
           <div className="space-y-2">
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Icono</label>
@@ -140,6 +269,81 @@ const CustomNode = ({ id, data, selected, onClick }) => {
               />
             </div>
 
+            {/* Propiedades específicas según el tipo de nodo */}
+            {(data.nodeType || data.type) === 'button' && (
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">URL del enlace</label>
+                <input
+                  type="url"
+                  value={data.url || ''}
+                  onChange={(e) => {
+                    if (data.onUpdateNode) {
+                      data.onUpdateNode(id, 'url', e.target.value);
+                    }
+                  }}
+                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                  placeholder="https://ejemplo.com"
+                />
+              </div>
+            )}
+
+            {(data.nodeType || data.type) === 'todo' && (
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Estado</label>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={data.completed || false}
+                    onChange={(e) => {
+                      if (data.onUpdateNode) {
+                        data.onUpdateNode(id, 'completed', e.target.checked);
+                      }
+                    }}
+                    className="rounded border-gray-300 text-blue-600"
+                  />
+                  <span className="text-xs text-gray-600">Marcado como completado</span>
+                </div>
+              </div>
+            )}
+
+            {/* Propiedades de estilo */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Color de fondo</label>
+              <input
+                type="color"
+                value={nodeData.backgroundColor}
+                onChange={(e) => setNodeData(prev => ({ ...prev, backgroundColor: e.target.value }))}
+                className="w-full h-8 border border-gray-300 rounded"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Color del texto</label>
+              <input
+                type="color"
+                value={nodeData.color}
+                onChange={(e) => setNodeData(prev => ({ ...prev, color: e.target.value }))}
+                className="w-full h-8 border border-gray-300 rounded"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Tamaño de fuente</label>
+              <input
+                type="number"
+                value={data.fontSize ? parseInt(data.fontSize) : 14}
+                onChange={(e) => {
+                  if (data.onUpdateNode) {
+                    data.onUpdateNode(id, 'fontSize', `${e.target.value}px`);
+                  }
+                }}
+                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                min="8"
+                max="48"
+                step="1"
+              />
+            </div>
+
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Referencias Gratuitas</label>
               <textarea
@@ -172,7 +376,7 @@ const CustomNode = ({ id, data, selected, onClick }) => {
           </div>
 
           {/* Botones de acción */}
-          <div className="flex items-center justify-end space-x-2 mt-3 pt-2 border-t border-gray-200">
+          <div className="flex justify-end space-x-2 mt-4">
             <button
               onClick={handleCancel}
               className="px-3 py-1 text-xs text-gray-600 hover:text-gray-800"
@@ -196,6 +400,123 @@ const CustomNode = ({ id, data, selected, onClick }) => {
     );
   }
 
+  // Determinar estilos del nodo según el tipo
+  const getNodeStyles = () => {
+    const nodeType = data.nodeType || data.type || 'default';
+    const baseStyles = {
+      width: data.width || 'auto',
+      height: data.height || 'auto',
+      minWidth: data.minWidth || '120px',
+      minHeight: data.minHeight || '60px',
+      maxWidth: data.maxWidth || '300px',
+      maxHeight: data.maxHeight || '200px',
+      fontSize: data.fontSize || '14px',
+      padding: data.padding || '12px',
+      borderRadius: data.borderRadius || '8px',
+      border: data.border || '1px solid #e5e7eb',
+      boxShadow: data.boxShadow || '0 2px 4px rgba(0, 0, 0, 0.1)',
+      transition: 'all 0.3s ease',
+      cursor: 'pointer',
+      position: 'relative',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      textAlign: 'center',
+      wordWrap: 'break-word',
+      overflow: 'hidden'
+    };
+
+    switch (nodeType) {
+      case 'title':
+        return {
+          ...baseStyles,
+          backgroundColor: 'transparent',
+          border: 'none',
+          boxShadow: 'none',
+          fontSize: data.fontSize || '24px',
+          fontWeight: 'bold',
+          color: '#111827'
+        };
+      case 'topic':
+        return {
+          ...baseStyles,
+          backgroundColor: data.backgroundColor || '#fef3c7',
+          border: 'none',
+          fontSize: data.fontSize || '18px',
+          fontWeight: '600',
+          color: '#92400e'
+        };
+      case 'subtopic':
+        return {
+          ...baseStyles,
+          backgroundColor: data.backgroundColor || '#fef08a',
+          border: '2px solid #eab308',
+          fontSize: data.fontSize || '16px',
+          fontWeight: '500',
+          color: '#a16207'
+        };
+      case 'paragraph':
+        return {
+          ...baseStyles,
+          backgroundColor: 'transparent',
+          border: 'none',
+          boxShadow: 'none',
+          fontSize: data.fontSize || '14px',
+          color: '#374151'
+        };
+      case 'button':
+        return {
+          ...baseStyles,
+          backgroundColor: '#1e40af',
+          border: 'none',
+          color: 'white',
+          fontSize: data.fontSize || '14px',
+          fontWeight: '500',
+          cursor: 'pointer'
+        };
+      case 'todo':
+        return {
+          ...baseStyles,
+          backgroundColor: data.backgroundColor || '#f3f4f6',
+          border: '2px solid #d1d5db',
+          fontSize: data.fontSize || '14px',
+          color: '#374151',
+          justifyContent: 'flex-start',
+          padding: '8px 12px'
+        };
+      case 'horizontal-line':
+        return {
+          ...baseStyles,
+          backgroundColor: 'transparent',
+          border: 'none',
+          boxShadow: 'none',
+          height: '4px',
+          minHeight: '4px',
+          maxHeight: '4px'
+        };
+      case 'vertical-line':
+        return {
+          ...baseStyles,
+          backgroundColor: 'transparent',
+          border: 'none',
+          boxShadow: 'none',
+          width: '4px',
+          minWidth: '4px',
+          maxWidth: '4px'
+        };
+      default:
+        return {
+          ...baseStyles,
+          backgroundColor: data.backgroundColor || '#f3f4f6',
+          border: '2px solid #d1d5db',
+          fontSize: data.fontSize || '16px',
+          color: '#374151'
+        };
+    }
+  };
+
+  const nodeStyles = getNodeStyles();
+
   return (
     <div className={`relative ${selected ? 'ring-2 ring-blue-500' : ''}`}>
       <Handle
@@ -203,45 +524,25 @@ const CustomNode = ({ id, data, selected, onClick }) => {
         position={Position.Top}
         className="w-2 h-2 sm:w-3 sm:h-3 bg-gray-400 border-2 border-white"
       />
-      <button
+      
+      <div
+        className="node-button"
+        style={nodeStyles}
         onClick={(e) => {
-          console.log('CustomNode clicked:', { id, data });
-          // Llamar a la función onNodeClick si existe, sino usar onClick por defecto
+          e.stopPropagation();
           if (data.onNodeClick) {
-            console.log('Calling onNodeClick with id:', id);
             data.onNodeClick(id);
-          } else if (onClick) {
+          }
+          if (onClick) {
             onClick(e);
           }
         }}
         onDoubleClick={handleDoubleClick}
-        type="button"
-        className={`
-          node-button rounded-lg shadow-md p-2 sm:p-3
-          min-w-[140px] sm:min-w-[160px] md:min-w-[180px] max-w-[140px] sm:max-w-[160px] md:max-w-[180px] transition-all duration-200
-          hover:shadow-lg hover:scale-105
-          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-          cursor-pointer select-none
-          ${selected ? 'shadow-lg' : ''}
-        `}
-        style={{ backgroundColor: nodeData.backgroundColor }}
       >
-        <div className="flex flex-col items-center text-center">
-          <span className="text-lg sm:text-xl md:text-2xl mb-1">{nodeData.icon}</span>
-          <h3 
-            className="font-semibold text-gray-900 text-xs sm:text-sm leading-tight mb-1"
-            dangerouslySetInnerHTML={{ __html: renderFormattedText(nodeData.label) }}
-          />
-          <div className="text-xs text-blue-600 font-medium">
-            Click para editar
-          </div>
-        </div>
-      </button>
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        className="w-2 h-2 sm:w-3 sm:h-3 bg-gray-400 border-2 border-white"
-      />
+        {renderNodeContent()}
+      </div>
+
+
     </div>
   );
 };
