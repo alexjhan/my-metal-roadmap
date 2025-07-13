@@ -183,12 +183,12 @@ export default function RoadmapLayout({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 roadmap-page">
       {/* Espacio superior reducido para móviles */}
       <div className="h-2 sm:h-4 md:h-6 lg:h-8" />
       
       {/* Contenedor del encabezado */}
-      <div className="max-w-6xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 mb-2">
+      <div className="max-w-6xl mx-auto px-8 sm:px-12 md:px-16 lg:px-20 xl:px-24 mb-2">
         <div className="bg-white rounded-xl shadow-lg border border-gray-100">
           <div className="p-4 sm:p-6">
             {/* Botones en la parte superior */}
@@ -264,9 +264,9 @@ export default function RoadmapLayout({
       </div>
       
       {/* Contenedor del contenido */}
-      <div className="max-w-6xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20">
-        <div className="bg-white rounded-xl shadow-lg border border-gray-100">
-          <div className="h-[calc(100vh-200px)] min-h-[500px] sm:min-h-[600px]">
+      <div className="max-w-6xl mx-auto px-8 sm:px-12 md:px-16 lg:px-20 xl:px-24">
+        <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+          <div className="h-[600px] sm:h-[700px] lg:h-[800px]">
             {children}
           </div>
         </div>

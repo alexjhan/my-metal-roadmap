@@ -38,6 +38,38 @@ html {
 #root {
   overflow-x: hidden;
   max-width: 100vw;
+  width: 100%;
+}
+
+/* Prevenir doble scroll en páginas de roadmap */
+.roadmap-page {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
+/* Asegurar que el contenido de roadmap no cause overflow */
+.roadmap-content {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Asegurar que los controles de React Flow sean visibles */
+.react-flow__controls {
+  z-index: 10;
+  position: absolute;
+}
+
+.react-flow__minimap {
+  z-index: 10;
+  position: absolute;
+}
+
+/* Asegurar que el contenedor principal no cause overflow */
+body {
+  overflow-x: hidden;
+  width: 100%;
 }
 
 /* Estilos para contenedores principales */
@@ -170,6 +202,48 @@ html {
 .react-flow__background {
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
+
+/* React Flow sin barras de scroll pero permitiendo scroll de página */
+.react-flow {
+  overflow: hidden !important;
+  width: 100% !important;
+  height: 100% !important;
+  position: relative !important;
+  border-radius: inherit !important;
+}
+
+.react-flow__viewport {
+  overflow: hidden !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: inherit !important;
+}
+
+.react-flow__pane {
+  overflow: hidden !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: inherit !important;
+}
+
+.react-flow__renderer {
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  border-radius: inherit !important;
+}
+
+/* Asegurar que el contenedor de React Flow respete el border radius */
+.roadmap-content .bg-white {
+  border-radius: 0.75rem !important;
+  overflow: hidden !important;
+}
+
+
+
+
+
+
 
 /* Estilos para las conexiones */
 .react-flow__edge-path {

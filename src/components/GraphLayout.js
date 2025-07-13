@@ -293,7 +293,7 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
   };
 
   return (
-    <div className="w-full h-full relative">
+    <div className="w-full h-full relative" style={{ height: '100%' }}>
       {/* Botón de edición */}
       {!readOnly && (
         <div className="absolute top-4 right-4 z-10">
@@ -311,7 +311,7 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
         </div>
       )}
 
-      <div className="h-full">
+      <div className="h-full w-full" style={{ height: '100%' }}>
         <ReactFlow
           nodes={nodesWithClick}
           edges={edges}

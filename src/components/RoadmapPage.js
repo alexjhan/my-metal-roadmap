@@ -7,6 +7,7 @@ import TopVersionsSection from './TopVersionsSection';
 import DebugVersions from './DebugVersions';
 import VerifyTables from './VerifyTables';
 import RecognitionPanel from './RecognitionPanel';
+import Footer from './Footer';
 import { allRoadmapsData } from '../data/allRoadmaps';
 import { roadmapStorageService } from '../lib/roadmapStorage';
 import { supabase } from '../lib/supabase';
@@ -103,68 +104,75 @@ export default function RoadmapPage() {
   }
 
   return (
-    <RoadmapLayout
-      title={roadmapInfo.title}
-      description={roadmapInfo.description}
-      icon={roadmapInfo.icon}
-      recognitionPanel={topVersion ? <RecognitionPanel topVersion={topVersion} authorInfo={authorInfo} /> : <div className="text-xs text-red-500">No hay versión mejor votada</div>}
-    >
-      {/* Indicador de datos guardados */}
-      {hasSavedData && savedData && (
-        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              <span className="text-sm text-green-700 font-medium">
-                Mostrando versión guardada ({new Date(savedData.lastModified).toLocaleDateString()})
-              </span>
+    <>
+      {/* Sección 1: React Flow */}
+      <RoadmapLayout
+        title={roadmapInfo.title}
+        description={roadmapInfo.description}
+        icon={roadmapInfo.icon}
+        recognitionPanel={topVersion ? <RecognitionPanel topVersion={topVersion} authorInfo={authorInfo} /> : <div className="text-xs text-red-500">No hay versión mejor votada</div>}
+      >
+        {/* Indicador de datos guardados */}
+        {hasSavedData && savedData && (
+          <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span className="text-sm text-green-700 font-medium">
+                  Mostrando versión guardada ({new Date(savedData.lastModified).toLocaleDateString()})
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  if (window.confirm('¿Estás seguro de que quieres restablecer el roadmap a su estado original?')) {
+                    roadmapStorageService.deleteRoadmap(roadmapType);
+                    window.location.reload();
+                  }
+                }}
+                className="px-3 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
+                title="Restablecer a estado original"
+              >
+                Restablecer
+              </button>
             </div>
-            <button
-              onClick={() => {
-                if (window.confirm('¿Estás seguro de que quieres restablecer el roadmap a su estado original?')) {
-                  roadmapStorageService.deleteRoadmap(roadmapType);
-                  window.location.reload();
-                }
-              }}
-              className="px-3 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
-              title="Restablecer a estado original"
-            >
-              Restablecer
-            </button>
           </div>
-        </div>
-      )}
-      
-      {/* Indicador de carga */}
-      {loadingTopVersion && (
-        <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-          <div className="flex items-center space-x-2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
-            <span className="text-sm text-gray-600">Cargando versión mejor votada...</span>
+        )}
+        
+        {/* Indicador de carga */}
+        {loadingTopVersion && (
+          <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+            <div className="flex items-center space-x-2">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+              <span className="text-sm text-gray-600">Cargando versión mejor votada...</span>
+            </div>
           </div>
-        </div>
-      )}
-      
-
-      
-      <GraphLayout 
-        roadmapType={roadmapType} 
-        customNodes={currentVersion ? currentVersion.nodes : null}
-        customEdges={currentVersion ? currentVersion.edges : null}
-        readOnly={true}
-      />
-      
-      <div className="mt-8 space-y-8">
-        {/* <VerifyTables /> */}
-        {/* <DebugVersions roadmapType={roadmapType} /> */}
-        <TopVersionsSection 
+        )}
+        
+        <GraphLayout 
           roadmapType={roadmapType} 
-          onVersionSelect={handleShowVersion}
+          customNodes={currentVersion ? currentVersion.nodes : null}
+          customEdges={currentVersion ? currentVersion.edges : null}
+          readOnly={true}
         />
-        <ProposalsSection roadmapType={roadmapType} />
+      </RoadmapLayout>
+
+      {/* Sección 2: Versiones y Propuestas */}
+      <div className="bg-gray-50 py-8">
+        <div className="max-w-6xl mx-auto px-8 sm:px-12 md:px-16 lg:px-20 xl:px-24">
+          <div className="space-y-8">
+            <TopVersionsSection 
+              roadmapType={roadmapType} 
+              onVersionSelect={handleShowVersion}
+            />
+            <ProposalsSection roadmapType={roadmapType} />
+          </div>
+        </div>
       </div>
-    </RoadmapLayout>
+
+      {/* Footer */}
+      <Footer />
+    </>
   );
 } 

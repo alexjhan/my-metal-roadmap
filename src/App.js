@@ -41,7 +41,7 @@ function App() {
                 </>
               } />
               <Route path="/termodinamica" element={<TermodinamicaPage />} />
-              <Route path="/roadmap/:roadmapType" element={<><RoadmapPage /><Footer /></>} />
+              <Route path="/roadmap/:roadmapType" element={<RoadmapPage />} />
               <Route path="/graph" element={<GraphLayout />} />
               <Route path="/create" element={<><CreateRoadmap /><Footer /></>} />
               <Route path="/my-roadmaps" element={<><MyRoadmaps /><Footer /></>} />

@@ -43,13 +43,13 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="w-full bg-white z-[1000]">
+    <nav className="w-full bg-blue-950 z-[1000]">
       <div className="flex justify-between items-center w-full py-4 sm:py-6 px-4 sm:px-6">
         <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity min-h-[4rem]">
           <img
             src="/assets/logo.png"
             alt="MetalRoadmap"
-            className="transition duration-500 cursor-pointer"
+            className="filter brightness-0 invert"
             style={{
               height: "4rem",
               width: "auto",
@@ -67,7 +67,7 @@ export default function Navbar() {
               fontFamily: "'Great Vibes', cursive",
               fontSize: "1.5rem",
               lineHeight: "2rem",
-              color: "#001f3f",
+              color: "#ffffff",
               padding: "0.3rem",
             }}
             onClick={() => {
@@ -75,7 +75,7 @@ export default function Navbar() {
               window.location.reload();
             }}
           >
-           San Antonio Abad
+            San Antonio Abad
           </h1>
         </Link>
         
@@ -83,7 +83,7 @@ export default function Navbar() {
         <div className="hidden md:block">
           <div className="flex items-center space-x-2">
             <span className="text-2xl filter grayscale">🤖</span>
-            <span className="text-gray-500 text-sm font-medium underline">IA Tutor Pronto</span>
+            <span className="text-blue-200 text-sm font-medium underline">IA Tutor Pronto</span>
           </div>
         </div>
         
@@ -92,13 +92,13 @@ export default function Navbar() {
           <div className="flex items-center space-x-2 sm:space-x-4">
             <Link
               to="/my-roadmaps"
-              className="text-xs sm:text-sm text-gray-700 hover:text-blue-600 transition-colors whitespace-nowrap"
+              className="text-xs sm:text-sm text-blue-200 hover:text-white transition-colors whitespace-nowrap"
             >
               Mis Roadmaps
             </Link>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="inline-flex items-center px-3 sm:px-5 py-2 bg-white text-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-xs sm:text-sm font-medium whitespace-nowrap"
+              className="inline-flex items-center px-3 sm:px-5 py-2 bg-blue-800 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-blue-700 hover:border-blue-600 hover:bg-blue-700 text-xs sm:text-sm font-medium whitespace-nowrap"
               style={{ minWidth: '120px', justifyContent: 'center' }}
             >
               <span className="mr-1 sm:mr-2">✨</span>
@@ -113,15 +113,17 @@ export default function Navbar() {
           <div className="flex items-center space-x-2 sm:space-x-4">
             <button
               onClick={() => setShowAuth(true)}
-              className="px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium bg-white text-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 hover:border-gray-300 hover:bg-gray-50 whitespace-nowrap"
+              className="px-2 sm:px-3 md:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium bg-white text-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 hover:border-gray-300 hover:bg-gray-50 whitespace-nowrap min-w-[80px] sm:min-w-[100px] md:min-w-[120px] lg:min-w-[140px]"
             >
-              Iniciar sesión
+              <span className="hidden sm:inline">Iniciar sesión</span>
+              <span className="sm:hidden">Iniciar</span>
             </button>
             <button
               onClick={() => setShowAuth(true)}
-              className="px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium bg-gray-900 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 hover:bg-gray-800 whitespace-nowrap"
+              className="px-2 sm:px-3 md:px-4 lg:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium bg-gray-900 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 hover:bg-gray-800 whitespace-nowrap min-w-[80px] sm:min-w-[100px] md:min-w-[120px] lg:min-w-[140px]"
             >
-              Registrarse
+              <span className="hidden sm:inline">Registrarse</span>
+              <span className="sm:hidden">Registro</span>
             </button>
           </div>
         )}
@@ -180,10 +182,7 @@ export default function Navbar() {
           -webkit-text-fill-color: transparent;
           animation: shine 3s linear infinite;
         }
-        img:hover {
-          filter: brightness(1.1) saturate(1.2) hue-rotate(180deg)
-            drop-shadow(0 0 4px #bfa14c);
-        }
+
         @keyframes shine {
           0% {
             background-position: 0% 50%;
