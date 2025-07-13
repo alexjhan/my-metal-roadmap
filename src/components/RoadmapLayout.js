@@ -11,7 +11,8 @@ export default function RoadmapLayout({
   showPrintButton = true,
   showShareButton = true,
   showSuggestionsButton = true,
-  customBackText = "All Roadmaps"
+  customBackText = "All Roadmaps",
+  recognitionPanel = null
 }) {
   const navigate = useNavigate();
 
@@ -186,8 +187,8 @@ export default function RoadmapLayout({
       {/* Espacio superior reducido para móviles */}
       <div className="h-2 sm:h-4 md:h-6 lg:h-8" />
       
-      {/* Contenedor del encabezado con márgenes responsivos mejorados */}
-      <div className="max-w-6xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 mb-4 sm:mb-6 md:mb-8 lg:mb-10">
+      {/* Contenedor del encabezado */}
+      <div className="max-w-6xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 mb-2">
         <div className="bg-white rounded-xl shadow-lg border border-gray-100">
           <div className="p-4 sm:p-6">
             {/* Botones en la parte superior */}
@@ -241,22 +242,27 @@ export default function RoadmapLayout({
               </p>
             </div>
 
-            {/* Botón de sugerencias - Extremo inferior derecho */}
-            {showSuggestionsButton && (
-              <div className="flex justify-end">
+            {/* Panel de reconocimiento y sugerencias */}
+            <div className="flex justify-end items-center space-x-2">
+              {recognitionPanel && (
+                <div className="flex items-center space-x-3 mr-4">
+                  {recognitionPanel}
+                </div>
+              )}
+              {showSuggestionsButton && (
                 <button className="flex items-center px-2 sm:px-3 py-2 bg-gray-200 text-gray-700 rounded-md text-xs sm:text-sm font-semibold hover:bg-gray-300 transition">
                   <FiMessageSquare className="mr-1 sm:mr-2" />
                   <span className="hidden sm:inline">Sugerencias</span>
                   <span className="sm:hidden">Sug</span>
                 </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
       
-      {/* Contenedor del contenido con márgenes responsivos mejorados */}
-      <div className="max-w-6xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 mb-4 sm:mb-6 md:mb-8 lg:mb-10">
+      {/* Contenedor del contenido */}
+      <div className="max-w-6xl mx-auto px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20">
         <div className="bg-white rounded-xl shadow-lg border border-gray-100">
           <div className="h-[calc(100vh-200px)] min-h-[500px] sm:min-h-[600px]">
             {children}
