@@ -15,6 +15,7 @@ import PrivacyPolicy from './components/PrivacyPolicy';
 import AuthCallback from './components/AuthCallback';
 import EditRoadmapRefactored from './components/editor/EditRoadmapRefactored';
 import EditLayout from './components/EditLayout';
+import RoadmapVersionPage from './components/RoadmapVersionPage';
 
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
             <EditRoadmapRefactored />
           </EditLayout>
         } />
+        <Route path="/roadmap/:roadmapType/version/:versionId" element={<RoadmapVersionPage />} />
         <Route path="*" element={
           <>
             <Navbar />

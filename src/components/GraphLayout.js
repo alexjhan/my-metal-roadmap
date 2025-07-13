@@ -205,14 +205,16 @@ function FlowWithFitView() {
   return null;
 }
 
-export default function GraphLayout({ roadmapType = 'termodinamica' }) {
+export default function GraphLayout({ roadmapType = 'termodinamica', customNodes, customEdges, readOnly = false }) {
   // Obtener datos del roadmap específico
   const roadmapInfo = allRoadmapsData[roadmapType];
   
   // Intentar cargar datos guardados primero
   const savedRoadmap = roadmapStorageService.loadRoadmap(roadmapType);
-  const initialRoadmapNodes = savedRoadmap ? savedRoadmap.nodes : (roadmapInfo ? roadmapInfo.nodes : initialNodes);
-  const initialRoadmapEdges = savedRoadmap ? savedRoadmap.edges : (roadmapInfo ? roadmapInfo.edges : initialEdges);
+  
+  // Prioridad: customNodes/customEdges > savedRoadmap > roadmapInfo > initialNodes/initialEdges
+  const initialRoadmapNodes = customNodes || (savedRoadmap ? savedRoadmap.nodes : (roadmapInfo ? roadmapInfo.nodes : initialNodes));
+  const initialRoadmapEdges = customEdges || (savedRoadmap ? savedRoadmap.edges : (roadmapInfo ? roadmapInfo.edges : initialEdges));
   
   const [nodes, setNodes, onNodesChange] = useNodesState(initialRoadmapNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(
@@ -266,19 +268,21 @@ export default function GraphLayout({ roadmapType = 'termodinamica' }) {
   return (
     <div className="w-full h-full relative">
       {/* Botón de edición */}
-      <div className="absolute top-4 right-4 z-10">
-        <button
-          onClick={handleEditClick}
-          className="px-4 py-2 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105 bg-blue-500 hover:bg-blue-600 text-white"
-        >
-          <div className="flex items-center space-x-2">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-            <span className="text-sm font-medium">Editar</span>
-          </div>
-        </button>
-      </div>
+      {!readOnly && (
+        <div className="absolute top-4 right-4 z-10">
+          <button
+            onClick={handleEditClick}
+            className="px-4 py-2 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105 bg-blue-500 hover:bg-blue-600 text-white"
+          >
+            <div className="flex items-center space-x-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              <span className="text-sm font-medium">Editar</span>
+            </div>
+          </button>
+        </div>
+      )}
 
       <div className="h-full">
         <ReactFlow

@@ -18,6 +18,7 @@ import { useUser } from '../../UserContext';
 import { roadmapStorage } from '../../lib/roadmapStorage';
 import { proposalService } from '../../lib/roadmapStorage';
 import { roadmapStorageService } from '../../lib/roadmapStorage';
+import { supabase } from '../../lib/supabase';
 import EditProposal from '../EditProposal';
 import LiveView from '../LiveView';
 import CustomNode from '../CustomNode';
@@ -371,9 +372,24 @@ const EditRoadmapRefactored = () => {
     setSaveStatus('saving');
 
     try {
-      // Aquí iría la lógica real de guardado en producción
-      // Por ahora simulamos el guardado
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Guardar versión en la base de datos
+      const { data: version, error } = await supabase
+        .from('roadmap_versions')
+        .insert({
+          roadmap_type: roadmapType,
+          user_id: user.id,
+          nodes: nodes,
+          edges: edges,
+          description: `Versión editada por ${user.email}`,
+          is_public: true,
+          total_votes: 0,
+          up_votes: 0,
+          down_votes: 0
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
       
       setSaveStatus('saved');
       setHasUnsavedChanges(false);
@@ -386,7 +402,7 @@ const EditRoadmapRefactored = () => {
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
           </svg>
-          <span class="font-medium">¡Roadmap guardado exitosamente!</span>
+          <span class="font-medium">¡Versión pública guardada exitosamente!</span>
         </div>
       `;
       document.body.appendChild(notification);
