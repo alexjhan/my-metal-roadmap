@@ -1,7 +1,6 @@
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import RoadmapsSection from './components/RoadmapsSection';
-import FeaturesSection from './components/FeaturesSection';
 
 import React from 'react';
 import RoadmapGrid from './components/RoadmapGrid';
@@ -16,6 +15,7 @@ import AuthCallback from './components/AuthCallback';
 import EditRoadmapRefactored from './components/editor/EditRoadmapRefactored';
 import EditLayout from './components/EditLayout';
 import RoadmapVersionPage from './components/RoadmapVersionPage';
+import Footer from './components/Footer';
 
 
 function App() {
@@ -37,19 +37,18 @@ function App() {
                   <HeroSection />
                   <RoadmapGrid />
                   <RoadmapsSection />
-                  <FeaturesSection />
+                  <Footer />
                 </>
               } />
               <Route path="/termodinamica" element={<TermodinamicaPage />} />
-              <Route path="/roadmap/:roadmapType" element={<RoadmapPage />} />
+              <Route path="/roadmap/:roadmapType" element={<><RoadmapPage /><Footer /></>} />
               <Route path="/graph" element={<GraphLayout />} />
-              <Route path="/create" element={<CreateRoadmap />} />
-              <Route path="/my-roadmaps" element={<MyRoadmaps />} />
-              <Route path="/privacy" element={<PrivacyPolicy />} />
-              <Route path="/privacidad" element={<PrivacyPolicy />} />
+              <Route path="/create" element={<><CreateRoadmap /><Footer /></>} />
+              <Route path="/my-roadmaps" element={<><MyRoadmaps /><Footer /></>} />
+              <Route path="/privacy" element={<><PrivacyPolicy /><Footer /></>} />
+              <Route path="/privacidad" element={<><PrivacyPolicy /><Footer /></>} />
               <Route path="/auth/callback" element={<AuthCallback />} />
             </Routes>
-
           </>
         } />
       </Routes>

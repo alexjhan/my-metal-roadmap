@@ -18,6 +18,7 @@ export default function RoadmapPage() {
   // Estados para las versiones
   const [currentVersion, setCurrentVersion] = useState(null);
   const [topVersion, setTopVersion] = useState(null);
+  const [authorInfo, setAuthorInfo] = useState(null);
   const [loadingTopVersion, setLoadingTopVersion] = useState(true);
   
   // Obtener datos del roadmap
@@ -33,16 +34,9 @@ export default function RoadmapPage() {
       try {
         setLoadingTopVersion(true);
         
-        const { data: versions, error } = await supabase
+        const { data: version, error } = await supabase
           .from('roadmap_versions')
-          .select(`
-            *,
-            user:user_id (
-              id,
-              email,
-              user_metadata
-            )
-          `)
+          .select('*')
           .eq('roadmap_type', roadmapType)
           .eq('is_public', true)
           .order('total_votes', { ascending: false })
@@ -51,10 +45,25 @@ export default function RoadmapPage() {
 
         if (error && error.code !== 'PGRST116') {
           console.error('Error cargando versión mejor votada:', error);
-        } else if (versions) {
-          console.log('Versión mejor votada cargada:', versions);
-          setTopVersion(versions);
-          setCurrentVersion(versions); // Establecer como versión actual por defecto
+        } else if (version) {
+          console.log('Versión mejor votada cargada:', version);
+          setTopVersion(version);
+          setCurrentVersion(version); // Establecer como versión actual por defecto
+          // Obtener datos del autor
+          if (version.user_id) {
+            const { data: user, error: userError } = await supabase
+              .from('auth.users')
+              .select('id, email, user_metadata')
+              .eq('id', version.user_id)
+              .single();
+            if (!userError && user) {
+              setAuthorInfo(user);
+            } else {
+              setAuthorInfo(null);
+            }
+          } else {
+            setAuthorInfo(null);
+          }
         }
       } catch (error) {
         console.error('Error cargando versión mejor votada:', error);
@@ -98,7 +107,7 @@ export default function RoadmapPage() {
       title={roadmapInfo.title}
       description={roadmapInfo.description}
       icon={roadmapInfo.icon}
-      recognitionPanel={topVersion ? <RecognitionPanel topVersion={topVersion} /> : null}
+      recognitionPanel={topVersion ? <RecognitionPanel topVersion={topVersion} authorInfo={authorInfo} /> : <div className="text-xs text-red-500">No hay versión mejor votada</div>}
     >
       {/* Indicador de datos guardados */}
       {hasSavedData && savedData && (
@@ -148,8 +157,8 @@ export default function RoadmapPage() {
       />
       
       <div className="mt-8 space-y-8">
-        <VerifyTables />
-        <DebugVersions roadmapType={roadmapType} />
+        {/* <VerifyTables /> */}
+        {/* <DebugVersions roadmapType={roadmapType} /> */}
         <TopVersionsSection 
           roadmapType={roadmapType} 
           onVersionSelect={handleShowVersion}

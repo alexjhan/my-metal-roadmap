@@ -135,7 +135,7 @@ export default function RoadmapGrid() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-32 xl:px-40 2xl:px-48 3xl:px-56">
         {/* Grid de roadmaps organizados por categorías */}
-        <div className="p-0">
+        <div className="p-0 pb-4">
           {/* Renderizar cada categoría en el orden especificado */}
           {renderCategory("Ciencias Básicas", categories["Ciencias Básicas"] || [])}
           {renderCategory("Extractiva", categories["Extractiva"] || [])}

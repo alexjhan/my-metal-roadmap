@@ -244,10 +244,12 @@ export default function RoadmapLayout({
 
             {/* Panel de reconocimiento y sugerencias */}
             <div className="flex justify-end items-center space-x-2">
-              {recognitionPanel && (
-                <div className="flex items-center space-x-3 mr-4">
+              {recognitionPanel ? (
+                <div className="flex items-center space-x-3 mr-4 bg-blue-50 p-2 rounded-lg border border-blue-200">
                   {recognitionPanel}
                 </div>
+              ) : (
+                <div className="text-xs text-gray-500 mr-4">Cargando reconocimiento...</div>
               )}
               {showSuggestionsButton && (
                 <button className="flex items-center px-2 sm:px-3 py-2 bg-gray-200 text-gray-700 rounded-md text-xs sm:text-sm font-semibold hover:bg-gray-300 transition">
