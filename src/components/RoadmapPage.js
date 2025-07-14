@@ -158,15 +158,15 @@ export default function RoadmapPage() {
         />
       </RoadmapLayout>
 
-      {/* Sección 2: Versiones y Propuestas */}
+      {/* Sección 2: Propuestas y Versiones */}
       <div className="bg-gray-50 py-8">
         <div className="max-w-6xl mx-auto px-8 sm:px-12 md:px-16 lg:px-20 xl:px-24">
           <div className="space-y-8">
+            <ProposalsSection roadmapType={roadmapType} />
             <TopVersionsSection 
               roadmapType={roadmapType} 
               onVersionSelect={handleShowVersion}
             />
-            <ProposalsSection roadmapType={roadmapType} />
           </div>
         </div>
       </div>

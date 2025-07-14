@@ -188,6 +188,7 @@ const EditRoadmapRefactored = () => {
   const [presentationMode, setPresentationMode] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [autoLayout, setAutoLayout] = useState(false);
+  const [proposalMode, setProposalMode] = useState(false);
 
   // Filtrar roadmaps basado en la búsqueda
   const filteredRoadmaps = useMemo(() => 
@@ -310,6 +311,169 @@ const EditRoadmapRefactored = () => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
   }, []);
+
+  const handleCreateProposalFromEditor = useCallback(async () => {
+    if (!user) {
+      alert('Debes iniciar sesión para crear una propuesta');
+      return;
+    }
+
+    // Comparar con la versión original para detectar cambios
+    const originalNodes = roadmapInfo.nodes;
+    const originalEdges = roadmapInfo.edges;
+    
+    const changes = [];
+    
+    // Detectar nodos agregados
+    const addedNodes = nodes.filter(node => 
+      !originalNodes.find(originalNode => originalNode.id === node.id)
+    );
+    
+    // Detectar nodos modificados
+    const modifiedNodes = nodes.filter(node => {
+      const originalNode = originalNodes.find(originalNode => originalNode.id === node.id);
+      return originalNode && JSON.stringify(originalNode) !== JSON.stringify(node);
+    });
+    
+    // Detectar nodos eliminados
+    const deletedNodes = originalNodes.filter(originalNode => 
+      !nodes.find(node => node.id === originalNode.id)
+    );
+    
+    // Detectar conexiones agregadas
+    const addedEdges = edges.filter(edge => 
+      !originalEdges.find(originalEdge => originalEdge.id === edge.id)
+    );
+    
+    // Detectar conexiones modificadas
+    const modifiedEdges = edges.filter(edge => {
+      const originalEdge = originalEdges.find(originalEdge => originalEdge.id === edge.id);
+      return originalEdge && JSON.stringify(originalEdge) !== JSON.stringify(edge);
+    });
+    
+    // Detectar conexiones eliminadas
+    const deletedEdges = originalEdges.filter(originalEdge => 
+      !edges.find(edge => edge.id === originalEdge.id)
+    );
+    
+    // Crear cambios para la propuesta
+    addedNodes.forEach(node => {
+      changes.push({
+        type: 'node',
+        action: 'add',
+        before: null,
+        after: node.data.label
+      });
+    });
+    
+    modifiedNodes.forEach(node => {
+      const originalNode = originalNodes.find(originalNode => originalNode.id === node.id);
+      changes.push({
+        type: 'node',
+        action: 'modify',
+        before: originalNode.data.label,
+        after: node.data.label
+      });
+    });
+    
+    deletedNodes.forEach(node => {
+      changes.push({
+        type: 'node',
+        action: 'remove',
+        before: node.data.label,
+        after: null
+      });
+    });
+    
+    addedEdges.forEach(edge => {
+      const sourceNode = nodes.find(node => node.id === edge.source);
+      const targetNode = nodes.find(node => node.id === edge.target);
+      changes.push({
+        type: 'connection',
+        action: 'add',
+        before: null,
+        after: `${sourceNode?.data.label || 'Nodo'} → ${targetNode?.data.label || 'Nodo'}`
+      });
+    });
+    
+    modifiedEdges.forEach(edge => {
+      const originalEdge = originalEdges.find(originalEdge => originalEdge.id === edge.id);
+      const sourceNode = nodes.find(node => node.id === edge.source);
+      const targetNode = nodes.find(node => node.id === edge.target);
+      const originalSourceNode = originalNodes.find(node => node.id === originalEdge.source);
+      const originalTargetNode = originalNodes.find(node => node.id === originalEdge.target);
+      
+      changes.push({
+        type: 'connection',
+        action: 'modify',
+        before: `${originalSourceNode?.data.label || 'Nodo'} → ${originalTargetNode?.data.label || 'Nodo'}`,
+        after: `${sourceNode?.data.label || 'Nodo'} → ${targetNode?.data.label || 'Nodo'}`
+      });
+    });
+    
+    deletedEdges.forEach(edge => {
+      const sourceNode = originalNodes.find(node => node.id === edge.source);
+      const targetNode = originalNodes.find(node => node.id === edge.target);
+      changes.push({
+        type: 'connection',
+        action: 'remove',
+        before: `${sourceNode?.data.label || 'Nodo'} → ${targetNode?.data.label || 'Nodo'}`,
+        after: null
+      });
+    });
+    
+    if (changes.length === 0) {
+      alert('No hay cambios para proponer. Realiza algunas modificaciones primero.');
+      return;
+    }
+    
+    // Crear la propuesta
+    const proposal = {
+      title: `Propuesta de edición para ${roadmapInfo.title}`,
+      description: proposalDescription || 'Cambios propuestos por el usuario',
+      changes: changes,
+      author: { name: user.email || 'Usuario' },
+      created_at: new Date().toISOString(),
+      status: 'pending',
+      votes: [],
+      comments: []
+    };
+    
+    try {
+      // En modo desarrollo, simular guardado
+      if (isDevelopment) {
+        console.log('Propuesta creada:', proposal);
+        alert('Propuesta creada exitosamente (modo desarrollo)');
+        setProposalMode(false);
+        setProposalDescription('');
+        return;
+      }
+      
+      // En producción, guardar en la base de datos
+      const { data, error } = await supabase
+        .from('edit_proposals')
+        .insert({
+          roadmap_type: roadmapType,
+          user_id: user.id,
+          title: proposal.title,
+          description: proposal.description,
+          changes: proposal.changes,
+          status: 'pending'
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      alert('Propuesta creada exitosamente');
+      setProposalMode(false);
+      setProposalDescription('');
+      
+    } catch (error) {
+      console.error('Error creating proposal:', error);
+      alert('Error al crear la propuesta: ' + error.message);
+    }
+  }, [user, nodes, edges, roadmapInfo, roadmapType, proposalDescription, isDevelopment]);
 
   const handleCreateProposal = useCallback(async () => {
     // En modo desarrollo, simular el guardado exitoso
@@ -764,7 +928,45 @@ const EditRoadmapRefactored = () => {
         onExit={() => navigate('/')}
         saveStatus={saveStatus}
         hasUnsavedChanges={hasUnsavedChanges}
+        proposalMode={proposalMode}
+        onToggleProposalMode={() => setProposalMode(!proposalMode)}
+        onCreateProposal={handleCreateProposalFromEditor}
       />
+
+      {/* Banner de modo propuesta */}
+      {proposalMode && (
+        <div className="bg-orange-50 border-b border-orange-200 px-6 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div>
+                <h3 className="text-sm font-medium text-orange-800">Modo Propuesta de Edición</h3>
+                <p className="text-xs text-orange-600">Los cambios que hagas se guardarán como una propuesta para la comunidad</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3">
+              <textarea
+                value={proposalDescription}
+                onChange={(e) => setProposalDescription(e.target.value)}
+                placeholder="Describe tu propuesta (opcional)..."
+                className="px-3 py-1 text-xs border border-orange-300 rounded-lg focus:ring-1 focus:ring-orange-500 focus:border-transparent resize-none"
+                rows={1}
+                style={{ width: '200px' }}
+              />
+              <button
+                onClick={() => setProposalMode(false)}
+                className="text-orange-600 hover:text-orange-800 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Sidebar */}
       <Sidebar
