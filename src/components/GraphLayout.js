@@ -337,6 +337,8 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
           zoomOnDoubleClick={false}
           multiSelectionKeyCode={null}
           deleteKeyCode={null}
+          translateExtent={[[-10000, -10000], [10000, 10000]]}
+          onlyRenderVisibleElements={false}
         >
           <FlowWithFitView />
           <Controls />
