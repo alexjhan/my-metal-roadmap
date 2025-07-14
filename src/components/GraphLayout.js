@@ -321,8 +321,8 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
           nodeTypes={nodeTypes}
           fitView={false}
           fitViewOptions={{ padding: 0.2, includeHiddenNodes: false }}
-          defaultViewport={{ x: 0, y: 0, zoom: 0.6 }}
-          minZoom={0.1}
+          defaultViewport={{ x: 0, y: 0, zoom: 0.2 }}
+          minZoom={0.05}
           maxZoom={2}
           nodesDraggable={false}
           nodesConnectable={false}
@@ -343,7 +343,7 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
           <FlowWithFitView />
           <Controls />
           <Background 
-            variant="lines" 
+            variant="dots" 
             gap={20} 
             size={1} 
             color="#e5e7eb"
