@@ -139,19 +139,19 @@ const EditRoadmapRefactored = () => {
   
   // Crear título personalizado si estamos editando una versión específica
   const editorTitle = useMemo(() => {
-    if (versionId) {
-      return `${roadmapInfo.title} (Editando Versión - Modo Propuesta)`;
-    }
     if (mode === 'proposal') {
       return `${roadmapInfo.title} (Modo Propuesta)`;
+    }
+    if (versionId) {
+      return `${roadmapInfo.title} (Editando Versión)`;
     }
     return roadmapInfo.title;
   }, [roadmapInfo.title, versionId, mode]);
 
-  // Determinar si estamos en modo solo propuesta (cuando editamos una versión específica o mode=proposal)
+  // Determinar si estamos en modo solo propuesta (solo si mode=proposal)
   const isProposalOnlyMode = useMemo(() => {
-    return versionId !== null || mode === 'proposal';
-  }, [versionId, mode]);
+    return mode === 'proposal';
+  }, [mode]);
   
   if (!roadmapInfo) {
     return (
@@ -210,7 +210,7 @@ const EditRoadmapRefactored = () => {
             localStorage.removeItem(storageKey);
             
             // Activar automáticamente el modo propuesta cuando se carga una versión específica
-            setProposalMode(true);
+            setProposalMode(false); // No activar modo propuesta automáticamente
           }
         } catch (error) {
           console.error('Error cargando datos de versión:', error);
@@ -219,11 +219,9 @@ const EditRoadmapRefactored = () => {
     }
   }, [versionId, roadmapType, setNodes, setEdges]);
 
-  // Activar modo propuesta automáticamente si mode=proposal
+  // Activar modo propuesta automáticamente solo si mode=proposal
   useEffect(() => {
-    if (mode === 'proposal') {
-      setProposalMode(true);
-    }
+    setProposalMode(mode === 'proposal');
   }, [mode]);
   const [selectedNodeId, setSelectedNodeId] = useState(null);
   const [selectedEdgeId, setSelectedEdgeId] = useState(null);
