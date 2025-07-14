@@ -1153,7 +1153,7 @@ const EditRoadmapRefactored = () => {
       {/* Contenido Principal */}
       <div className="flex-1 relative">
         <div 
-          className={`h-full ${presentationMode ? '' : 'ml-12'} ${showPropertiesPanel ? 'mr-80' : ''} ${showComponentsPanel || showRoadmapsPanel || showToolsPanel ? 'ml-80' : ''}`}
+          className={`w-full h-[calc(100vh-4.5rem)] ${presentationMode ? '' : 'ml-12'} ${showPropertiesPanel ? 'mr-80' : ''} ${(showComponentsPanel || showRoadmapsPanel || showToolsPanel) ? 'ml-80' : ''}`}
           onClick={() => {
             if (showPropertiesPanel) setShowPropertiesPanel(false);
             if (showComponentsPanel) setShowComponentsPanel(false);
@@ -1199,7 +1199,8 @@ const EditRoadmapRefactored = () => {
             connectionMode="loose"
             snapToGrid={false}
             snapGrid={[15, 15]}
-            style={{ width: '100vw', height: '100vh', background: '#f8fafc' }}
+            className="w-full h-full bg-gray-50"
+            // style eliminado
           >
             <FlowWithFitView />
             <Controls />
