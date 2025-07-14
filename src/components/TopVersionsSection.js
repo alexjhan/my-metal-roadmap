@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase';
 import CreateProposalModal from './CreateProposalModal';
 import ProposalDetailModal from './ProposalDetailModal';
 
-const TopVersionsSection = ({ roadmapType, onVersionSelect }) => {
+const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => {
   const { user } = useUser();
   const [topVersions, setTopVersions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -125,13 +125,9 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect }) => {
 
   const handleCreateProposal = (version) => {
     // Redirigir al editor con la versión específica
-    if (onVersionSelect) {
-      onVersionSelect(version);
+    if (onEditVersion) {
+      onEditVersion(version);
     }
-    
-    // Opcional: También podrías abrir el modal para agregar contexto
-    // setSelectedVersion(version);
-    // setShowCreateModal(true);
   };
 
   const handleProposalCreated = (newProposal) => {

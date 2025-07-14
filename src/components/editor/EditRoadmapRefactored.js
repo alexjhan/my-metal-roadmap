@@ -13,7 +13,7 @@ import ReactFlow, {
   getSmoothStepPath,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useUser } from '../../UserContext';
 import { roadmapStorage } from '../../lib/roadmapStorage';
 import { proposalService } from '../../lib/roadmapStorage';
@@ -130,9 +130,19 @@ const EditRoadmapRefactored = () => {
   const { roadmapType } = useParams();
   const navigate = useNavigate();
   const { user } = useUser();
+  const [searchParams] = useSearchParams();
+  const versionId = searchParams.get('version');
   
   // Obtener datos del roadmap
   const roadmapInfo = useMemo(() => roadmapData[roadmapType], [roadmapType]);
+  
+  // Crear título personalizado si estamos editando una versión específica
+  const editorTitle = useMemo(() => {
+    if (versionId) {
+      return `${roadmapInfo.title} (Editando Versión)`;
+    }
+    return roadmapInfo.title;
+  }, [roadmapInfo.title, versionId]);
   
   if (!roadmapInfo) {
     return (
@@ -164,6 +174,38 @@ const EditRoadmapRefactored = () => {
       style: { stroke: '#1e3a8a', strokeWidth: 3 }
     }))
   );
+
+  // Cargar datos de versión específica si está disponible
+  useEffect(() => {
+    if (versionId) {
+      const storageKey = `roadmap_${roadmapType}_version_${versionId}`;
+      const versionData = localStorage.getItem(storageKey);
+      
+      if (versionData) {
+        try {
+          const parsedData = JSON.parse(versionData);
+          if (parsedData.nodes && parsedData.edges) {
+            console.log('Cargando datos de versión específica:', versionId);
+            setNodes(parsedData.nodes);
+            setEdges(parsedData.edges.map(edge => ({
+              ...edge,
+              type: edge.type || 'straight',
+              markerEnd: edge.markerEnd || { 
+                type: MarkerType.ArrowClosed,
+                color: '#1e3a8a'
+              },
+              style: edge.style || { stroke: '#1e3a8a', strokeWidth: 3 }
+            })));
+            
+            // Limpiar los datos del localStorage después de cargarlos
+            localStorage.removeItem(storageKey);
+          }
+        } catch (error) {
+          console.error('Error cargando datos de versión:', error);
+        }
+      }
+    }
+  }, [versionId, roadmapType, setNodes, setEdges]);
   const [selectedNodeId, setSelectedNodeId] = useState(null);
   const [selectedEdgeId, setSelectedEdgeId] = useState(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -917,7 +959,7 @@ const EditRoadmapRefactored = () => {
     <div className={`w-full h-screen bg-white flex flex-col ${presentationMode ? 'presentation-mode' : ''}`}>
       {/* Header */}
       <EditorHeader
-        roadmapInfo={roadmapInfo}
+        roadmapInfo={{ ...roadmapInfo, title: editorTitle }}
         onShowToolsPanel={() => setShowToolsPanel(!showToolsPanel)}
         showToolsPanel={showToolsPanel}
         onPresentationMode={handlePresentationMode}
@@ -943,7 +985,12 @@ const EditRoadmapRefactored = () => {
               </svg>
               <div>
                 <h3 className="text-sm font-medium text-orange-800">Modo Propuesta de Edición</h3>
-                <p className="text-xs text-orange-600">Los cambios que hagas se guardarán como una propuesta para la comunidad</p>
+                <p className="text-xs text-orange-600">
+                  {versionId 
+                    ? 'Los cambios que hagas se guardarán como una propuesta basada en esta versión'
+                    : 'Los cambios que hagas se guardarán como una propuesta para la comunidad'
+                  }
+                </p>
               </div>
             </div>
             <div className="flex items-center space-x-3">

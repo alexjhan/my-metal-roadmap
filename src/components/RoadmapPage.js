@@ -85,6 +85,27 @@ export default function RoadmapPage() {
   const handleShowVersion = (version) => {
     setCurrentVersion(version);
   };
+
+  // Función para editar una versión específica
+  const handleEditVersion = (version) => {
+    // Guardar los datos de la versión en localStorage para que el editor los use
+    if (version && version.nodes && version.edges) {
+      const versionData = {
+        nodes: version.nodes,
+        edges: version.edges,
+        lastModified: new Date().toISOString(),
+        versionId: version.id,
+        versionInfo: version
+      };
+      
+      // Guardar en localStorage con un identificador específico para esta versión
+      const storageKey = `roadmap_${roadmapType}_version_${version.id}`;
+      localStorage.setItem(storageKey, JSON.stringify(versionData));
+      
+      // Navegar al editor con parámetros para indicar que debe cargar esta versión
+      navigate(`/edit/${roadmapType}?version=${version.id}`);
+    }
+  };
   
   if (!roadmapInfo) {
     return (
@@ -166,6 +187,7 @@ export default function RoadmapPage() {
             <TopVersionsSection 
               roadmapType={roadmapType} 
               onVersionSelect={handleShowVersion}
+              onEditVersion={handleEditVersion}
             />
           </div>
         </div>
