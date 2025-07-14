@@ -118,7 +118,7 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[80vh] overflow-hidden">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div>
@@ -138,7 +138,7 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
         {/* Contenido */}
         <div className="p-6">
           <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Todos los Roadmaps</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Todos los Roadmaps</h3>
             <p className="text-sm text-gray-600">Edita versiones existentes o crea nuevas versiones</p>
           </div>
 
@@ -182,71 +182,82 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
               <p className="text-gray-500">Cargando roadmaps...</p>
             </div>
           ) : (
-            <div className="space-y-4 max-h-96 overflow-y-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-h-[60vh] overflow-y-auto">
               {filteredRoadmaps.map((roadmap) => {
                 const versions = getRoadmapVersions(roadmap.link.replace('/roadmap/', ''));
                 const userVersion = getUserVersion(roadmap.link.replace('/roadmap/', ''));
                 const hasUserVersion = !!userVersion;
                 
                 return (
-                  <div key={roadmap.link} className="border border-gray-200 rounded-lg p-4">
-                    <div className="flex items-start space-x-3 mb-3">
-                      <span className="text-2xl">{roadmap.icon}</span>
+                  <div key={roadmap.link} className="border border-gray-200 rounded-xl p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
+                    {/* Header del roadmap */}
+                    <div className="flex items-start space-x-4 mb-4">
+                      <span className="text-4xl">{roadmap.icon}</span>
                       <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900">{roadmap.title}</h3>
-                        <p className="text-sm text-gray-600">{roadmap.description}</p>
+                        <h3 className="text-xl font-bold text-gray-900 mb-1">{roadmap.title}</h3>
+                        <p className="text-sm text-gray-600 mb-2">{roadmap.description}</p>
+                        <span className="inline-block px-3 py-1 text-xs bg-blue-100 text-blue-800 rounded-full font-medium">
+                          {roadmap.category}
+                        </span>
                       </div>
                     </div>
                     
-                    {/* Mostrar botón de crear nueva versión solo si el usuario no tiene una versión */}
+                    {/* Botón de crear nueva versión */}
                     {!hasUserVersion && (
-                      <div className="mb-3">
+                      <div className="mb-4">
                         <button
                           onClick={() => handleCreateNewVersion(roadmap.link.replace('/roadmap/', ''))}
-                          className="w-full p-3 border-2 border-dashed border-blue-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer text-blue-600 font-medium"
+                          className="w-full p-4 border-2 border-dashed border-blue-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer text-blue-600 font-medium"
                         >
-                          <div className="flex items-center justify-center space-x-2">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <div className="flex items-center justify-center space-x-3">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                             </svg>
-                            <span>Crear Nueva Versión</span>
+                            <span className="text-lg">Crear Nueva Versión</span>
                           </div>
                         </button>
                       </div>
                     )}
                     
+                    {/* Versiones existentes */}
                     {versions.length === 0 ? (
-                      <div className="text-center py-4 bg-gray-50 rounded-lg">
-                        <p className="text-gray-500">No hay versiones existentes de este roadmap</p>
+                      <div className="text-center py-6 bg-gray-50 rounded-lg">
+                        <div className="text-3xl mb-2">📚</div>
+                        <p className="text-gray-500 font-medium">No hay versiones existentes</p>
                         {!hasUserVersion && (
                           <p className="text-xs text-gray-400 mt-1">Usa el botón de arriba para crear la primera versión</p>
                         )}
                       </div>
                     ) : (
-                      <div className="space-y-2">
-                        <h4 className="text-sm font-medium text-gray-700 mb-2">Versiones Existentes:</h4>
+                      <div className="space-y-3">
+                        <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                          </svg>
+                          Versiones Existentes ({versions.length})
+                        </h4>
                         {versions.map((version) => {
                           const isUserVersion = version.user_id === user.id;
                           return (
                             <div
                               key={version.id}
                               onClick={() => handleVersionSelect(roadmap.link.replace('/roadmap/', ''), version)}
-                              className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all cursor-pointer bg-white"
+                              className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all cursor-pointer bg-white"
                             >
                               <div className="flex items-center space-x-3">
                                 <div className="flex items-center space-x-2">
                                   {isUserVersion ? (
-                                    <span className="inline-block px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
+                                    <span className="inline-block px-3 py-1 text-sm bg-green-100 text-green-800 rounded-full font-medium">
                                       Mi Versión
                                     </span>
                                   ) : (
-                                    <span className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+                                    <span className="inline-block px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full font-medium">
                                       Versión de Otro
                                     </span>
                                   )}
                                 </div>
                                 <div>
-                                  <p className="text-sm font-medium text-gray-900">
+                                  <p className="text-sm font-semibold text-gray-900">
                                     {version.description || `Versión creada el ${new Date(version.created_at).toLocaleDateString()}`}
                                   </p>
                                   <p className="text-xs text-gray-500">
@@ -254,7 +265,7 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
                                   </p>
                                 </div>
                               </div>
-                              <div className="text-sm text-gray-500">
+                              <div className="text-sm text-gray-500 font-medium">
                                 {isUserVersion ? 'Editar' : 'Proponer Cambios'}
                               </div>
                             </div>
@@ -269,11 +280,11 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
           )}
 
           {filteredRoadmaps.length === 0 && (
-            <div className="text-center py-8">
-              <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="text-center py-12">
+              <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33" />
               </svg>
-              <p className="text-gray-500">No se encontraron roadmaps que coincidan con tu búsqueda</p>
+              <p className="text-gray-500 text-lg">No se encontraron roadmaps que coincidan con tu búsqueda</p>
             </div>
           )}
         </div>
