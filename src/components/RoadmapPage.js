@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import GraphLayout from './GraphLayout';
 import RoadmapLayout from './RoadmapLayout';
-import ProposalsSection from './ProposalsSection';
 import TopVersionsSection from './TopVersionsSection';
 import DebugVersions from './DebugVersions';
 import VerifyTables from './VerifyTables';
@@ -179,17 +178,14 @@ export default function RoadmapPage() {
         />
       </RoadmapLayout>
 
-      {/* Sección 2: Propuestas y Versiones */}
+      {/* Sección 2: Versiones Mejor Votadas */}
       <div className="bg-gray-50 py-8">
         <div className="max-w-6xl mx-auto px-8 sm:px-12 md:px-16 lg:px-20 xl:px-24">
-          <div className="space-y-8">
-            <ProposalsSection roadmapType={roadmapType} />
-            <TopVersionsSection 
-              roadmapType={roadmapType} 
-              onVersionSelect={handleShowVersion}
-              onEditVersion={handleEditVersion}
-            />
-          </div>
+          <TopVersionsSection 
+            roadmapType={roadmapType} 
+            onVersionSelect={handleShowVersion}
+            onEditVersion={handleEditVersion}
+          />
         </div>
       </div>
 
