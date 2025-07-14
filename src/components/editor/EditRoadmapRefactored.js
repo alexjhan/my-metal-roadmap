@@ -171,9 +171,9 @@ const EditRoadmapRefactored = () => {
   }
 
   // Estados principales
-  const [nodes, setNodes, onNodesChange] = useNodesState(roadmapInfo.nodes);
+  const [nodes, setNodes, onNodesChange] = useNodesState(roadmapInfo.nodes || []);
   const [edges, setEdges, onEdgesChange] = useEdgesState(
-    roadmapInfo.edges.map(edge => ({
+    (roadmapInfo.edges || []).map(edge => ({
       ...edge,
       type: 'straight', // Tipo por defecto
       markerEnd: { 
@@ -183,6 +183,24 @@ const EditRoadmapRefactored = () => {
       style: { stroke: '#1e3a8a', strokeWidth: 3 }
     }))
   );
+
+  // Mostrar error si no hay nodos cargados
+  if (!nodes || nodes.length === 0) {
+    return (
+      <div className="w-full h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-700 mb-4">No se pudieron cargar los nodos del roadmap</h1>
+          <p className="text-gray-600 mb-6">Verifica tu conexión o la configuración de la base de datos.</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Reintentar
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // Cargar datos de versión específica si está disponible
   useEffect(() => {
