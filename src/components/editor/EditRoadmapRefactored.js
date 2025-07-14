@@ -1043,7 +1043,7 @@ const EditRoadmapRefactored = () => {
 
 
   return (
-    <div className={`w-full h-screen bg-white flex flex-col ${presentationMode ? 'presentation-mode' : ''}`}>
+    <div className="w-screen h-screen" style={{ position: 'relative' }}>
       {/* Header */}
       <EditorHeader
         roadmapInfo={{ ...roadmapInfo, title: editorTitle }}
@@ -1181,6 +1181,7 @@ const EditRoadmapRefactored = () => {
             connectionMode="loose"
             snapToGrid={false}
             snapGrid={[15, 15]}
+            style={{ width: '100vw', height: '100vh', background: '#f8fafc' }}
           >
             <FlowWithFitView />
             <Controls />
