@@ -100,8 +100,8 @@ export default function RoadmapGrid() {
             className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 transform hover:scale-105 text-sm"
           >
             <span className="mr-2">✨</span>
-            <span className="hidden sm:inline">Editar Roadmap</span>
-            <span className="sm:hidden">Editar Roadmap</span>
+            <span className="hidden sm:inline">Gestionar Roadmaps</span>
+            <span className="sm:hidden">Gestionar</span>
           </button>
         </div>
       </div>

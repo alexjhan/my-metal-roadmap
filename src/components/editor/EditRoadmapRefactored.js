@@ -132,6 +132,7 @@ const EditRoadmapRefactored = () => {
   const { user } = useUser();
   const [searchParams] = useSearchParams();
   const versionId = searchParams.get('version');
+  const mode = searchParams.get('mode');
   
   // Obtener datos del roadmap
   const roadmapInfo = useMemo(() => roadmapData[roadmapType], [roadmapType]);
@@ -139,10 +140,18 @@ const EditRoadmapRefactored = () => {
   // Crear título personalizado si estamos editando una versión específica
   const editorTitle = useMemo(() => {
     if (versionId) {
-      return `${roadmapInfo.title} (Editando Versión)`;
+      return `${roadmapInfo.title} (Editando Versión - Modo Propuesta)`;
+    }
+    if (mode === 'proposal') {
+      return `${roadmapInfo.title} (Modo Propuesta)`;
     }
     return roadmapInfo.title;
-  }, [roadmapInfo.title, versionId]);
+  }, [roadmapInfo.title, versionId, mode]);
+
+  // Determinar si estamos en modo solo propuesta (cuando editamos una versión específica o mode=proposal)
+  const isProposalOnlyMode = useMemo(() => {
+    return versionId !== null || mode === 'proposal';
+  }, [versionId, mode]);
   
   if (!roadmapInfo) {
     return (
@@ -199,6 +208,9 @@ const EditRoadmapRefactored = () => {
             
             // Limpiar los datos del localStorage después de cargarlos
             localStorage.removeItem(storageKey);
+            
+            // Activar automáticamente el modo propuesta cuando se carga una versión específica
+            setProposalMode(true);
           }
         } catch (error) {
           console.error('Error cargando datos de versión:', error);
@@ -206,6 +218,13 @@ const EditRoadmapRefactored = () => {
       }
     }
   }, [versionId, roadmapType, setNodes, setEdges]);
+
+  // Activar modo propuesta automáticamente si mode=proposal
+  useEffect(() => {
+    if (mode === 'proposal') {
+      setProposalMode(true);
+    }
+  }, [mode]);
   const [selectedNodeId, setSelectedNodeId] = useState(null);
   const [selectedEdgeId, setSelectedEdgeId] = useState(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -231,6 +250,7 @@ const EditRoadmapRefactored = () => {
   const [showExportModal, setShowExportModal] = useState(false);
   const [autoLayout, setAutoLayout] = useState(false);
   const [proposalMode, setProposalMode] = useState(false);
+  const [userExistingProposal, setUserExistingProposal] = useState(null);
 
   // Filtrar roadmaps basado en la búsqueda
   const filteredRoadmaps = useMemo(() => 
@@ -257,7 +277,7 @@ const EditRoadmapRefactored = () => {
     selectedEdgeId ? edges.find(edge => edge.id === selectedEdgeId) : null
   , [selectedEdgeId, edges]);
 
-  // Cargar propuestas existentes
+  // Cargar propuestas existentes y propuesta del usuario
   useEffect(() => {
     const loadProposals = async () => {
       // En modo desarrollo, no cargar propuestas de Supabase
@@ -274,8 +294,30 @@ const EditRoadmapRefactored = () => {
       }
     };
 
+    const loadUserProposal = async () => {
+      if (!user) return;
+      
+      try {
+        const { data: userProposal, error } = await supabase
+          .from('edit_proposals')
+          .select('*')
+          .eq('roadmap_type', roadmapType)
+          .eq('user_id', user.id)
+          .eq('status', 'pending')
+          .single();
+
+        if (!error && userProposal) {
+          setUserExistingProposal(userProposal);
+        }
+      } catch (error) {
+        // Si no hay propuesta existente, continuar
+        console.log('No hay propuesta pendiente del usuario');
+      }
+    };
+
     loadProposals();
-  }, [roadmapType, isDevelopment]);
+    loadUserProposal();
+  }, [roadmapType, isDevelopment, user]);
 
   // Handlers principales
   const handleNodeClick = useCallback((id) => {
@@ -358,6 +400,25 @@ const EditRoadmapRefactored = () => {
     if (!user) {
       alert('Debes iniciar sesión para crear una propuesta');
       return;
+    }
+
+    // Verificar si el usuario ya tiene una propuesta pendiente
+    try {
+      const { data: existingProposal, error } = await supabase
+        .from('edit_proposals')
+        .select('*')
+        .eq('roadmap_type', roadmapType)
+        .eq('user_id', user.id)
+        .eq('status', 'pending')
+        .single();
+
+      if (existingProposal && !userExistingProposal) {
+        alert('Ya tienes una propuesta pendiente. No puedes crear otra propuesta hasta que la actual sea aprobada o rechazada.');
+        return;
+      }
+    } catch (error) {
+      // Si no hay propuesta existente, continuar
+      console.log('No hay propuesta pendiente del usuario');
     }
 
     // Comparar con la versión original para detectar cambios
@@ -491,33 +552,61 @@ const EditRoadmapRefactored = () => {
         return;
       }
       
-      // En producción, guardar en la base de datos
-      const { data, error } = await supabase
-        .from('edit_proposals')
-        .insert({
-          roadmap_type: roadmapType,
-          user_id: user.id,
-          title: proposal.title,
-          description: proposal.description,
-          changes: proposal.changes,
-          status: 'pending'
-        })
-        .select()
-        .single();
+      // En producción, actualizar o crear propuesta
+      let result;
+      if (userExistingProposal) {
+        // Actualizar propuesta existente
+        const { data, error } = await supabase
+          .from('edit_proposals')
+          .update({
+            title: proposal.title,
+            description: proposal.description,
+            changes: proposal.changes,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', userExistingProposal.id)
+          .select()
+          .single();
+        
+        if (error) throw error;
+        result = data;
+        alert('Propuesta actualizada exitosamente');
+      } else {
+        // Crear nueva propuesta
+        const { data, error } = await supabase
+          .from('edit_proposals')
+          .insert({
+            roadmap_type: roadmapType,
+            user_id: user.id,
+            title: proposal.title,
+            description: proposal.description,
+            changes: proposal.changes,
+            status: 'pending'
+          })
+          .select()
+          .single();
+        
+        if (error) throw error;
+        result = data;
+        alert('Propuesta creada exitosamente');
+      }
       
-      if (error) throw error;
-      
-      alert('Propuesta creada exitosamente');
       setProposalMode(false);
       setProposalDescription('');
       
     } catch (error) {
-      console.error('Error creating proposal:', error);
-      alert('Error al crear la propuesta: ' + error.message);
+      console.error('Error creating/updating proposal:', error);
+      alert('Error al procesar la propuesta: ' + error.message);
     }
   }, [user, nodes, edges, roadmapInfo, roadmapType, proposalDescription, isDevelopment]);
 
   const handleCreateProposal = useCallback(async () => {
+    // Si estamos en modo solo propuesta, no permitir guardar como versión
+    if (isProposalOnlyMode) {
+      alert('No puedes guardar como nueva versión cuando estás editando una versión específica. Usa el botón "Crear Propuesta" para proponer cambios.');
+      return;
+    }
+
     // En modo desarrollo, simular el guardado exitoso
     if (isDevelopment) {
       console.log('Modo desarrollo: simulando guardado exitoso');
@@ -973,10 +1062,11 @@ const EditRoadmapRefactored = () => {
         proposalMode={proposalMode}
         onToggleProposalMode={() => setProposalMode(!proposalMode)}
         onCreateProposal={handleCreateProposalFromEditor}
+        isProposalOnlyMode={isProposalOnlyMode}
       />
 
       {/* Banner de modo propuesta */}
-      {proposalMode && (
+      {(proposalMode || isProposalOnlyMode) && (
         <div className="bg-orange-50 border-b border-orange-200 px-6 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -984,11 +1074,22 @@ const EditRoadmapRefactored = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <div>
-                <h3 className="text-sm font-medium text-orange-800">Modo Propuesta de Edición</h3>
+                <h3 className="text-sm font-medium text-orange-800">
+                  {isProposalOnlyMode 
+                    ? 'Editando Versión - Modo Propuesta Automático'
+                    : userExistingProposal 
+                      ? 'Editando Propuesta Existente' 
+                      : 'Modo Propuesta de Edición'
+                  }
+                </h3>
                 <p className="text-xs text-orange-600">
-                  {versionId 
-                    ? 'Los cambios que hagas se guardarán como una propuesta basada en esta versión'
-                    : 'Los cambios que hagas se guardarán como una propuesta para la comunidad'
+                  {isProposalOnlyMode
+                    ? 'Estás editando una versión específica. El modo propuesta se activó automáticamente. Solo puedes crear propuestas.'
+                    : userExistingProposal 
+                      ? 'Estás editando tu propuesta pendiente. Los cambios se actualizarán automáticamente.'
+                      : versionId 
+                        ? 'Los cambios que hagas se guardarán como una propuesta basada en esta versión'
+                        : 'Los cambios que hagas se guardarán como una propuesta para la comunidad'
                   }
                 </p>
               </div>
@@ -1002,14 +1103,16 @@ const EditRoadmapRefactored = () => {
                 rows={1}
                 style={{ width: '200px' }}
               />
-              <button
-                onClick={() => setProposalMode(false)}
-                className="text-orange-600 hover:text-orange-800 transition-colors"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+              {!isProposalOnlyMode && (
+                <button
+                  onClick={() => setProposalMode(false)}
+                  className="text-orange-600 hover:text-orange-800 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
             </div>
           </div>
         </div>

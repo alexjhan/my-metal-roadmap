@@ -16,11 +16,14 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
   const [selectedVersion, setSelectedVersion] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedProposal, setSelectedProposal] = useState(null);
+  const [userProposal, setUserProposal] = useState(null);
+  const [loadingUserProposal, setLoadingUserProposal] = useState(false);
 
   useEffect(() => {
     loadTopVersions();
     if (user) {
       loadUserVotes();
+      loadUserProposal();
     }
   }, [roadmapType, user]);
 
@@ -114,6 +117,33 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
     }
   };
 
+  const loadUserProposal = async () => {
+    if (!user) return;
+    
+    try {
+      setLoadingUserProposal(true);
+      
+      // Aquí deberías conectar con tu base de datos para obtener la propuesta del usuario
+      // Por ahora simulamos la carga
+      const mockUserProposal = null; // Cambiar a null para simular que no tiene propuesta
+      
+      // Simular consulta a la base de datos
+      // const { data: userProposal, error } = await supabase
+      //   .from('edit_proposals')
+      //   .select('*')
+      //   .eq('roadmap_type', roadmapType)
+      //   .eq('user_id', user.id)
+      //   .eq('status', 'pending')
+      //   .single();
+      
+      setUserProposal(mockUserProposal);
+    } catch (error) {
+      console.error('Error loading user proposal:', error);
+    } finally {
+      setLoadingUserProposal(false);
+    }
+  };
+
   const toggleProposals = (versionId) => {
     const isExpanded = expandedVersions[versionId];
     setExpandedVersions(prev => ({ ...prev, [versionId]: !isExpanded }));
@@ -124,6 +154,17 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
   };
 
   const handleCreateProposal = (version) => {
+    if (!user) {
+      alert('Debes iniciar sesión para crear una propuesta');
+      return;
+    }
+
+    // Verificar si el usuario ya tiene una propuesta pendiente
+    if (userProposal) {
+      alert('Ya tienes una propuesta pendiente. No puedes crear otra propuesta hasta que la actual sea aprobada o rechazada.');
+      return;
+    }
+
     // Redirigir al editor con la versión específica
     if (onEditVersion) {
       onEditVersion(version);
@@ -273,6 +314,23 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
         </div>
       </div>
 
+      {/* Propuesta del usuario actual */}
+      {user && userProposal && (
+        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-sm font-medium text-blue-900">Tu Propuesta Pendiente</h4>
+            <span className="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">
+              En votación
+            </span>
+          </div>
+          <p className="text-sm text-blue-700 mb-3">{userProposal.description || 'Propuesta de edición'}</p>
+          <div className="flex items-center justify-between text-xs text-blue-600">
+            <span>{userProposal.changes?.length || 0} cambios propuestos</span>
+            <span>{userProposal.votes?.length || 0} votos recibidos</span>
+          </div>
+        </div>
+      )}
+
       {topVersions.length === 0 ? (
         <div className="text-center py-8">
           <div className="text-gray-400 mb-4">
@@ -393,15 +451,24 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
                 <div className="mt-4 pt-4 border-t border-gray-200">
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="text-sm font-medium text-gray-900">Propuestas de Edición</h4>
-                    <button
-                      onClick={() => handleCreateProposal(version)}
-                      className="px-3 py-1 text-xs bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center space-x-1"
-                    >
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                      </svg>
-                      <span>Editar y Proponer</span>
-                    </button>
+                    {userProposal ? (
+                      <div className="px-3 py-1 text-xs bg-gray-300 text-gray-600 rounded-lg flex items-center space-x-1 cursor-not-allowed" title="Ya tienes una propuesta pendiente">
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Propuesta Pendiente</span>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => handleCreateProposal(version)}
+                        className="px-3 py-1 text-xs bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center space-x-1"
+                      >
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span>Editar y Proponer</span>
+                      </button>
+                    )}
                   </div>
 
                   {loadingProposals[version.id] ? (

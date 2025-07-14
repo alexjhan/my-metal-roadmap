@@ -14,7 +14,8 @@ const EditorHeader = ({
   hasUnsavedChanges = false,
   proposalMode = false,
   onToggleProposalMode = () => {},
-  onCreateProposal = () => {}
+  onCreateProposal = () => {},
+  isProposalOnlyMode = false
 }) => {
   return (
     <div className="w-full bg-white border-b border-gray-100 px-6 py-4">
@@ -28,6 +29,14 @@ const EditorHeader = ({
               <p className="text-xs text-gray-500 truncate">{roadmapInfo.description}</p>
             </div>
           </div>
+          {isProposalOnlyMode && (
+            <div className="flex items-center space-x-2 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-medium">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Modo Propuesta</span>
+            </div>
+          )}
           <button
             onClick={onEditModal}
             className="text-gray-400 hover:text-gray-600 transition-colors p-1"
@@ -42,19 +51,21 @@ const EditorHeader = ({
         {/* Botones de acción mejorados */}
         <div className="flex items-center space-x-3">
           {/* Botón de modo propuesta */}
-          <button
-            onClick={onToggleProposalMode}
-            className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-              proposalMode 
-                ? 'bg-orange-100 text-orange-600' 
-                : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
-            }`}
-            title="Modo propuesta de edición"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </button>
+          {!isProposalOnlyMode && (
+            <button
+              onClick={onToggleProposalMode}
+              className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                proposalMode 
+                  ? 'bg-orange-100 text-orange-600' 
+                  : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+              }`}
+              title="Modo propuesta de edición"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
+          )}
 
           {/* Botón de modo presentación */}
           <button
@@ -78,7 +89,18 @@ const EditorHeader = ({
             <span className="hidden sm:inline">Vista</span>
             <span className="sm:hidden">👁️</span>
           </button>
-          {proposalMode ? (
+          {isProposalOnlyMode ? (
+            // En modo solo propuesta, siempre mostrar botón de propuesta
+            <button
+              onClick={onCreateProposal}
+              className="px-4 py-2 text-sm font-medium bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors flex items-center space-x-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Crear Propuesta</span>
+            </button>
+          ) : proposalMode ? (
             <button
               onClick={onCreateProposal}
               className="px-4 py-2 text-sm font-medium bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors flex items-center space-x-2"
