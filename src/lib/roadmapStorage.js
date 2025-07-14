@@ -147,11 +147,7 @@ export const proposalService = {
   async getProposals(roadmapType) {
     const { data, error } = await supabase
       .from('edit_proposals')
-      .select(`
-        *,
-        votes(*),
-        comments(*)
-      `)
+      .select('*')
       .eq('roadmap_type', roadmapType)
       .order('created_at', { ascending: false });
 
