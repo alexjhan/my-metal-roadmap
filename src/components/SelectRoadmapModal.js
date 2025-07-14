@@ -287,7 +287,7 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
                                       <p className="text-xs text-gray-500">
                                         {new Date(version.created_at).toLocaleDateString()}
                                       </p>
-                                      <p className="text-xs text-blue-900 font-semibold mt-1">Votos: {Array.isArray(version.votes) ? version.votes.length : (version.votes ?? 0)}</p>
+                                      <p className="text-xs text-blue-900 font-semibold mt-1">Votos: {version.total_votes ?? 0}</p>
                                     </div>
                                   </div>
                                   <div className="flex items-center space-x-2">
