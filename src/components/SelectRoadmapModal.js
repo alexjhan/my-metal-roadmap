@@ -180,47 +180,46 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
               <p className="text-gray-500">Cargando roadmaps...</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 max-h-[60vh] overflow-y-auto">
               {filteredRoadmaps.map((roadmap) => {
                 const versions = getRoadmapVersions(roadmap.link.replace('/roadmap/', ''));
                 const userVersion = getUserVersion(roadmap.link.replace('/roadmap/', ''));
                 const hasUserVersion = !!userVersion;
                 
                 return (
-                  <div key={roadmap.link} className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
+                  <div key={roadmap.link} className="bg-white border border-gray-200 rounded-md shadow-sm hover:shadow-md transition-all duration-150 overflow-hidden">
                     {/* Header del roadmap */}
-                    <div className="bg-gray-50 p-3 border-b border-gray-200">
-                      <div className="flex items-center space-x-2">
+                    <div className="bg-gray-50 p-2 border-b border-gray-200">
+                      <div className="flex items-center space-x-1">
                         <div className="flex-shrink-0">
-                          <span className="text-2xl">{roadmap.icon}</span>
+                          <span className="text-xl">{roadmap.icon}</span>
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-sm font-bold text-gray-900 mb-1">{roadmap.title}</h3>
-                          <p className="text-xs text-gray-600 mb-1">{roadmap.description}</p>
-                          <span className="inline-block px-1.5 py-0.5 text-xs bg-blue-100 text-blue-800 rounded-full font-medium">
+                          <h3 className="text-xs font-bold text-gray-900 mb-0.5 truncate">{roadmap.title}</h3>
+                          <p className="text-[10px] text-gray-600 mb-0.5 truncate">{roadmap.description}</p>
+                          <span className="inline-block px-1 py-0.5 text-[10px] bg-blue-100 text-blue-800 rounded font-medium">
                             {roadmap.category}
                           </span>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="p-3">
+                    <div className="p-2">
                       {/* Botón de crear nueva versión */}
                       {!hasUserVersion && (
-                        <div className="mb-3">
+                        <div className="mb-2">
                           <button
                             onClick={() => handleCreateNewVersion(roadmap.link.replace('/roadmap/', ''))}
-                            className="w-full p-2 border-2 border-dashed border-blue-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 cursor-pointer group"
+                            className="w-full p-1.5 border-2 border-dashed border-blue-300 rounded hover:border-blue-400 hover:bg-blue-50 transition-all duration-150 cursor-pointer group"
                           >
-                            <div className="flex items-center justify-center space-x-2">
-                              <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                            <div className="flex items-center justify-center space-x-1">
+                              <div className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-blue-200 transition-colors">
                                 <svg className="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                                 </svg>
                               </div>
                               <div className="text-center">
-                                <span className="text-xs font-semibold text-blue-600 block">Crear Nueva Versión</span>
-                                <span className="text-xs text-gray-500">Comienza desde cero</span>
+                                <span className="text-[11px] font-semibold text-blue-600 block">Crear Nueva Versión</span>
                               </div>
                             </div>
                           </button>
@@ -229,40 +228,40 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
                       
                       {/* Versiones existentes */}
                       {versions.length === 0 ? (
-                        <div className="text-center py-4 bg-gray-50 rounded-lg">
-                          <div className="text-lg mb-1">📚</div>
-                          <p className="text-gray-500 font-medium text-xs">No hay versiones existentes</p>
+                        <div className="text-center py-2 bg-gray-50 rounded">
+                          <div className="text-base mb-0.5">📚</div>
+                          <p className="text-gray-500 font-medium text-[11px]">No hay versiones</p>
                           {!hasUserVersion && (
-                            <p className="text-xs text-gray-400 mt-1">Usa el botón de arriba para crear la primera versión</p>
+                            <p className="text-[10px] text-gray-400 mt-0.5">Usa el botón de arriba</p>
                           )}
                         </div>
                       ) : (
                         <div>
-                          <h4 className="text-xs font-semibold text-gray-900 mb-2 flex items-center">
+                          <h4 className="text-[11px] font-semibold text-gray-900 mb-1 flex items-center">
                             <svg className="w-3 h-3 mr-1 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                             </svg>
                             Versiones ({versions.length})
                           </h4>
-                          <div className="space-y-1.5">
+                          <div className="space-y-1">
                             {versions.map((version) => {
                               const isUserVersion = version.user_id === user.id;
                               return (
                                 <div
                                   key={version.id}
                                   onClick={() => handleVersionSelect(roadmap.link.replace('/roadmap/', ''), version)}
-                                  className="flex items-center justify-between p-2 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-sm transition-all duration-200 cursor-pointer bg-white group"
+                                  className="flex items-center justify-between p-1.5 border border-gray-200 rounded hover:border-blue-300 hover:shadow-sm transition-all duration-150 cursor-pointer bg-white group"
                                 >
-                                  <div className="flex items-center space-x-2">
+                                  <div className="flex items-center space-x-1">
                                     <div className="flex-shrink-0">
                                       {isUserVersion ? (
-                                        <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                                        <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
                                           <svg className="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                           </svg>
                                         </div>
                                       ) : (
-                                        <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <div className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center">
                                           <svg className="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                           </svg>
@@ -272,28 +271,28 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
                                     <div className="flex-1">
                                       <div className="flex items-center space-x-1 mb-0.5">
                                         {isUserVersion ? (
-                                          <span className="inline-block px-1.5 py-0.5 text-xs bg-green-100 text-green-800 rounded-full font-medium">
+                                          <span className="inline-block px-1 py-0.5 text-[10px] bg-green-100 text-green-800 rounded font-medium">
                                             Mi Versión
                                           </span>
                                         ) : (
-                                          <span className="inline-block px-1.5 py-0.5 text-xs bg-blue-100 text-blue-800 rounded-full font-medium">
+                                          <span className="inline-block px-1 py-0.5 text-[10px] bg-blue-100 text-blue-800 rounded font-medium">
                                             Versión de Otro
                                           </span>
                                         )}
                                       </div>
-                                      <p className="text-xs font-medium text-gray-900">
-                                        {version.description || `Versión creada el ${new Date(version.created_at).toLocaleDateString()}`}
+                                      <p className="text-[10px] font-medium text-gray-900 truncate">
+                                        {version.description || `Versión del ${new Date(version.created_at).toLocaleDateString()}`}
                                       </p>
-                                      <p className="text-xs text-gray-500">
+                                      <p className="text-[10px] text-gray-500">
                                         {new Date(version.created_at).toLocaleDateString()}
                                       </p>
                                     </div>
                                   </div>
                                   <div className="flex items-center space-x-1">
-                                    <span className="text-xs font-medium text-gray-500 group-hover:text-blue-600 transition-colors">
+                                    <span className="text-[10px] font-medium text-gray-500 group-hover:text-blue-600 transition-colors">
                                       {isUserVersion ? 'Editar' : 'Proponer'}
                                     </span>
-                                    <svg className="w-2.5 h-2.5 text-gray-400 group-hover:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-2 h-2 text-gray-400 group-hover:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                     </svg>
                                   </div>
