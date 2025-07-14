@@ -11,11 +11,14 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [userRoadmaps, setUserRoadmaps] = useState([]);
   const [loadingUserRoadmaps, setLoadingUserRoadmaps] = useState(false);
-  const [activeTab, setActiveTab] = useState('propose'); // 'propose' o 'edit'
+  const [activeTab, setActiveTab] = useState('edit'); // 'edit' o 'propose'
+  const [roadmapVersions, setRoadmapVersions] = useState({});
+  const [loadingVersions, setLoadingVersions] = useState(false);
 
   useEffect(() => {
     if (isOpen && user) {
       loadUserRoadmaps();
+      loadAllRoadmapVersions();
     }
   }, [isOpen, user]);
 
@@ -30,6 +33,34 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
       console.error('Error cargando roadmaps del usuario:', error);
     } finally {
       setLoadingUserRoadmaps(false);
+    }
+  };
+
+  const loadAllRoadmapVersions = async () => {
+    if (!user) return;
+    
+    setLoadingVersions(true);
+    try {
+      const versionsByRoadmap = {};
+      
+      // Cargar versiones para cada roadmap disponible
+      for (const roadmap of data) {
+        if (roadmap.status === 'active') {
+          try {
+            const versions = await roadmapService.getRoadmapVersions(roadmap.link.replace('/roadmap/', ''));
+            versionsByRoadmap[roadmap.link.replace('/roadmap/', '')] = versions;
+          } catch (error) {
+            console.error(`Error cargando versiones para ${roadmap.title}:`, error);
+            versionsByRoadmap[roadmap.link.replace('/roadmap/', '')] = [];
+          }
+        }
+      }
+      
+      setRoadmapVersions(versionsByRoadmap);
+    } catch (error) {
+      console.error('Error cargando versiones:', error);
+    } finally {
+      setLoadingVersions(false);
     }
   };
 
@@ -74,6 +105,29 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
     onClose();
   };
 
+  const handleVersionSelect = (roadmapType, version) => {
+    // Verificar si la versión pertenece al usuario actual
+    const isUserVersion = version.user_id === user.id;
+    
+    if (isUserVersion) {
+      // Si es la versión del usuario, ir al modo editor normal
+      navigate(`/edit/${roadmapType}?version=${version.id}`);
+    } else {
+      // Si no es la versión del usuario, ir al modo propuesta
+      navigate(`/edit/${roadmapType}?version=${version.id}&mode=proposal`);
+    }
+    onClose();
+  };
+
+  const getRoadmapVersions = (roadmapType) => {
+    return roadmapVersions[roadmapType] || [];
+  };
+
+  const getUserVersion = (roadmapType) => {
+    const versions = getRoadmapVersions(roadmapType);
+    return versions.find(version => version.user_id === user.id);
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[80vh] overflow-hidden">
@@ -81,7 +135,7 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">Gestionar Roadmaps</h2>
-            <p className="text-gray-600 mt-1">Edita tu roadmap o propón versiones de otros</p>
+            <p className="text-gray-600 mt-1">Edita versiones existentes o propón nuevas versiones</p>
           </div>
           <button
             onClick={onClose}
@@ -107,7 +161,7 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
-              <span>Editar Mi Roadmap</span>
+              <span>Editar Versiones</span>
             </div>
           </button>
           <button
@@ -130,59 +184,86 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
         {/* Contenido */}
         <div className="p-6">
           {activeTab === 'edit' ? (
-            // Tab de editar roadmap del usuario
+            // Tab de editar versiones existentes
             <div>
               <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Mi Roadmap</h3>
-                <p className="text-sm text-gray-600">Edita tu roadmap personal en modo propuesta</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Versiones Existentes</h3>
+                <p className="text-sm text-gray-600">Edita versiones que ya has creado o propón cambios a versiones de otros</p>
               </div>
 
-              {loadingUserRoadmaps ? (
+              {loadingVersions ? (
                 <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                  <p className="text-gray-500">Cargando tus roadmaps...</p>
-                </div>
-              ) : userRoadmaps.length === 0 ? (
-                <div className="text-center py-8">
-                  <div className="text-6xl mb-4">📚</div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No tienes roadmaps aún</h3>
-                  <p className="text-gray-600 mb-4">Crea tu primer roadmap personalizado</p>
-                  <button
-                    onClick={() => {
-                      onClose();
-                      navigate('/create');
-                    }}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                  >
-                    Crear Mi Primer Roadmap
-                  </button>
+                  <p className="text-gray-500">Cargando versiones existentes...</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {userRoadmaps.map((roadmap) => (
-                    <div
-                      key={roadmap.id}
-                      onClick={() => handleUserRoadmapSelect(roadmap.id)}
-                      className="p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all cursor-pointer bg-white"
-                    >
-                      <div className="flex items-start space-x-3">
-                        <span className="text-2xl">{roadmap.emoji || '📚'}</span>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-semibold text-gray-900 mb-1 truncate">
-                            {roadmap.title}
-                          </h3>
-                          <p className="text-xs text-gray-600 line-clamp-2">
-                            {roadmap.description}
-                          </p>
-                          <div className="mt-2">
-                            <span className="inline-block px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
-                              Mi Roadmap
-                            </span>
+                <div className="space-y-4">
+                  {filteredRoadmaps.map((roadmap) => {
+                    const versions = getRoadmapVersions(roadmap.link.replace('/roadmap/', ''));
+                    const userVersion = getUserVersion(roadmap.link.replace('/roadmap/', ''));
+                    
+                    return (
+                      <div key={roadmap.link} className="border border-gray-200 rounded-lg p-4">
+                        <div className="flex items-start space-x-3 mb-3">
+                          <span className="text-2xl">{roadmap.icon}</span>
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold text-gray-900">{roadmap.title}</h3>
+                            <p className="text-sm text-gray-600">{roadmap.description}</p>
                           </div>
                         </div>
+                        
+                        {versions.length === 0 ? (
+                          <div className="text-center py-4 bg-gray-50 rounded-lg">
+                            <p className="text-gray-500">No hay versiones existentes de este roadmap</p>
+                            <button
+                              onClick={() => handleRoadmapSelect(roadmap.link.replace('/roadmap/', ''))}
+                              className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
+                            >
+                              Crear Primera Versión
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            {versions.map((version) => {
+                              const isUserVersion = version.user_id === user.id;
+                              return (
+                                <div
+                                  key={version.id}
+                                  onClick={() => handleVersionSelect(roadmap.link.replace('/roadmap/', ''), version)}
+                                  className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all cursor-pointer bg-white"
+                                >
+                                  <div className="flex items-center space-x-3">
+                                    <div className="flex items-center space-x-2">
+                                      {isUserVersion ? (
+                                        <span className="inline-block px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
+                                          Mi Versión
+                                        </span>
+                                      ) : (
+                                        <span className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+                                          Versión de Otro
+                                        </span>
+                                      )}
+                                    </div>
+                                    <div>
+                                      <p className="text-sm font-medium text-gray-900">
+                                        {version.description || `Versión creada el ${new Date(version.created_at).toLocaleDateString()}`}
+                                      </p>
+                                      <p className="text-xs text-gray-500">
+                                        {new Date(version.created_at).toLocaleDateString()}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="text-sm text-gray-500">
+                                    {isUserVersion ? 'Editar' : 'Proponer Cambios'}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

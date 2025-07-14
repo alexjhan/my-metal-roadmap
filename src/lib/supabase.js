@@ -71,6 +71,45 @@ export const roadmapService = {
     return data
   },
 
+  // Obtener versiones existentes de roadmaps
+  async getRoadmapVersions(roadmapType) {
+    if (!isConfigured) {
+      throw new Error('Supabase no está configurado. Por favor, configura las variables de entorno.');
+    }
+    
+    const { data, error } = await supabase
+      .from('roadmap_versions')
+      .select(`
+        *,
+        user_id,
+        created_at,
+        description,
+        is_public
+      `)
+      .eq('roadmap_type', roadmapType)
+      .eq('is_public', true)
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+    return data
+  },
+
+  // Obtener versión específica de roadmap
+  async getRoadmapVersion(versionId) {
+    if (!isConfigured) {
+      throw new Error('Supabase no está configurado. Por favor, configura las variables de entorno.');
+    }
+    
+    const { data, error } = await supabase
+      .from('roadmap_versions')
+      .select('*')
+      .eq('id', versionId)
+      .single()
+
+    if (error) throw error
+    return data
+  },
+
   // Crear nodo
   async createNode(roadmapId, nodeData) {
     if (!isConfigured) {
