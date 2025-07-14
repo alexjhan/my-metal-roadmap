@@ -84,7 +84,8 @@ export const roadmapService = {
         user_id,
         created_at,
         description,
-        is_public
+        is_public,
+        votes
       `)
       .eq('roadmap_type', roadmapType)
       .eq('is_public', true)

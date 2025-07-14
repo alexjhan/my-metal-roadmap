@@ -4,6 +4,7 @@ import Auth from "./Auth";
 import UserProfile from "./UserProfile";
 import { supabase } from "../lib/supabase";
 import { useUser } from '../UserContext';
+import SelectRoadmapModal from './SelectRoadmapModal';
 
 export default function Navbar() {
   const location = useLocation();
@@ -14,6 +15,7 @@ export default function Navbar() {
   const [newTitle, setNewTitle] = useState("");
   const [newDesc, setNewDesc] = useState("");
   const [creating, setCreating] = useState(false);
+  const [showSelectRoadmapModal, setShowSelectRoadmapModal] = useState(false);
 
   const handleCreateRoadmap = async () => {
     if (!newTitle) return;
@@ -97,13 +99,13 @@ export default function Navbar() {
               Mis Roadmaps
             </Link>
             <button
-              onClick={() => setShowCreateModal(true)}
+              onClick={() => setShowSelectRoadmapModal(true)}
               className="inline-flex items-center px-3 sm:px-5 py-2 bg-blue-800 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-blue-700 hover:border-blue-600 hover:bg-blue-700 text-xs sm:text-sm font-medium whitespace-nowrap"
               style={{ minWidth: '120px', justifyContent: 'center' }}
             >
-              <span className="mr-1 sm:mr-2">✨</span>
-              <span className="hidden sm:inline">Crear Roadmap</span>
-              <span className="sm:hidden">Crear</span>
+              <span className="mr-1 sm:mr-2">🗂️</span>
+              <span className="hidden sm:inline">Gestionar Roadmaps</span>
+              <span className="sm:hidden">Gestionar</span>
             </button>
             <UserProfile />
           </div>
@@ -136,6 +138,10 @@ export default function Navbar() {
             <Auth />
           </div>
         </div>
+      )}
+      {/* Modal para gestionar roadmaps */}
+      {showSelectRoadmapModal && (
+        <SelectRoadmapModal isOpen={showSelectRoadmapModal} onClose={() => setShowSelectRoadmapModal(false)} />
       )}
       {/* Modal para crear roadmap */}
       {showCreateModal && (
