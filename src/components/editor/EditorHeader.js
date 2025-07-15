@@ -18,7 +18,7 @@ const EditorHeader = ({
   isProposalOnlyMode = false
 }) => {
   return (
-    <div className="w-full bg-white border-b border-gray-100 px-6 py-4 editor-header">
+    <div className="w-full bg-white border-b border-gray-100 px-6 py-4 editor-header relative z-50">
       <div className="flex items-center justify-between">
         {/* Logo y título */}
         <div className="flex items-center space-x-4">
