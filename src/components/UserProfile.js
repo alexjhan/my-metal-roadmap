@@ -115,25 +115,21 @@ export function UserProfileDropdown() {
           
           <div className="p-2">
             <button
-              onClick={() => {
-                setIsOpen(false);
-                window.location.href = '/profile';
-              }}
-              className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+              disabled
+              className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-400 cursor-not-allowed opacity-50"
             >
               <FiUser className="w-4 h-4" />
-              <span>Mi Perfil</span>
+              <span className="line-through">Mi Perfil</span>
+              <span className="text-xs text-gray-500">(No disponible)</span>
             </button>
             
             <button
-              onClick={() => {
-                setIsOpen(false);
-                window.location.href = '/my-roadmaps';
-              }}
-              className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+              disabled
+              className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-400 cursor-not-allowed opacity-50"
             >
               <FiBookOpen className="w-4 h-4" />
-              <span>Mis Roadmaps</span>
+              <span className="line-through">Mis Roadmaps</span>
+              <span className="text-xs text-gray-500">(No disponible)</span>
             </button>
             
             <hr className="my-2" />

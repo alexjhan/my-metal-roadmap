@@ -46,8 +46,8 @@ function App() {
               <Route path="/roadmap/:roadmapType" element={<RoadmapPage />} />
               <Route path="/graph" element={<GraphLayout />} />
               <Route path="/create" element={<><CreateRoadmap /><Footer /></>} />
-              <Route path="/my-roadmaps" element={<><MyRoadmaps /><Footer /></>} />
-              <Route path="/profile" element={<><UserProfile /><Footer /></>} />
+              {/* <Route path="/my-roadmaps" element={<><MyRoadmaps /><Footer /></>} /> */}
+              {/* <Route path="/profile" element={<><UserProfile /><Footer /></>} /> */}
               <Route path="/privacy" element={<><PrivacyPolicy /><Footer /></>} />
               <Route path="/privacidad" element={<><PrivacyPolicy /><Footer /></>} />
               <Route path="/auth/callback" element={<AuthCallback />} />

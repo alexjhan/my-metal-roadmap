@@ -92,12 +92,11 @@ export default function Navbar() {
         {/* Navegación para usuarios autenticados */}
         {user && (
           <div className="flex items-center space-x-2 sm:space-x-4">
-            <Link
-              to="/my-roadmaps"
-              className="text-xs sm:text-sm text-blue-200 hover:text-white transition-colors whitespace-nowrap"
+            <span
+              className="text-xs sm:text-sm text-gray-400 cursor-not-allowed opacity-50 line-through"
             >
               Mis Roadmaps
-            </Link>
+            </span>
             <button
               onClick={() => setShowSelectRoadmapModal(true)}
               className="inline-flex items-center px-3 sm:px-5 py-2 bg-blue-800 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-blue-700 hover:border-blue-600 hover:bg-blue-700 text-xs sm:text-sm font-medium whitespace-nowrap"
