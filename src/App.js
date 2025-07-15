@@ -18,6 +18,7 @@ import RoadmapVersionPage from './components/RoadmapVersionPage';
 import Footer from './components/Footer';
 import PerformanceMonitor from './components/PerformanceMonitor';
 import { devConfig } from './config/dev';
+import UserProfile from './components/UserProfile';
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
               <Route path="/graph" element={<GraphLayout />} />
               <Route path="/create" element={<><CreateRoadmap /><Footer /></>} />
               <Route path="/my-roadmaps" element={<><MyRoadmaps /><Footer /></>} />
+              <Route path="/profile" element={<><UserProfile /><Footer /></>} />
               <Route path="/privacy" element={<><PrivacyPolicy /><Footer /></>} />
               <Route path="/privacidad" element={<><PrivacyPolicy /><Footer /></>} />
               <Route path="/auth/callback" element={<AuthCallback />} />

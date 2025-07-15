@@ -13,9 +13,146 @@ import {
   FiAward,
   FiTarget,
   FiBarChart,
-  FiActivity
+  FiActivity,
+  FiLogOut,
+  FiSettings
 } from 'react-icons/fi';
 
+// Componente simple para el dropdown del navbar
+export function UserProfileDropdown() {
+  const { user, loading } = useUser();
+  const [isOpen, setIsOpen] = useState(false);
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    if (user) {
+      loadProfile();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isOpen && !event.target.closest('.user-profile-dropdown')) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
+  const loadProfile = async () => {
+    try {
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      setProfile(data);
+    } catch (error) {
+      console.error('Error cargando perfil:', error);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      setIsOpen(false);
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
+
+  if (loading || !user) return null;
+
+  return (
+    <div className="relative user-profile-dropdown">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center space-x-2 text-blue-200 hover:text-white transition-colors"
+      >
+        <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
+          {profile?.avatar_url ? (
+            <img 
+              src={profile.avatar_url} 
+              alt="Avatar" 
+              className="w-8 h-8 rounded-full object-cover"
+            />
+          ) : (
+            <FiUser className="w-4 h-4 text-white" />
+          )}
+        </div>
+        <span className="hidden sm:block text-sm font-medium">
+          {profile?.full_name || user.email?.split('@')[0]}
+        </span>
+      </button>
+
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+          <div className="p-4 border-b border-gray-200">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
+                {profile?.avatar_url ? (
+                  <img 
+                    src={profile.avatar_url} 
+                    alt="Avatar" 
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <FiUser className="w-5 h-5 text-white" />
+                )}
+              </div>
+              <div>
+                <p className="font-medium text-gray-900">
+                  {profile?.full_name || 'Usuario'}
+                </p>
+                <p className="text-sm text-gray-500">{user.email}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="p-2">
+            <button
+              onClick={() => {
+                setIsOpen(false);
+                window.location.href = '/profile';
+              }}
+              className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+            >
+              <FiUser className="w-4 h-4" />
+              <span>Mi Perfil</span>
+            </button>
+            
+            <button
+              onClick={() => {
+                setIsOpen(false);
+                window.location.href = '/my-roadmaps';
+              }}
+              className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+            >
+              <FiBookOpen className="w-4 h-4" />
+              <span>Mis Roadmaps</span>
+            </button>
+            
+            <hr className="my-2" />
+            
+            <button
+              onClick={handleSignOut}
+              className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
+            >
+              <FiLogOut className="w-4 h-4" />
+              <span>Cerrar Sesión</span>
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Componente original para la página completa
 export default function UserProfile() {
   const { user, loading } = useUser();
   const [profile, setProfile] = useState(null);

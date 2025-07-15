@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Auth from "./Auth";
-import UserProfile from "./UserProfile";
+import { UserProfileDropdown } from "./UserProfile";
 import { supabase } from "../lib/supabase";
 import { useUser } from '../UserContext';
 import SelectRoadmapModal from './SelectRoadmapModal';
@@ -107,7 +107,7 @@ export default function Navbar() {
               <span className="hidden sm:inline">Gestionar Roadmaps</span>
               <span className="sm:hidden">Gestionar</span>
             </button>
-            <UserProfile />
+            <UserProfileDropdown />
           </div>
         )}
         {/* Botones para visitantes */}
