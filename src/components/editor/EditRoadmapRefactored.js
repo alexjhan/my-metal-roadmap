@@ -436,6 +436,18 @@ const EditRoadmapRefactored = () => {
   const [selectedEdgeId, setSelectedEdgeId] = useState(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [saveStatus, setSaveStatus] = useState('idle');
+
+  // Guardado automático cuando hay cambios sin guardar
+  useEffect(() => {
+    if (!hasUnsavedChanges || !user) return;
+
+    const autoSaveTimer = setTimeout(() => {
+      console.log('Guardado automático iniciado...');
+      handleCreateProposal();
+    }, 30000); // Guardar automáticamente después de 30 segundos de inactividad
+
+    return () => clearTimeout(autoSaveTimer);
+  }, [hasUnsavedChanges, user, handleCreateProposal]);
   const [showProposalModal, setShowProposalModal] = useState(false);
   const [proposals, setProposals] = useState([]);
   const [selectedProposal, setSelectedProposal] = useState(null);
@@ -830,58 +842,7 @@ const EditRoadmapRefactored = () => {
       return;
     }
 
-    // En modo desarrollo, simular el guardado exitoso
-    if (isDevelopment) {
-      console.log('Modo desarrollo: simulando guardado exitoso');
-      setSaveStatus('saving');
-      
-      // Simular tiempo de guardado
-      setTimeout(() => {
-        // Guardar en localStorage
-        const saveSuccess = roadmapStorageService.saveRoadmap(roadmapType, nodes, edges);
-        
-        // Actualizar los datos del roadmap en memoria
-        if (roadmapData[roadmapType]) {
-          roadmapData[roadmapType].nodes = [...nodes];
-          roadmapData[roadmapType].edges = [...edges];
-          console.log('Roadmap actualizado:', roadmapType, roadmapData[roadmapType]);
-        }
-        
-        setSaveStatus('saved');
-        setHasUnsavedChanges(false);
-        
-        // Mostrar notificación de éxito
-        const notification = document.createElement('div');
-        notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300 translate-x-full';
-        notification.innerHTML = `
-          <div class="flex items-center space-x-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            <span class="font-medium">¡Roadmap guardado exitosamente!</span>
-          </div>
-        `;
-        document.body.appendChild(notification);
-        
-        // Animar entrada
-        setTimeout(() => {
-          notification.classList.remove('translate-x-full');
-        }, 100);
-        
-        // Remover después de 3 segundos
-        setTimeout(() => {
-          notification.classList.add('translate-x-full');
-          setTimeout(() => {
-            document.body.removeChild(notification);
-          }, 300);
-        }, 3000);
-        
-        setSaveStatus('idle');
-      }, 1000);
-      return;
-    }
-
-    // En producción, verificar autenticación
+    // Verificar autenticación
     if (!user) {
       alert('Debes iniciar sesión para guardar cambios');
       return;
@@ -890,35 +851,41 @@ const EditRoadmapRefactored = () => {
     setSaveStatus('saving');
 
     try {
-      // Verificar si estamos en desarrollo o si hay error de conexión
-      if (isDevelopment) {
-        // En desarrollo, simular guardado exitoso
-        console.log('Modo desarrollo: simulando guardado en BD');
-        await new Promise(resolve => setTimeout(resolve, 1000));
+      let savedVersion = null;
+
+      // Guardar versión en la base de datos (tanto en desarrollo como en producción)
+      console.log('Guardando versión en BD para roadmap:', roadmapType);
+      console.log('Datos a guardar:', { 
+        roadmapType, 
+        userId: user.id, 
+        nodesCount: nodes.length, 
+        edgesCount: edges.length,
+        versionId: versionId || 'nueva versión'
+      });
+
+      if (versionId) {
+        // Actualizar versión existente
+        const { data: version, error } = await supabase
+          .from('roadmap_versions')
+          .update({
+            nodes: nodes,
+            edges: edges,
+            description: `Versión actualizada por ${user.email} - ${new Date().toLocaleString()}`,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', versionId)
+          .eq('user_id', user.id) // Asegurar que solo el propietario puede actualizar
+          .select()
+          .single();
+        
+        if (error) {
+          console.error('Error al actualizar versión:', error);
+          throw error;
+        }
+        savedVersion = version;
+        console.log('Versión actualizada exitosamente:', version);
       } else {
-        // Guardar versión en la base de datos
-        console.log('Guardando versión en BD para roadmap:', roadmapType);
-        console.log('Datos a guardar:', { roadmapType, userId: user.id, nodesCount: nodes.length, edgesCount: edges.length });
-        if (versionId) {
-          // Actualizar versión existente
-          const { data: version, error } = await supabase
-            .from('roadmap_versions')
-            .update({
-              nodes: nodes,
-              edges: edges,
-              description: `Versión editada por ${user.email}`,
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', versionId)
-            .select()
-            .single();
-          if (error) {
-            console.error('Error al actualizar versión:', error);
-            throw error;
-          }
-          console.log('Versión actualizada exitosamente:', version);
-        } else {
-          // Crear nueva versión
+        // Crear nueva versión
         const { data: version, error } = await supabase
           .from('roadmap_versions')
           .insert({
@@ -926,7 +893,7 @@ const EditRoadmapRefactored = () => {
             user_id: user.id,
             nodes: nodes,
             edges: edges,
-            description: `Versión editada por ${user.email}`,
+            description: `Nueva versión creada por ${user.email} - ${new Date().toLocaleString()}`,
             is_public: true,
             total_votes: 0,
             up_votes: 0,
@@ -934,12 +901,19 @@ const EditRoadmapRefactored = () => {
           })
           .select()
           .single();
+        
         if (error) {
           console.error('Error al guardar en BD:', error);
           throw error;
         }
-        console.log('Versión guardada exitosamente:', version);
-        }
+        savedVersion = version;
+        console.log('Nueva versión guardada exitosamente:', version);
+      }
+
+      // En modo desarrollo, también guardar en localStorage como respaldo
+      if (isDevelopment) {
+        roadmapStorageService.saveRoadmap(roadmapType, nodes, edges);
+        console.log('Respaldo en localStorage guardado (modo desarrollo)');
       }
       
       setSaveStatus('saved');
@@ -953,7 +927,9 @@ const EditRoadmapRefactored = () => {
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
           </svg>
-          <span class="font-medium">¡Versión pública guardada exitosamente!</span>
+          <span class="font-medium">
+            ${versionId ? '¡Versión actualizada exitosamente!' : '¡Nueva versión guardada exitosamente!'}
+          </span>
         </div>
       `;
       document.body.appendChild(notification);
@@ -972,6 +948,14 @@ const EditRoadmapRefactored = () => {
       }, 3000);
       
       setSaveStatus('idle');
+      
+      // Si es una nueva versión, actualizar la URL para incluir el versionId
+      if (!versionId && savedVersion && savedVersion.id) {
+        const newUrl = `/edit/${roadmapType}?version=${savedVersion.id}`;
+        window.history.replaceState({}, '', newUrl);
+        console.log('URL actualizada con nuevo versionId:', newUrl);
+      }
+      
     } catch (error) {
       console.error('Error saving changes:', error);
       setSaveStatus('error');
@@ -1002,7 +986,7 @@ const EditRoadmapRefactored = () => {
         }, 300);
       }, 5000);
     }
-  }, [isDevelopment, user, nodes, edges, roadmapInfo, roadmapType, versionId]);
+  }, [isDevelopment, user, nodes, edges, roadmapInfo, roadmapType, versionId, isProposalOnlyMode]);
 
   const handleVote = useCallback(async (proposalId, vote, comment) => {
     try {
@@ -1789,6 +1773,18 @@ const EditRoadmapRefactored = () => {
           <div className="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full shadow-lg opacity-75 hover:opacity-100 transition-opacity">
             <span className="w-1.5 h-1.5 bg-white rounded-full inline-block mr-1"></span>
             DEV
+          </div>
+        </div>
+      )}
+
+      {/* Indicador de guardado automático */}
+      {hasUnsavedChanges && user && (
+        <div className="fixed bottom-4 left-4 z-50">
+          <div className="bg-blue-500 text-white text-xs px-3 py-2 rounded-lg shadow-lg opacity-90 hover:opacity-100 transition-opacity">
+            <div className="flex items-center space-x-2">
+              <div className="animate-pulse w-2 h-2 bg-white rounded-full"></div>
+              <span>Guardando automáticamente...</span>
+            </div>
           </div>
         </div>
       )}
