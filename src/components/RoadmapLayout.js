@@ -266,7 +266,7 @@ export default function RoadmapLayout({
       {/* Contenedor del contenido */}
       <div className="max-w-6xl mx-auto px-8 sm:px-12 md:px-16 lg:px-20 xl:px-24" style={{ overflow: 'visible' }}>
         <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-          {children}
+            {children}
         </div>
       </div>
     </div>

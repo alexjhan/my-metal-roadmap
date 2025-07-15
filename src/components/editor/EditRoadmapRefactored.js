@@ -125,7 +125,7 @@ function FlowWithFitView() {
   useEffect(() => {
     if (!hasFitted.current) {
       const timer = setTimeout(() => {
-        fitView({ padding: 0.2 });
+    fitView({ padding: 0.2 });
         hasFitted.current = true;
       }, 100);
       return () => clearTimeout(timer);
@@ -760,26 +760,26 @@ const EditRoadmapRefactored = () => {
           console.log('Versión actualizada exitosamente:', version);
         } else {
           // Crear nueva versión
-          const { data: version, error } = await supabase
-            .from('roadmap_versions')
-            .insert({
-              roadmap_type: roadmapType,
-              user_id: user.id,
-              nodes: nodes,
-              edges: edges,
-              description: `Versión editada por ${user.email}`,
-              is_public: true,
-              total_votes: 0,
-              up_votes: 0,
-              down_votes: 0
-            })
-            .select()
-            .single();
-          if (error) {
-            console.error('Error al guardar en BD:', error);
-            throw error;
-          }
-          console.log('Versión guardada exitosamente:', version);
+        const { data: version, error } = await supabase
+          .from('roadmap_versions')
+          .insert({
+            roadmap_type: roadmapType,
+            user_id: user.id,
+            nodes: nodes,
+            edges: edges,
+            description: `Versión editada por ${user.email}`,
+            is_public: true,
+            total_votes: 0,
+            up_votes: 0,
+            down_votes: 0
+          })
+          .select()
+          .single();
+        if (error) {
+          console.error('Error al guardar en BD:', error);
+          throw error;
+        }
+        console.log('Versión guardada exitosamente:', version);
         }
       }
       
@@ -1203,20 +1203,20 @@ const EditRoadmapRefactored = () => {
       {/* Área principal con barra lateral y React Flow */}
       <div className="flex-1 flex flex-row bg-gray-50 m-0 p-0 h-full border-0 gap-0 relative">
         {/* Sidebar - Segundo */}
-        <Sidebar
-          showComponentsPanel={showComponentsPanel}
-          showRoadmapsPanel={showRoadmapsPanel}
-          onToggleComponentsPanel={() => {
-            setShowComponentsPanel(!showComponentsPanel);
-            setShowRoadmapsPanel(false);
-            setShowToolsPanel(false);
-          }}
-          onToggleRoadmapsPanel={() => {
-            setShowRoadmapsPanel(!showRoadmapsPanel);
-            setShowComponentsPanel(false);
-            setShowToolsPanel(false);
-          }}
-        />
+      <Sidebar
+        showComponentsPanel={showComponentsPanel}
+        showRoadmapsPanel={showRoadmapsPanel}
+        onToggleComponentsPanel={() => {
+          setShowComponentsPanel(!showComponentsPanel);
+          setShowRoadmapsPanel(false);
+          setShowToolsPanel(false);
+        }}
+        onToggleRoadmapsPanel={() => {
+          setShowRoadmapsPanel(!showRoadmapsPanel);
+          setShowComponentsPanel(false);
+          setShowToolsPanel(false);
+        }}
+      />
 
         {/* Panel de versiones (roadmaps) */}
         {showRoadmapsPanel && (
@@ -1292,55 +1292,55 @@ const EditRoadmapRefactored = () => {
           
           {/* React Flow principal */}
           <ReactFlow
-              nodes={nodesWithClick}
-              edges={edges}
-              onNodesChange={(changes) => {
-                onNodesChange(changes);
-                setHasUnsavedChanges(true);
-              }}
-              onEdgesChange={(changes) => {
-                onEdgesChange(changes);
-                setHasUnsavedChanges(true);
-              }}
-              onEdgeClick={handleEdgeClick}
-              onConnect={onConnect}
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              nodeTypes={nodeTypes}
-              edgeTypes={edgeTypes}
-              fitView={false}
-              fitViewOptions={{ padding: 0.2, includeHiddenNodes: false }}
-              defaultViewport={{ x: 0, y: 0, zoom: zoomLevel }}
-              minZoom={0.1}
-              maxZoom={2}
-              nodesDraggable={!presentationMode}
-              nodesConnectable={!presentationMode}
-              elementsSelectable={!presentationMode}
-              panOnScroll={false}
-              zoomOnScroll={false}
-              panOnDrag={true}
-              zoomOnPinch={true}
-              panOnScrollMode="free"
-              attributionPosition="bottom-left"
-              preventScrolling={false}
-              zoomOnDoubleClick={false}
-              multiSelectionKeyCode={null}
-              deleteKeyCode={presentationMode ? null : "Delete"}
-              connectionMode="loose"
-              snapToGrid={false}
-              snapGrid={[15, 15]}
+            nodes={nodesWithClick}
+            edges={edges}
+            onNodesChange={(changes) => {
+              onNodesChange(changes);
+              setHasUnsavedChanges(true);
+            }}
+            onEdgesChange={(changes) => {
+              onEdgesChange(changes);
+              setHasUnsavedChanges(true);
+            }}
+            onEdgeClick={handleEdgeClick}
+            onConnect={onConnect}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            nodeTypes={nodeTypes}
+            edgeTypes={edgeTypes}
+            fitView={false}
+            fitViewOptions={{ padding: 0.2, includeHiddenNodes: false }}
+            defaultViewport={{ x: 0, y: 0, zoom: zoomLevel }}
+            minZoom={0.1}
+            maxZoom={2}
+            nodesDraggable={!presentationMode}
+            nodesConnectable={!presentationMode}
+            elementsSelectable={!presentationMode}
+            panOnScroll={false}
+            zoomOnScroll={false}
+            panOnDrag={true}
+            zoomOnPinch={true}
+            panOnScrollMode="free"
+            attributionPosition="bottom-left"
+            preventScrolling={false}
+            zoomOnDoubleClick={false}
+            multiSelectionKeyCode={null}
+            deleteKeyCode={presentationMode ? null : "Delete"}
+            connectionMode="loose"
+            snapToGrid={false}
+            snapGrid={[15, 15]}
               className="w-full h-full"
-            >
-              <FlowWithFitView />
-              <Controls />
-              <Background 
+          >
+            <FlowWithFitView />
+            <Controls />
+            <Background 
                 variant="lines" 
                 gap={50} 
-                size={1} 
+              size={1} 
                 color="#ffffff"
                 style={{ backgroundColor: 'transparent' }}
-              />
-            </ReactFlow>
+            />
+          </ReactFlow>
 
           {/* Overlay para cerrar panel al hacer clic fuera */}
           {showPropertiesPanel && (
@@ -1351,18 +1351,18 @@ const EditRoadmapRefactored = () => {
           )}
 
           {/* Panel de propiedades */}
-          <PropertiesPanel
-            showPropertiesPanel={showPropertiesPanel}
-            selectedNode={selectedNode}
-            selectedEdge={selectedEdge}
-            onClose={() => setShowPropertiesPanel(false)}
-            onUpdateNode={handleUpdateNode}
-            onUpdateEdge={handleUpdateEdge}
-            propertiesTab={propertiesTab}
-            onTabChange={setPropertiesTab}
-          />
-        </div>
-      </div>
+      <PropertiesPanel
+        showPropertiesPanel={showPropertiesPanel}
+        selectedNode={selectedNode}
+        selectedEdge={selectedEdge}
+        onClose={() => setShowPropertiesPanel(false)}
+        onUpdateNode={handleUpdateNode}
+        onUpdateEdge={handleUpdateEdge}
+        propertiesTab={propertiesTab}
+        onTabChange={setPropertiesTab}
+      />
+          </div>
+            </div>
 
       {/* Modal de propuesta */}
       {showProposalModal && (

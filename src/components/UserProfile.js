@@ -112,7 +112,7 @@ export function UserProfileDropdown() {
               </div>
             </div>
           </div>
-          
+
           <div className="p-2">
             <button
               disabled

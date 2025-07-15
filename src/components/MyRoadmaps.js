@@ -86,7 +86,7 @@ export default function MyRoadmaps() {
     if (versionId) {
       navigate(`/edit/${roadmapId}?version=${versionId}`);
     } else {
-      navigate(`/edit/${roadmapId}`);
+    navigate(`/edit/${roadmapId}`);
     }
   }, [navigate]);
 
@@ -202,7 +202,7 @@ export default function MyRoadmaps() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+        {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
@@ -371,7 +371,7 @@ export default function MyRoadmaps() {
                   {/* Header del card */}
                   <div className="p-6">
                     <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-3">
                         <span className="text-3xl">{roadmap.icon}</span>
                         <div>
                           <h3 className="text-lg font-semibold text-gray-900">{roadmap.title}</h3>
@@ -427,7 +427,7 @@ export default function MyRoadmaps() {
                       <div>
                         <span className="font-medium">Tiempo:</span> {formatTime(progress.time_spent)}
                       </div>
-                      <div>
+                    <div>
                         <span className="font-medium">Versión:</span> {roadmap.version}
                       </div>
                     </div>
@@ -447,31 +447,31 @@ export default function MyRoadmaps() {
                           +{roadmap.tags.length - 3}
                         </span>
                       )}
-                    </div>
+                  </div>
 
                     {/* Acciones */}
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() => viewRoadmap(roadmap.id)}
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => viewRoadmap(roadmap.id)}
                           className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
-                        >
+                    >
                           Ver
-                        </button>
-                        <button
+                    </button>
+                    <button
                           onClick={() => editRoadmap(roadmap.id, roadmap.versionId)}
                           className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded-lg transition-colors"
-                        >
+                    >
                           Editar
-                        </button>
+                    </button>
                       </div>
-                      <button
-                        onClick={() => deleteRoadmap(roadmap.id)}
+                    <button
+                      onClick={() => deleteRoadmap(roadmap.id)}
                         className="text-red-600 hover:text-red-800 transition-colors"
-                        title="Eliminar roadmap"
-                      >
+                      title="Eliminar roadmap"
+                    >
                         <FiTrash2 className="w-4 h-4" />
-                      </button>
+                    </button>
                     </div>
                   </div>
                 </div>
@@ -484,7 +484,7 @@ export default function MyRoadmaps() {
           <div className="text-center py-12">
             <div className="text-gray-400 mb-4">
               <FiSearch className="w-16 h-16 mx-auto" />
-            </div>
+                </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">No se encontraron roadmaps</h3>
             <p className="text-gray-600">Intenta ajustar los filtros o crear un nuevo roadmap.</p>
           </div>

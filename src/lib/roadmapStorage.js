@@ -314,7 +314,7 @@ export const roadmapStorageService = {
       if (!roadmapData.nodes || !roadmapData.edges) {
         console.warn('Datos de roadmap corruptos, eliminando...');
         localStorage.removeItem(storageKey);
-        return null;
+      return null;
       }
 
       console.log(`Roadmap ${roadmapType} cargado desde localStorage`);
@@ -343,10 +343,10 @@ export const roadmapStorageService = {
   getSavedRoadmaps: () => {
     try {
       const savedRoadmaps = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith('roadmap_')) {
-          const roadmapType = key.replace('roadmap_', '');
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('roadmap_')) {
+        const roadmapType = key.replace('roadmap_', '');
           const data = localStorage.getItem(key);
           if (data) {
             try {
