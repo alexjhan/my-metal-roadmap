@@ -67,24 +67,10 @@ const EditorHeader = ({
             </button>
           )}
 
-          {/* Botón de modo presentación */}
-          <button
-            onClick={onPresentationMode}
-            className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-              presentationMode 
-                ? 'bg-green-100 text-green-600' 
-                : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
-            }`}
-            title="Modo presentación"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
-          </button>
-
           <button
             onClick={onShowLiveView}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-gray-400 bg-gray-100 rounded-lg cursor-not-allowed transition-colors line-through"
+            disabled
           >
             <span className="hidden sm:inline">Vista</span>
             <span className="sm:hidden">👁️</span>
