@@ -60,7 +60,6 @@ export default function Navbar() {
             }}
             onClick={() => {
               navigate('/');
-              window.location.reload();
             }}
           />
           <h1
@@ -74,7 +73,6 @@ export default function Navbar() {
             }}
             onClick={() => {
               navigate('/');
-              window.location.reload();
             }}
           >
             San Antonio Abad
