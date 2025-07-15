@@ -136,6 +136,23 @@ CREATE TABLE roadmap_votes (
   UNIQUE(version_id, user_id)
 );
 
+-- Tabla de progreso del usuario (NUEVA)
+CREATE TABLE user_progress (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  roadmap_type TEXT NOT NULL,
+  completed_nodes JSONB DEFAULT '[]',
+  current_node TEXT,
+  time_spent INTEGER DEFAULT 0,
+  last_accessed TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  progress_percentage INTEGER DEFAULT 0,
+  notes JSONB DEFAULT '{}',
+  bookmarks JSONB DEFAULT '[]',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(user_id, roadmap_type)
+);
+
 -- Políticas RLS para roadmaps
 CREATE POLICY "Users can view their own roadmaps" ON roadmaps
   FOR SELECT USING (auth.uid() = user_id);
@@ -252,53 +269,22 @@ CREATE POLICY "Users can delete their own versions" ON roadmap_versions
 CREATE POLICY "Anyone can view roadmap votes" ON roadmap_votes
   FOR SELECT USING (true);
 
-CREATE POLICY "Authenticated users can vote" ON roadmap_votes
+CREATE POLICY "Authenticated users can vote on versions" ON roadmap_votes
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Users can update their own votes" ON roadmap_votes
   FOR UPDATE USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can delete their own votes" ON roadmap_votes
+-- Políticas RLS para progreso del usuario (NUEVAS)
+CREATE POLICY "Users can view their own progress" ON user_progress
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own progress" ON user_progress
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own progress" ON user_progress
+  FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own progress" ON user_progress
   FOR DELETE USING (auth.uid() = user_id);
 ```
-
-### 5. Configurar Vercel
-1. Ve a tu proyecto en Vercel
-2. En Settings > Environment Variables
-3. Agrega las mismas variables de entorno:
-   - `REACT_APP_SUPABASE_URL`
-   - `REACT_APP_SUPABASE_ANON_KEY`
-
-### 6. Funcionalidades implementadas
-- ✅ Autenticación de usuarios
-- ✅ Crear roadmaps personalizados
-- ✅ Guardar nodos y conceptos
-- ✅ Seguridad con RLS (Row Level Security)
-- ✅ Integración con Vercel
-- ✅ Sistema híbrido de almacenamiento (estático + personalizaciones)
-- ✅ Optimización de espacio en base de datos
-
-### 7. Próximos pasos
-- [ ] Visualizar roadmaps creados
-- [ ] Compartir roadmaps públicos
-- [ ] Editar roadmaps existentes
-- [ ] Agregar recursos a los nodos
-- [ ] Sistema de likes y comentarios
-
-### 8. Estimación de Uso de Almacenamiento
-
-**Datos Estáticos (Gratis - no en BD):**
-- 30 roadmaps = ~150KB
-- Contenido base de todos los roadmaps
-
-**Datos Dinámicos (en BD - cuenta contra límite):**
-- Personalizaciones por usuario: ~4KB por roadmap
-- 100 usuarios × 30 roadmaps = ~12MB
-- **Límite de Supabase: 500MB**
-- **Margen disponible: ~488MB**
-
-**Optimizaciones implementadas:**
-- ✅ Solo guardar cambios del usuario
-- ✅ Datos base en archivos estáticos
-- ✅ Comprimir posiciones y notas
-- ✅ Eliminar redundancias 

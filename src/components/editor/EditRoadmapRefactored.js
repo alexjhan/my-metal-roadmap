@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -38,8 +38,8 @@ import { availableComponents, allRoadmaps } from './constants';
 // Modo de desarrollo - permite acceso sin autenticación en localhost
 const isDevelopment = devConfig.isDevelopment;
 
-// Edge types personalizados
-const StraightEdge = ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style = {}, markerEnd, markerStart }) => {
+// Edge types personalizados - Memoizados para evitar re-renders
+const StraightEdge = React.memo(({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style = {}, markerEnd, markerStart }) => {
   const [edgePath] = getStraightPath({
     sourceX,
     sourceY,
@@ -59,9 +59,9 @@ const StraightEdge = ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, 
       markerStart={markerStart}
     />
   );
-};
+});
 
-const AngleEdge = ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style = {}, markerEnd, markerStart }) => {
+const AngleEdge = React.memo(({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style = {}, markerEnd, markerStart }) => {
   const [edgePath] = getSmoothStepPath({
     sourceX,
     sourceY,
@@ -81,9 +81,9 @@ const AngleEdge = ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, tar
       markerStart={markerStart}
     />
   );
-};
+});
 
-const CurvedEdge = ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style = {}, markerEnd, markerStart }) => {
+const CurvedEdge = React.memo(({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style = {}, markerEnd, markerStart }) => {
   const [edgePath] = getBezierPath({
     sourceX,
     sourceY,
@@ -103,11 +103,11 @@ const CurvedEdge = ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, ta
       markerStart={markerStart}
     />
   );
-};
+});
 
-// Datos de roadmaps
-const roadmapData = allRoadmapsData;
+// Datos de roadmaps - se definirá dentro del componente
 
+// Definir nodeTypes y edgeTypes como objetos estáticos
 const nodeTypes = {
   custom: CustomNode,
 };
@@ -120,9 +120,18 @@ const edgeTypes = {
 
 function FlowWithFitView() {
   const { fitView } = useReactFlow();
+  const hasFitted = useRef(false);
+  
   useEffect(() => {
-    fitView({ padding: 0.2 });
+    if (!hasFitted.current) {
+      const timer = setTimeout(() => {
+        fitView({ padding: 0.2 });
+        hasFitted.current = true;
+      }, 100);
+      return () => clearTimeout(timer);
+    }
   }, [fitView]);
+  
   return null;
 }
 
@@ -134,24 +143,41 @@ const EditRoadmapRefactored = () => {
   const versionId = searchParams.get('version');
   const mode = searchParams.get('mode');
   
+  // Datos de roadmaps
+  const roadmapData = allRoadmapsData;
+  
   // Obtener datos del roadmap
-  const roadmapInfo = useMemo(() => roadmapData[roadmapType], [roadmapType]);
+  const roadmapInfo = useMemo(() => roadmapData[roadmapType], [roadmapType, roadmapData]);
   
   // Crear título personalizado si estamos editando una versión específica
   const editorTitle = useMemo(() => {
     if (mode === 'proposal') {
-      return `${roadmapInfo.title} (Modo Propuesta)`;
+      return `${roadmapInfo?.title} (Modo Propuesta)`;
     }
     if (versionId) {
-      return `${roadmapInfo.title} (Editando Versión)`;
+      return `${roadmapInfo?.title} (Editando Versión)`;
     }
-    return roadmapInfo.title;
-  }, [roadmapInfo.title, versionId, mode]);
+    return roadmapInfo?.title;
+  }, [roadmapInfo?.title, versionId, mode]);
 
   // Determinar si estamos en modo solo propuesta (solo si mode=proposal)
   const isProposalOnlyMode = useMemo(() => {
     return mode === 'proposal';
   }, [mode]);
+
+  // Memoizar nodos y edges iniciales
+  const initialNodes = useMemo(() => roadmapInfo?.nodes || [], [roadmapInfo?.nodes]);
+  const initialEdges = useMemo(() => 
+    (roadmapInfo?.edges || []).map(edge => ({
+      ...edge,
+      type: 'straight',
+      markerEnd: { 
+        type: MarkerType.ArrowClosed,
+        color: '#1e3a8a'
+      },
+      style: { stroke: '#1e3a8a', strokeWidth: 3 }
+    })), [roadmapInfo?.edges]
+  );
   
   if (!roadmapInfo) {
     return (
@@ -171,18 +197,8 @@ const EditRoadmapRefactored = () => {
   }
 
   // Estados principales
-  const [nodes, setNodes, onNodesChange] = useNodesState(roadmapInfo.nodes || []);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(
-    (roadmapInfo.edges || []).map(edge => ({
-      ...edge,
-      type: 'straight', // Tipo por defecto
-      markerEnd: { 
-        type: MarkerType.ArrowClosed,
-        color: '#1e3a8a' // Color inicial de la flecha
-      },
-      style: { stroke: '#1e3a8a', strokeWidth: 3 }
-    }))
-  );
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   // Mostrar error si no hay nodos cargados
   if (!nodes || nodes.length === 0) {

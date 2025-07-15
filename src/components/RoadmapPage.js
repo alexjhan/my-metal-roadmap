@@ -25,8 +25,8 @@ export default function RoadmapPage() {
   const roadmapInfo = allRoadmapsData[roadmapType];
   
   // Verificar si hay datos guardados
-  const hasSavedData = roadmapStorageService.hasSavedRoadmap(roadmapType);
   const savedData = roadmapStorageService.loadRoadmap(roadmapType);
+  const hasSavedData = savedData !== null;
   
   // Cargar la versión mejor votada
   useEffect(() => {

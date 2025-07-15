@@ -16,7 +16,8 @@ import EditRoadmapRefactored from './components/editor/EditRoadmapRefactored';
 import EditLayout from './components/EditLayout';
 import RoadmapVersionPage from './components/RoadmapVersionPage';
 import Footer from './components/Footer';
-
+import PerformanceMonitor from './components/PerformanceMonitor';
+import { devConfig } from './config/dev';
 
 function App() {
   return (
@@ -52,6 +53,9 @@ function App() {
           </>
         } />
       </Routes>
+      
+      {/* Monitor de Performance - Solo en desarrollo */}
+      <PerformanceMonitor enabled={devConfig.isDevelopment} />
     </Router>
   );
 }

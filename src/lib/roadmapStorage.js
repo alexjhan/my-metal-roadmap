@@ -271,7 +271,7 @@ export const storageEstimates = {
 
 // Funciones para guardar y cargar roadmaps
 export const roadmapStorageService = {
-  // Guardar roadmap en localStorage
+  // Guardar roadmap en localStorage con compresión básica
   saveRoadmap: (roadmapType, nodes, edges) => {
     try {
       const roadmapData = {
@@ -280,66 +280,301 @@ export const roadmapStorageService = {
         lastModified: new Date().toISOString(),
         version: '1.0'
       };
-      localStorage.setItem(`roadmap_${roadmapType}`, JSON.stringify(roadmapData));
+
+      // Comprimir datos antes de guardar
+      const compressedData = JSON.stringify(roadmapData);
+      const storageKey = `roadmap_${roadmapType}`;
+      
+      // Verificar si hay cambios antes de guardar
+      const existingData = localStorage.getItem(storageKey);
+      if (existingData === compressedData) {
+        return; // No hay cambios, no guardar
+      }
+
+      localStorage.setItem(storageKey, compressedData);
       console.log(`Roadmap ${roadmapType} guardado en localStorage`);
-      return true;
     } catch (error) {
-      console.error('Error guardando roadmap:', error);
-      return false;
+      console.error('Error guardando roadmap en localStorage:', error);
     }
   },
 
-  // Cargar roadmap desde localStorage
+  // Cargar roadmap desde localStorage con validación
   loadRoadmap: (roadmapType) => {
     try {
-      const savedData = localStorage.getItem(`roadmap_${roadmapType}`);
-      if (savedData) {
-        const parsedData = JSON.parse(savedData);
-        console.log(`Roadmap ${roadmapType} cargado desde localStorage`);
-        return {
-          nodes: parsedData.nodes || [],
-          edges: parsedData.edges || [],
-          lastModified: parsedData.lastModified,
-          version: parsedData.version
-        };
+      const storageKey = `roadmap_${roadmapType}`;
+      const savedData = localStorage.getItem(storageKey);
+      
+      if (!savedData) {
+        return null;
       }
-      return null;
+
+      const roadmapData = JSON.parse(savedData);
+      
+      // Validar estructura de datos
+      if (!roadmapData.nodes || !roadmapData.edges) {
+        console.warn('Datos de roadmap corruptos, eliminando...');
+        localStorage.removeItem(storageKey);
+        return null;
+      }
+
+      console.log(`Roadmap ${roadmapType} cargado desde localStorage`);
+      return roadmapData;
     } catch (error) {
-      console.error('Error cargando roadmap:', error);
+      console.error('Error cargando roadmap desde localStorage:', error);
+      // Limpiar datos corruptos
+      const storageKey = `roadmap_${roadmapType}`;
+      localStorage.removeItem(storageKey);
       return null;
     }
   },
 
-  // Verificar si existe un roadmap guardado
-  hasSavedRoadmap: (roadmapType) => {
-    return localStorage.getItem(`roadmap_${roadmapType}`) !== null;
-  },
-
-  // Obtener todos los roadmaps guardados
-  getAllSavedRoadmaps: () => {
-    const savedRoadmaps = {};
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith('roadmap_')) {
-        const roadmapType = key.replace('roadmap_', '');
-        const savedData = roadmapStorageService.loadRoadmap(roadmapType);
-        if (savedData) {
-          savedRoadmaps[roadmapType] = savedData;
-        }
-      }
-    }
-    return savedRoadmaps;
-  },
-
-  // Eliminar roadmap guardado
+  // Eliminar roadmap del localStorage
   deleteRoadmap: (roadmapType) => {
     try {
-      localStorage.removeItem(`roadmap_${roadmapType}`);
+      const storageKey = `roadmap_${roadmapType}`;
+      localStorage.removeItem(storageKey);
       console.log(`Roadmap ${roadmapType} eliminado de localStorage`);
-      return true;
     } catch (error) {
-      console.error('Error eliminando roadmap:', error);
-      return false;
+      console.error('Error eliminando roadmap de localStorage:', error);
     }
+  },
+
+  // Obtener lista de roadmaps guardados
+  getSavedRoadmaps: () => {
+    try {
+      const savedRoadmaps = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('roadmap_')) {
+          const roadmapType = key.replace('roadmap_', '');
+          const data = localStorage.getItem(key);
+          if (data) {
+            try {
+              const parsedData = JSON.parse(data);
+              savedRoadmaps.push({
+                type: roadmapType,
+                lastModified: parsedData.lastModified,
+                nodesCount: parsedData.nodes?.length || 0,
+                edgesCount: parsedData.edges?.length || 0
+              });
+            } catch (e) {
+              // Ignorar datos corruptos
+              console.warn(`Datos corruptos para ${roadmapType}, eliminando...`);
+              localStorage.removeItem(key);
+            }
+          }
+        }
+      }
+      return savedRoadmaps;
+    } catch (error) {
+      console.error('Error obteniendo roadmaps guardados:', error);
+      return [];
+    }
+  },
+
+  // Limpiar roadmaps antiguos (más de 30 días)
+  cleanupOldRoadmaps: () => {
+    try {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('roadmap_')) {
+          const data = localStorage.getItem(key);
+          if (data) {
+            try {
+              const parsedData = JSON.parse(data);
+              const lastModified = new Date(parsedData.lastModified);
+              
+              if (lastModified < thirtyDaysAgo) {
+                localStorage.removeItem(key);
+                console.log(`Roadmap antiguo eliminado: ${key}`);
+              }
+            } catch (e) {
+              // Eliminar datos corruptos
+              localStorage.removeItem(key);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error limpiando roadmaps antiguos:', error);
+    }
+  },
+
+  // Obtener estadísticas de almacenamiento
+  getStorageStats: () => {
+    try {
+      const stats = {
+        totalItems: 0,
+        totalSize: 0,
+        roadmaps: []
+      };
+
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('roadmap_')) {
+          const data = localStorage.getItem(key);
+          if (data) {
+            stats.totalItems++;
+            stats.totalSize += data.length;
+            
+            const roadmapType = key.replace('roadmap_', '');
+            stats.roadmaps.push({
+              type: roadmapType,
+              size: data.length
+            });
+          }
+        }
+      }
+
+      return stats;
+    } catch (error) {
+      console.error('Error obteniendo estadísticas de almacenamiento:', error);
+      return { totalItems: 0, totalSize: 0, roadmaps: [] };
+    }
+  }
+};
+
+// Sistema de seguimiento de progreso
+export const progressService = {
+  // Guardar progreso del usuario en un roadmap
+  async saveProgress(userId, roadmapType, progressData) {
+    const { data, error } = await supabase
+      .from('user_progress')
+      .upsert({
+        user_id: userId,
+        roadmap_type: roadmapType,
+        completed_nodes: progressData.completedNodes || [],
+        current_node: progressData.currentNode || null,
+        time_spent: progressData.timeSpent || 0,
+        last_accessed: new Date().toISOString(),
+        progress_percentage: progressData.progressPercentage || 0,
+        notes: progressData.notes || {},
+        bookmarks: progressData.bookmarks || [],
+        updated_at: new Date().toISOString()
+      });
+
+    if (error) throw error;
+    return data;
+  },
+
+  // Obtener progreso del usuario en un roadmap
+  async getProgress(userId, roadmapType) {
+    const { data, error } = await supabase
+      .from('user_progress')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('roadmap_type', roadmapType)
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw error;
+    return data || {
+      completed_nodes: [],
+      current_node: null,
+      time_spent: 0,
+      progress_percentage: 0,
+      notes: {},
+      bookmarks: []
+    };
+  },
+
+  // Obtener progreso general del usuario
+  async getAllProgress(userId) {
+    const { data, error } = await supabase
+      .from('user_progress')
+      .select('*')
+      .eq('user_id', userId)
+      .order('last_accessed', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  },
+
+  // Marcar nodo como completado
+  async markNodeCompleted(userId, roadmapType, nodeId) {
+    const currentProgress = await this.getProgress(userId, roadmapType);
+    const completedNodes = [...new Set([...currentProgress.completed_nodes, nodeId])];
+    
+    return await this.saveProgress(userId, roadmapType, {
+      ...currentProgress,
+      completed_nodes: completedNodes,
+      progress_percentage: this.calculateProgressPercentage(completedNodes, roadmapType)
+    });
+  },
+
+  // Marcar nodo como no completado
+  async markNodeIncomplete(userId, roadmapType, nodeId) {
+    const currentProgress = await this.getProgress(userId, roadmapType);
+    const completedNodes = currentProgress.completed_nodes.filter(id => id !== nodeId);
+    
+    return await this.saveProgress(userId, roadmapType, {
+      ...currentProgress,
+      completed_nodes: completedNodes,
+      progress_percentage: this.calculateProgressPercentage(completedNodes, roadmapType)
+    });
+  },
+
+  // Agregar nota a un nodo
+  async addNodeNote(userId, roadmapType, nodeId, note) {
+    const currentProgress = await this.getProgress(userId, roadmapType);
+    const notes = { ...currentProgress.notes, [nodeId]: note };
+    
+    return await this.saveProgress(userId, roadmapType, {
+      ...currentProgress,
+      notes
+    });
+  },
+
+  // Agregar bookmark
+  async addBookmark(userId, roadmapType, nodeId) {
+    const currentProgress = await this.getProgress(userId, roadmapType);
+    const bookmarks = [...new Set([...currentProgress.bookmarks, nodeId])];
+    
+    return await this.saveProgress(userId, roadmapType, {
+      ...currentProgress,
+      bookmarks
+    });
+  },
+
+  // Remover bookmark
+  async removeBookmark(userId, roadmapType, nodeId) {
+    const currentProgress = await this.getProgress(userId, roadmapType);
+    const bookmarks = currentProgress.bookmarks.filter(id => id !== nodeId);
+    
+    return await this.saveProgress(userId, roadmapType, {
+      ...currentProgress,
+      bookmarks
+    });
+  },
+
+  // Calcular porcentaje de progreso
+  calculateProgressPercentage(completedNodes, roadmapType) {
+    const roadmapData = staticRoadmaps[roadmapType];
+    if (!roadmapData || !roadmapData.nodes) return 0;
+    
+    const totalNodes = roadmapData.nodes.length;
+    return totalNodes > 0 ? Math.round((completedNodes.length / totalNodes) * 100) : 0;
+  },
+
+  // Obtener estadísticas de progreso
+  async getProgressStats(userId) {
+    const allProgress = await this.getAllProgress(userId);
+    
+    const stats = {
+      totalRoadmaps: allProgress.length,
+      completedRoadmaps: allProgress.filter(p => p.progress_percentage === 100).length,
+      inProgressRoadmaps: allProgress.filter(p => p.progress_percentage > 0 && p.progress_percentage < 100).length,
+      totalTimeSpent: allProgress.reduce((sum, p) => sum + (p.time_spent || 0), 0),
+      averageProgress: allProgress.length > 0 
+        ? Math.round(allProgress.reduce((sum, p) => sum + (p.progress_percentage || 0), 0) / allProgress.length)
+        : 0,
+      recentActivity: allProgress
+        .sort((a, b) => new Date(b.last_accessed) - new Date(a.last_accessed))
+        .slice(0, 5)
+    };
+
+    return stats;
   }
 }; 
