@@ -1,7 +1,6 @@
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import RoadmapsSection from './components/RoadmapsSection';
-
 import React from 'react';
 import RoadmapGrid from './components/RoadmapGrid';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
@@ -20,6 +19,16 @@ import PerformanceMonitor from './components/PerformanceMonitor';
 import { devConfig } from './config/dev';
 import UserProfile from './components/UserProfile';
 
+function MainLayout({ children }) {
+  return (
+    <>
+      <Navbar />
+      {children}
+      <Footer />
+    </>
+  );
+}
+
 function App() {
   return (
     <Router>
@@ -30,34 +39,25 @@ function App() {
           </EditLayout>
         } />
         <Route path="/roadmap/:roadmapType/version/:versionId" element={<RoadmapVersionPage />} />
-        <Route path="*" element={
-          <>
-            <Navbar />
-            <Routes>
-              <Route path="/" element={
-                <>
-                  <HeroSection />
-                  <RoadmapGrid />
-                  <RoadmapsSection />
-                  <Footer />
-                </>
-              } />
-              <Route path="/termodinamica" element={<TermodinamicaPage />} />
-              <Route path="/roadmap/:roadmapType" element={<RoadmapPage />} />
-              <Route path="/graph" element={<GraphLayout />} />
-              <Route path="/create" element={<><CreateRoadmap /><Footer /></>} />
-              {/* <Route path="/my-roadmaps" element={<><MyRoadmaps /><Footer /></>} /> */}
-              {/* <Route path="/profile" element={<><UserProfile /><Footer /></>} /> */}
-              <Route path="/privacy" element={<><PrivacyPolicy /><Footer /></>} />
-              <Route path="/privacidad" element={<><PrivacyPolicy /><Footer /></>} />
-              <Route path="/auth/callback" element={<AuthCallback />} />
-            </Routes>
-          </>
+        <Route path="/" element={
+          <MainLayout>
+            <HeroSection />
+            <RoadmapGrid />
+            <RoadmapsSection />
+          </MainLayout>
         } />
+        <Route path="/termodinamica" element={<MainLayout><TermodinamicaPage /></MainLayout>} />
+        <Route path="/roadmap/:roadmapType" element={<MainLayout><RoadmapPage /></MainLayout>} />
+        <Route path="/graph" element={<MainLayout><GraphLayout /></MainLayout>} />
+        <Route path="/create" element={<MainLayout><CreateRoadmap /></MainLayout>} />
+        {/* <Route path="/my-roadmaps" element={<MainLayout><MyRoadmaps /></MainLayout>} /> */}
+        {/* <Route path="/profile" element={<MainLayout><UserProfile /></MainLayout>} /> */}
+        <Route path="/privacy" element={<MainLayout><PrivacyPolicy /></MainLayout>} />
+        <Route path="/privacidad" element={<MainLayout><PrivacyPolicy /></MainLayout>} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
+        {/* Puedes agregar más rutas aquí si es necesario */}
       </Routes>
-      
-      {/* Monitor de Performance - Solo en desarrollo */}
-      <PerformanceMonitor enabled={devConfig.isDevelopment} />
+      {/* <PerformanceMonitor enabled={devConfig.isDevelopment} /> */}
     </Router>
   );
 }

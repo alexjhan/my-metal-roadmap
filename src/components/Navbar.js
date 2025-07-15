@@ -58,9 +58,6 @@ export default function Navbar() {
               objectFit: "contain",
               padding: "0.3rem",
             }}
-            onClick={() => {
-              navigate('/');
-            }}
           />
           <h1
             className="hidden sm:block text-4xl font-bold transition-all duration-500 cursor-pointer"
@@ -70,9 +67,6 @@ export default function Navbar() {
               lineHeight: "2rem",
               color: "#ffffff",
               padding: "0.3rem",
-            }}
-            onClick={() => {
-              navigate('/');
             }}
           >
             San Antonio Abad
