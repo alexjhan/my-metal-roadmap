@@ -82,8 +82,12 @@ export default function MyRoadmaps() {
     }
   }, [user?.id, loadUserData]);
 
-  const editRoadmap = useCallback((roadmapId) => {
-    navigate(`/edit/${roadmapId}`);
+  const editRoadmap = useCallback((roadmapId, versionId) => {
+    if (versionId) {
+      navigate(`/edit/${roadmapId}?version=${versionId}`);
+    } else {
+      navigate(`/edit/${roadmapId}`);
+    }
   }, [navigate]);
 
   const viewRoadmap = useCallback((roadmapType) => {
@@ -455,7 +459,7 @@ export default function MyRoadmaps() {
                           Ver
                         </button>
                         <button
-                          onClick={() => editRoadmap(roadmap.id)}
+                          onClick={() => editRoadmap(roadmap.id, roadmap.versionId)}
                           className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded-lg transition-colors"
                         >
                           Editar

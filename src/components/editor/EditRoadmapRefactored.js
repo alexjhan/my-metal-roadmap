@@ -740,29 +740,47 @@ const EditRoadmapRefactored = () => {
         // Guardar versión en la base de datos
         console.log('Guardando versión en BD para roadmap:', roadmapType);
         console.log('Datos a guardar:', { roadmapType, userId: user.id, nodesCount: nodes.length, edgesCount: edges.length });
-        
-        const { data: version, error } = await supabase
-          .from('roadmap_versions')
-          .insert({
-            roadmap_type: roadmapType,
-            user_id: user.id,
-            nodes: nodes,
-            edges: edges,
-            description: `Versión editada por ${user.email}`,
-            is_public: true,
-            total_votes: 0,
-            up_votes: 0,
-            down_votes: 0
-          })
-          .select()
-          .single();
-
-        if (error) {
-          console.error('Error al guardar en BD:', error);
-          throw error;
+        if (versionId) {
+          // Actualizar versión existente
+          const { data: version, error } = await supabase
+            .from('roadmap_versions')
+            .update({
+              nodes: nodes,
+              edges: edges,
+              description: `Versión editada por ${user.email}`,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', versionId)
+            .select()
+            .single();
+          if (error) {
+            console.error('Error al actualizar versión:', error);
+            throw error;
+          }
+          console.log('Versión actualizada exitosamente:', version);
+        } else {
+          // Crear nueva versión
+          const { data: version, error } = await supabase
+            .from('roadmap_versions')
+            .insert({
+              roadmap_type: roadmapType,
+              user_id: user.id,
+              nodes: nodes,
+              edges: edges,
+              description: `Versión editada por ${user.email}`,
+              is_public: true,
+              total_votes: 0,
+              up_votes: 0,
+              down_votes: 0
+            })
+            .select()
+            .single();
+          if (error) {
+            console.error('Error al guardar en BD:', error);
+            throw error;
+          }
+          console.log('Versión guardada exitosamente:', version);
         }
-        
-        console.log('Versión guardada exitosamente:', version);
       }
       
       setSaveStatus('saved');
@@ -825,7 +843,7 @@ const EditRoadmapRefactored = () => {
         }, 300);
       }, 5000);
     }
-  }, [isDevelopment, user, nodes, edges, roadmapInfo, roadmapType]);
+  }, [isDevelopment, user, nodes, edges, roadmapInfo, roadmapType, versionId]);
 
   const handleVote = useCallback(async (proposalId, vote, comment) => {
     try {
