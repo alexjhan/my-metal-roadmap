@@ -30,67 +30,33 @@ const nodeTypes = {
 function NodeDrawer({ node, onClose }) {
   if (!node) return null;
 
-  // Datos de ejemplo para termodinámica (puedes personalizar según cada nodo)
-  const getNodeData = (nodeId) => {
-    const nodeData = {
-      'termodinamica-basica': {
-        title: 'Termodinámica Básica',
-        description: 'La termodinámica es la rama de la física que estudia las relaciones entre el calor, la energía y el trabajo. En ingeniería metalúrgica, es fundamental para entender los procesos de transformación de materiales, las reacciones químicas y los cambios de fase que ocurren durante la extracción y refinación de metales. Esta disciplina proporciona las herramientas matemáticas y conceptuales necesarias para analizar y optimizar los procesos industriales.',
-        freeResources: [
-          { type: 'artículo', title: 'Introducción a la Termodinámica', url: '#' },
-          { type: 'video', title: 'Primera Ley de la Termodinámica', url: '#' },
-          { type: 'artículo', title: 'Segunda Ley de la Termodinámica', url: '#' },
-          { type: 'video', title: 'Termodinámica en 5 minutos', url: '#' },
-          { type: 'libro', title: 'Fundamentos de Termodinámica Metalúrgica', url: '#' }
-        ],
-        premiumResources: [
-          { type: 'curso', title: 'Termodinámica Avanzada para Metalurgia', discount: '20%', url: '#' },
-          { type: 'curso', title: 'Aplicaciones Termodinámicas en Procesos Metalúrgicos', discount: '15%', url: '#' }
-        ]
-      },
-      'entalpia': {
-        title: 'Entalpía',
-        description: 'La entalpía es una propiedad termodinámica que representa la cantidad total de energía contenida en un sistema. En metalurgia, es crucial para calcular el calor necesario en procesos como la fundición, el refinamiento y las reacciones químicas que ocurren durante la extracción de metales. Esta propiedad permite determinar la energía requerida para transformar los materiales y optimizar los procesos industriales de manera eficiente.',
-        freeResources: [
-          { type: 'artículo', title: '¿Qué es la Entalpía?', url: '#' },
-          { type: 'video', title: 'Cálculo de Entalpía en Reacciones Químicas', url: '#' },
-          { type: 'artículo', title: 'Entalpía en Procesos Metalúrgicos', url: '#' },
-          { type: 'libro', title: 'Entalpía y Transformaciones de Fase', url: '#' }
-        ],
-        premiumResources: [
-          { type: 'curso', title: 'Entalpía y Procesos Metalúrgicos', discount: '25%', url: '#' }
-        ]
-      },
-      'entropia': {
-        title: 'Entropía',
-        description: 'La entropía es una medida del desorden o aleatoriedad en un sistema. En metalurgia, ayuda a entender la espontaneidad de las reacciones químicas y la dirección de los procesos de transformación de materiales. Esta propiedad termodinámica es fundamental para predecir si una reacción ocurrirá espontáneamente y determinar las condiciones óptimas para los procesos industriales.',
-        freeResources: [
-          { type: 'artículo', title: 'Concepto de Entropía', url: '#' },
-          { type: 'video', title: 'Entropía en Reacciones Químicas', url: '#' },
-          { type: 'artículo', title: 'Entropía y Espontaneidad', url: '#' },
-          { type: 'libro', title: 'Entropía en Sistemas Metalúrgicos', url: '#' }
-        ],
-        premiumResources: [
-          { type: 'curso', title: 'Entropía en Ingeniería Metalúrgica', discount: '20%', url: '#' }
-        ]
-      }
-    };
-
-    return nodeData[nodeId] || {
-      title: node.data.label,
-      description: 'La termodinámica es fundamental en ingeniería metalúrgica para entender los procesos de transformación de materiales. Esta disciplina estudia las relaciones entre calor, energía y trabajo, proporcionando las herramientas necesarias para analizar y optimizar procesos industriales complejos.',
-      freeResources: [
-        { type: 'artículo', title: 'Recurso gratuito 1', url: '#' },
-        { type: 'video', title: 'Video explicativo', url: '#' },
-        { type: 'libro', title: 'Libro de referencia', url: '#' }
-      ],
-      premiumResources: [
-        { type: 'curso', title: 'Curso premium', discount: '20%', url: '#' }
-      ]
+  // Función para obtener datos dinámicos del nodo
+  const getNodeData = (node) => {
+    // Obtener título del nodo (prioridad: título personalizado > label)
+    const title = node.data.title || node.data.label || 'Sin título';
+    
+    // Obtener descripción del nodo
+    const description = node.data.description || 'Sin descripción disponible.';
+    
+    // Obtener recursos gratuitos desde los links del nodo
+    const freeResources = (node.data.links || []).map(link => ({
+      type: link.type || 'artículo',
+      title: link.title || 'Recurso sin título',
+      url: link.url || '#'
+    }));
+    
+    // Obtener recursos premium (por ahora vacío, se puede expandir después)
+    const premiumResources = [];
+    
+    return {
+      title,
+      description,
+      freeResources,
+      premiumResources
     };
   };
 
-  const nodeData = getNodeData(node.id);
+  const nodeData = getNodeData(node);
 
   return (
     <>
@@ -127,60 +93,79 @@ function NodeDrawer({ node, onClose }) {
               </p>
             </div>
 
-            {/* Recursos gratuitos */}
-            <div>
-              <div className="relative mb-3 sm:mb-4">
-                <div className="absolute top-1/2 left-0 right-0 border-t border-green-500"></div>
-                <div className="text-left pl-3 sm:pl-4">
-                  <h4 className="text-xs sm:text-sm font-semibold text-green-700 border border-green-500 rounded-lg px-2 sm:px-3 py-1 bg-white inline-block relative z-10">
-                    <svg className="inline w-3 h-3 mr-1 text-green-600" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                    </svg>
-                    Recursos gratuitos
-                  </h4>
-                </div>
-              </div>
-              <div className="space-y-1">
-                {nodeData.freeResources.map((resource, index) => (
-                  <div key={index} className="flex items-center">
-                    <a
-                      href={resource.url}
-                      className={`text-xs sm:text-sm font-semibold px-2 py-1 rounded mr-2 sm:mr-3 transition-colors hover:opacity-80 ${
-                        resource.type === 'artículo' ? 'bg-yellow-500 text-black' :
-                        resource.type === 'video' ? 'bg-purple-500 text-black' :
-                        resource.type === 'libro' ? 'bg-blue-500 text-black' :
-                        'bg-gray-500 text-black'
-                      }`}>
-                      {resource.type.charAt(0).toUpperCase() + resource.type.slice(1)}
-                    </a>
-                    <a
-                      href={resource.url}
-                      className="text-gray-700 text-xs sm:text-sm md:text-base font-medium truncate hover:text-blue-600 transition-colors pr-2 sm:pr-4 underline decoration-gray-600 hover:decoration-blue-700"
-                    >
-                      {resource.title}
-                    </a>
+            {/* Recursos gratuitos - Solo mostrar si hay recursos configurados */}
+            {nodeData.freeResources && nodeData.freeResources.length > 0 && (
+              <div>
+                <div className="relative mb-3 sm:mb-4">
+                  <div className="absolute top-1/2 left-0 right-0 border-t border-green-500"></div>
+                  <div className="text-left pl-3 sm:pl-4">
+                    <h4 className="text-xs sm:text-sm font-semibold text-green-700 border border-green-500 rounded-lg px-2 sm:px-3 py-1 bg-white inline-block relative z-10">
+                      <svg className="inline w-3 h-3 mr-1 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                      </svg>
+                      Recursos gratuitos
+                    </h4>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Recursos premium */}
-            <div>
-              <div className="relative mb-3 sm:mb-4">
-                <div className="absolute top-1/2 left-0 right-0 border-t border-purple-500"></div>
-                <div className="text-left pl-3 sm:pl-4">
-                  <h4 className="text-xs sm:text-sm font-semibold text-purple-700 border border-purple-500 rounded-lg px-2 sm:px-3 py-1 bg-white inline-block relative z-10">
-                    <svg className="inline w-3 h-3 mr-1 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                    </svg>
-                    Recursos premium
-                  </h4>
+                </div>
+                <div className="space-y-1">
+                  {nodeData.freeResources.map((resource, index) => (
+                    <div key={index} className="flex items-center">
+                      <a
+                        href={resource.url}
+                        className={`text-xs sm:text-sm font-semibold px-2 py-1 rounded mr-2 sm:mr-3 transition-colors hover:opacity-80 ${
+                          resource.type === 'artículo' ? 'bg-yellow-500 text-black' :
+                          resource.type === 'video' ? 'bg-purple-500 text-black' :
+                          resource.type === 'libro' ? 'bg-blue-500 text-black' :
+                          'bg-gray-500 text-black'
+                        }`}>
+                        {resource.type.charAt(0).toUpperCase() + resource.type.slice(1)}
+                      </a>
+                      <a
+                        href={resource.url}
+                        className="text-gray-700 text-xs sm:text-sm md:text-base font-medium truncate hover:text-blue-600 transition-colors pr-2 sm:pr-4 underline decoration-gray-600 hover:decoration-blue-700"
+                      >
+                        {resource.title}
+                      </a>
+                    </div>
+                  ))}
                 </div>
               </div>
-              <div className="text-center py-3 sm:py-4">
-                <p className="text-gray-500 text-xs sm:text-sm font-medium">Muy pronto</p>
+            )}
+
+            {/* Recursos premium - Solo mostrar si hay recursos premium */}
+            {nodeData.premiumResources && nodeData.premiumResources.length > 0 && (
+              <div>
+                <div className="relative mb-3 sm:mb-4">
+                  <div className="absolute top-1/2 left-0 right-0 border-t border-purple-500"></div>
+                  <div className="text-left pl-3 sm:pl-4">
+                    <h4 className="text-xs sm:text-sm font-semibold text-purple-700 border border-purple-500 rounded-lg px-2 sm:px-3 py-1 bg-white inline-block relative z-10">
+                      <svg className="inline w-3 h-3 mr-1 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                      Recursos premium
+                    </h4>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  {nodeData.premiumResources.map((resource, index) => (
+                    <div key={index} className="flex items-center">
+                      <a
+                        href={resource.url}
+                        className="text-xs sm:text-sm font-semibold px-2 py-1 rounded mr-2 sm:mr-3 transition-colors hover:opacity-80 bg-purple-500 text-black"
+                      >
+                        {resource.type.charAt(0).toUpperCase() + resource.type.slice(1)}
+                      </a>
+                      <a
+                        href={resource.url}
+                        className="text-gray-700 text-xs sm:text-sm md:text-base font-medium truncate hover:text-blue-600 transition-colors pr-2 sm:pr-4 underline decoration-gray-600 hover:decoration-blue-700"
+                      >
+                        {resource.title}
+                      </a>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -193,12 +178,15 @@ function FlowWithFitView() {
   
   useEffect(() => {
     const timer = setTimeout(() => {
+      console.log('FlowWithFitView: Ejecutando fit view automático');
       fitView({ 
         padding: 0.2, 
         includeHiddenNodes: false,
-        duration: 800 
+        duration: 800,
+        minZoom: 0.1,
+        maxZoom: 1.5
       });
-    }, 100);
+    }, 1500); // Delay más largo para asegurar que todo esté renderizado
 
     return () => clearTimeout(timer);
   }, [fitView]);
@@ -330,6 +318,7 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
             color="#ffffff"
             style={{ backgroundColor: 'transparent' }}
           />
+          <FlowWithFitView />
         </ReactFlow>
       </div>
       {/* Drawer lateral fullscreen */}

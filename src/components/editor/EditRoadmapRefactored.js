@@ -118,19 +118,119 @@ const edgeTypes = {
   curved: CurvedEdge,
 };
 
-function FlowWithFitView() {
+function GuideLinesOverlay({ guideLines }) {
+  const { getViewport } = useReactFlow();
+  const { x: offsetX, y: offsetY, zoom } = getViewport();
+  // Transformar solo el eje correspondiente
+  const transformCoordX = (val) => val * zoom + offsetX;
+  const transformCoordY = (val) => val * zoom + offsetY;
+  // Obtener tamaño del SVG dinámicamente
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  return (
+    <svg className="absolute inset-0 pointer-events-none" style={{ width: '100%', height: '100%', zIndex: 50 }}>
+      {guideLines.map((line, idx) =>
+        line.type === 'vertical' ? (
+          <line
+            key={line.key + idx}
+            x1={transformCoordX(line.value)}
+            x2={transformCoordX(line.value)}
+            y1={0}
+            y2={height}
+            stroke="#2563eb"
+            strokeWidth={3}
+            opacity={0.85}
+          />
+        ) : (
+          <line
+            key={line.key + idx}
+            y1={transformCoordY(line.value)}
+            y2={transformCoordY(line.value)}
+            x1={0}
+            x2={width}
+            stroke="#2563eb"
+            strokeWidth={3}
+            opacity={0.85}
+          />
+        )
+      )}
+    </svg>
+  );
+}
+
+// Componente hijo para manejar el drop correctamente usando useReactFlow
+function DropHandler({ onNodeAdd }) {
+  const { project } = useReactFlow();
+
+  useEffect(() => {
+    const handleDrop = (event) => {
+      event.preventDefault();
+      const reactFlowBounds = document.querySelector('.react-flow').getBoundingClientRect();
+      const data = event.dataTransfer.getData('application/json');
+      if (!data) return;
+      const component = JSON.parse(data);
+      const position = project({
+        x: event.clientX - reactFlowBounds.left,
+        y: event.clientY - reactFlowBounds.top,
+      });
+      onNodeAdd(component, position);
+    };
+    const handleDragOver = (event) => {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'move';
+    };
+    const flow = document.querySelector('.react-flow');
+    if (flow) {
+      flow.addEventListener('drop', handleDrop);
+      flow.addEventListener('dragover', handleDragOver);
+    }
+    return () => {
+      if (flow) {
+        flow.removeEventListener('drop', handleDrop);
+        flow.removeEventListener('dragover', handleDragOver);
+      }
+    };
+  }, [onNodeAdd, project]);
+  return null;
+}
+
+// Componente para auto fit view
+function AutoFitView({ nodes }) {
   const { fitView } = useReactFlow();
   const hasFitted = useRef(false);
   
+  // Ejecutar fit view cuando el componente se monte
   useEffect(() => {
-    if (!hasFitted.current) {
+    const timer = setTimeout(() => {
+      console.log('AutoFitView: Ejecutando fitView inicial');
+      fitView({ 
+        padding: 0.2,
+        includeHiddenNodes: false,
+        minZoom: 0.1,
+        maxZoom: 1.5
+      });
+      hasFitted.current = true;
+    }, 2000); // Delay más largo para asegurar que todo esté renderizado
+    
+    return () => clearTimeout(timer);
+  }, []); // Solo se ejecuta al montar
+  
+  // Ejecutar fit view cuando cambien los nodos
+  useEffect(() => {
+    if (nodes && nodes.length > 0 && !hasFitted.current) {
       const timer = setTimeout(() => {
-    fitView({ padding: 0.2 });
+        console.log('AutoFitView: Ejecutando fitView con', nodes.length, 'nodos');
+        fitView({ 
+          padding: 0.2,
+          includeHiddenNodes: false,
+          minZoom: 0.1,
+          maxZoom: 1.5
+        });
         hasFitted.current = true;
-      }, 100);
+      }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [fitView]);
+  }, [nodes, fitView]);
   
   return null;
 }
@@ -257,6 +357,7 @@ const EditRoadmapRefactored = () => {
   useEffect(() => {
     setProposalMode(mode === 'proposal');
   }, [mode]);
+
   const [selectedNodeId, setSelectedNodeId] = useState(null);
   const [selectedEdgeId, setSelectedEdgeId] = useState(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -283,6 +384,8 @@ const EditRoadmapRefactored = () => {
   const [autoLayout, setAutoLayout] = useState(false);
   const [proposalMode, setProposalMode] = useState(false);
   const [userExistingProposal, setUserExistingProposal] = useState(null);
+  const [guideLines, setGuideLines] = useState([]);
+  const [draggingNodeId, setDraggingNodeId] = useState(null);
 
   // Filtrar roadmaps basado en la búsqueda
   const filteredRoadmaps = useMemo(() => 
@@ -423,37 +526,19 @@ const EditRoadmapRefactored = () => {
     setHasUnsavedChanges(true);
   }, [setEdges]);
 
-  const handleDrop = useCallback(
-    (event) => {
-      event.preventDefault();
-
-      const reactFlowBounds = document.querySelector('.react-flow').getBoundingClientRect();
-      const data = event.dataTransfer.getData('application/json');
-
-      if (typeof data === 'undefined' || !data) {
-        return;
-      }
-
-      const component = JSON.parse(data);
-      const position = {
-        x: event.clientX - reactFlowBounds.left,
-        y: event.clientY - reactFlowBounds.top,
-      };
-
-      const newNode = {
-        id: `${component.type}-${Date.now()}`,
-        type: 'custom',
-        position,
-        data: {
-          ...component.defaultData,
-          label: component.defaultData.label,
-        },
-      };
-
-      setNodes((nds) => nds.concat(newNode));
-    },
-    [setNodes]
-  );
+  // handler para agregar nodo desde drop
+  const handleNodeAdd = useCallback((component, position) => {
+    const newNode = {
+      id: `${component.type}-${Date.now()}`,
+      type: 'custom',
+      position,
+      data: {
+        ...component.defaultData,
+        label: component.defaultData.label,
+      },
+    };
+    setNodes((nds) => nds.concat(newNode));
+  }, [setNodes]);
 
   const handleDragOver = useCallback((event) => {
     event.preventDefault();
@@ -1059,57 +1144,60 @@ const EditRoadmapRefactored = () => {
   }, [roadmapInfo, roadmapType, nodes, edges]);
 
   // Pasar función de click a cada nodo
-  const nodesWithClick = useMemo(() => 
-    nodes.map(node => ({
-      ...node,
-      data: {
-        ...node.data,
-        onNodeClick: handleNodeClick,
-        onDelete: (nodeId) => {
-          if (window.confirm('¿Estás seguro de que quieres eliminar este nodo?')) {
-            setNodes((nds) => nds.filter((n) => n.id !== nodeId));
-            setEdges((eds) => eds.filter(e => e.source !== nodeId && e.target !== nodeId));
-            setSelectedNodeId(null);
-            setShowPropertiesPanel(false);
-            setHasUnsavedChanges(true);
-          }
-        },
-        onUpdateNode: (nodeId, property, value) => {
-          setNodes((nds) =>
-            nds.map((n) => {
-              if (n.id === nodeId) {
-                return {
-                  ...n,
-                  data: {
-                    ...n.data,
-                    [property]: value
-                  }
-                };
-              }
-              return n;
-            })
-          );
-          setHasUnsavedChanges(true);
-        },
-        onUpdateResources: (type, value) => {
-          setNodes((nds) =>
-            nds.map((n) => {
-              if (n.id === node.id) {
-                return {
-                  ...n,
-                  data: {
-                    ...n.data,
-                    [`${type}Resources`]: value
-                  }
-                };
-              }
-              return n;
-            })
-          );
-        }
-      },
-    })), [nodes, handleNodeClick, setNodes]
-  );
+  // const nodesWithClick = useMemo(() => 
+  //   nodes.map(node => ({
+  //     ...node,
+  //     data: {
+  //       ...node.data,
+  //       onNodeClick: handleNodeClick,
+  //       onDelete: (nodeId) => {
+  //         if (window.confirm('¿Estás seguro de que quieres eliminar este nodo?')) {
+  //           setNodes((nds) => nds.filter((n) => n.id !== nodeId));
+  //           setEdges((eds) => eds.filter(e => e.source !== nodeId && e.target !== nodeId));
+  //           setSelectedNodeId(null);
+  //           setShowPropertiesPanel(false);
+  //           setHasUnsavedChanges(true);
+  //         }
+  //       },
+  //       onUpdateNode: (nodeId, property, value) => {
+  //         setNodes((nds) =>
+  //           nds.map((n) => {
+  //             if (n.id === nodeId) {
+  //               return {
+  //                 ...n,
+  //                 data: {
+  //                   ...n.data,
+  //                   [property]: value
+  //                 }
+  //               };
+  //             }
+  //             return n;
+  //           })
+  //         );
+  //         setHasUnsavedChanges(true);
+  //       },
+  //       onUpdateResources: (type, value) => {
+  //         setNodes((nds) =>
+  //           nds.map((n) => {
+  //             if (n.id === node.id) {
+  //               return {
+  //                 ...n,
+  //                 data: {
+  //                   ...n.data,
+  //                   [`${type}Resources`]: value
+  //                 }
+  //               };
+  //             }
+  //             return n;
+  //           })
+  //         );
+  //       }
+  //     },
+  //   })), [nodes, handleNodeClick, setNodes]
+  // );
+
+  // Usar los nodos tal cual, sin pasar onNodeClick ni onClick
+  const nodesWithClick = nodes;
 
   const onConnect = useCallback(
     (params) => {
@@ -1124,6 +1212,119 @@ const EditRoadmapRefactored = () => {
     [setEdges]
   );
 
+  // --- NUEVO: Función para calcular guías ---
+  const SNAP_THRESHOLD = 8; // píxeles de tolerancia para snap
+  const getNodeRect = (node) => {
+    const { position, data, width = 120, height = 60 } = node;
+    // Usa width/height del nodo si existen, si no, valores por defecto
+    return {
+      left: position.x,
+      right: position.x + (node.width || width),
+      top: position.y,
+      bottom: position.y + (node.height || height),
+      centerX: position.x + (node.width || width) / 2,
+      centerY: position.y + (node.height || height) / 2,
+      width: node.width || width,
+      height: node.height || height,
+    };
+  };
+  // Handler para detectar alineación durante el drag
+  const onNodeDrag = useCallback((event, node) => {
+    if (!node || !node.id || !node.position) {
+      console.warn('Nodo inválido en drag:', node);
+      setGuideLines([]);
+      return;
+    }
+    setDraggingNodeId(node.id);
+    // Calcular guías
+    const movingRect = getNodeRect(node);
+    const lines = [];
+    nodes.forEach((other) => {
+      if (!other || !other.id || !other.position || other.id === node.id) return;
+      const otherRect = getNodeRect(other);
+      if (!otherRect) return;
+      // Verticales: left, right, centerX
+      [
+        { type: 'vertical', pos: movingRect.left, other: otherRect.left, key: 'left' },
+        { type: 'vertical', pos: movingRect.right, other: otherRect.right, key: 'right' },
+        { type: 'vertical', pos: movingRect.centerX, other: otherRect.centerX, key: 'centerX' },
+      ].forEach(({ type, pos, other: otherVal, key }) => {
+        if (Math.abs(pos - otherVal) < SNAP_THRESHOLD) {
+          lines.push({
+            type,
+            value: otherVal,
+            key: `${other && other.id ? other.id : 'safe'}-${key}`,
+          });
+        }
+      });
+      // Horizontales: top, bottom, centerY
+      [
+        { type: 'horizontal', pos: movingRect.top, other: otherRect.top, key: 'top' },
+        { type: 'horizontal', pos: movingRect.bottom, other: otherRect.bottom, key: 'bottom' },
+        { type: 'horizontal', pos: movingRect.centerY, other: otherRect.centerY, key: 'centerY' },
+      ].forEach(({ type, pos, other: otherVal, key }) => {
+        if (Math.abs(pos - otherVal) < SNAP_THRESHOLD) {
+          lines.push({
+            type,
+            value: otherVal,
+            key: `${other && other.id ? other.id : 'safe'}-${key}`,
+          });
+        }
+      });
+    });
+    setGuideLines(lines);
+  }, [nodes]);
+
+  const onNodeDragStop = useCallback((event, node) => {
+    setDraggingNodeId(null);
+    setGuideLines([]);
+    if (!node || !node.id || !node.position) return;
+    const movingRect = getNodeRect(node);
+    let snapDelta = { x: 0, y: 0 };
+    nodes.forEach((other) => {
+      if (!other || !other.id || !other.position || other.id === node.id) return;
+      const otherRect = getNodeRect(other);
+      if (!otherRect) return;
+      // Snap vertical (x)
+      [
+        { pos: movingRect.left, other: otherRect.left, axis: 'x', delta: movingRect.left - otherRect.left },
+        { pos: movingRect.right, other: otherRect.right, axis: 'x', delta: movingRect.right - otherRect.right },
+        { pos: movingRect.centerX, other: otherRect.centerX, axis: 'x', delta: movingRect.centerX - otherRect.centerX },
+      ].forEach(({ pos, other, axis, delta }) => {
+        if (Math.abs(pos - other) < SNAP_THRESHOLD && Math.abs(delta) > 0) {
+          if (snapDelta[axis] === 0 || Math.abs(delta) < Math.abs(snapDelta[axis])) {
+            snapDelta[axis] = -delta;
+          }
+        }
+      });
+      // Snap horizontal (y)
+      [
+        { pos: movingRect.top, other: otherRect.top, axis: 'y', delta: movingRect.top - otherRect.top },
+        { pos: movingRect.bottom, other: otherRect.bottom, axis: 'y', delta: movingRect.bottom - otherRect.bottom },
+        { pos: movingRect.centerY, other: otherRect.centerY, axis: 'y', delta: movingRect.centerY - otherRect.centerY },
+      ].forEach(({ pos, other, axis, delta }) => {
+        if (Math.abs(pos - other) < SNAP_THRESHOLD && Math.abs(delta) > 0) {
+          if (snapDelta[axis] === 0 || Math.abs(delta) < Math.abs(snapDelta[axis])) {
+            snapDelta[axis] = -delta;
+          }
+        }
+      });
+    });
+    // Si hay snap, actualizar la posición del nodo
+    if (snapDelta.x !== 0 || snapDelta.y !== 0) {
+      setNodes((nds) => nds.map((n) =>
+        n.id === node.id
+          ? {
+              ...n,
+              position: {
+                x: n.position.x + snapDelta.x,
+                y: n.position.y + snapDelta.y,
+              },
+            }
+          : n
+      ));
+    }
+  }, [nodes, setNodes]);
 
 
   return (
@@ -1304,13 +1505,16 @@ const EditRoadmapRefactored = () => {
             }}
             onEdgeClick={handleEdgeClick}
             onConnect={onConnect}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
             nodeTypes={nodeTypes}
             edgeTypes={edgeTypes}
             fitView={false}
-            fitViewOptions={{ padding: 0.2, includeHiddenNodes: false }}
-            defaultViewport={{ x: 0, y: 0, zoom: zoomLevel }}
+            fitViewOptions={{ 
+              padding: 0.3, 
+              includeHiddenNodes: false,
+              minZoom: 0.1,
+              maxZoom: 1.5
+            }}
+            defaultViewport={{ x: 0, y: 0, zoom: 1 }}
             minZoom={0.1}
             maxZoom={2}
             nodesDraggable={!presentationMode}
@@ -1330,8 +1534,10 @@ const EditRoadmapRefactored = () => {
             snapToGrid={false}
             snapGrid={[15, 15]}
               className="w-full h-full"
+            onNodeClick={(event, node) => handleNodeClick(node.id)}
+            onNodeDrag={onNodeDrag}
+            onNodeDragStop={onNodeDragStop}
           >
-            <FlowWithFitView />
             <Controls />
             <Background 
                 variant="lines" 
@@ -1340,6 +1546,9 @@ const EditRoadmapRefactored = () => {
                 color="#ffffff"
                 style={{ backgroundColor: 'transparent' }}
             />
+            <DropHandler onNodeAdd={handleNodeAdd} />
+            {guideLines.length > 0 && <GuideLinesOverlay guideLines={guideLines} />}
+            <AutoFitView nodes={nodes} />
           </ReactFlow>
 
           {/* Overlay para cerrar panel al hacer clic fuera */}

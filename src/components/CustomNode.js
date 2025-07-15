@@ -292,12 +292,12 @@ const CustomNode = React.memo(({ id, data, selected, onClick }) => {
   }, [data]);
 
   // Memoizar el manejador de clic
-  const handleClick = useCallback((event) => {
-    event.stopPropagation();
-    if (onClick) {
-      onClick(id);
-    }
-  }, [onClick, id]);
+  // const handleClick = useCallback((event) => {
+  //   event.stopPropagation();
+  //   if (onClick) {
+  //     onClick(id);
+  //   }
+  // }, [onClick, id]);
 
   // Memoizar los handles
   const handles = useMemo(() => {
@@ -336,13 +336,14 @@ const CustomNode = React.memo(({ id, data, selected, onClick }) => {
 
   return (
     <div
+      data-id={id}
       style={{
         ...nodeStyles,
         border: selected ? '2px solid #3b82f6' : nodeStyles.border,
         boxShadow: selected ? '0 0 0 2px rgba(59, 130, 246, 0.2)' : nodeStyles.boxShadow
       }}
-      onClick={handleClick}
-      className={`custom-node ${selected ? 'selected' : ''}`}
+      // onClick={handleClick} // Eliminado para que el click lo maneje React Flow
+      className={`custom-node moveable-node ${selected ? 'selected' : ''}`}
     >
       {handles}
       {nodeContent}

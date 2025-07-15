@@ -1,0 +1,194 @@
+/* Moveable CSS - versión compatible para guías y controles visuales */
+.moveable-control-box {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform;
+  pointer-events: none;
+  z-index: 10;
+}
+.moveable-line {
+  position: absolute;
+  background: #4af;
+  z-index: 10;
+}
+.moveable-line.moveable-horizontal {
+  height: 1px;
+  width: 100%;
+  left: 0;
+}
+.moveable-line.moveable-vertical {
+  width: 1px;
+  height: 100%;
+  top: 0;
+}
+.moveable-control {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  border: 1px solid #4af;
+  border-radius: 50%;
+  box-sizing: border-box;
+  z-index: 11;
+  pointer-events: auto;
+}
+.moveable-control.moveable-origin {
+  background: #4af;
+  border: 1px solid #fff;
+}
+.moveable-control.moveable-direction {
+  background: #fff;
+  border: 1px solid #4af;
+}
+.moveable-control.moveable-direction.moveable-n {
+  top: -4px;
+  left: 50%;
+  margin-left: -4px;
+}
+.moveable-control.moveable-direction.moveable-s {
+  bottom: -4px;
+  left: 50%;
+  margin-left: -4px;
+}
+.moveable-control.moveable-direction.moveable-e {
+  right: -4px;
+  top: 50%;
+  margin-top: -4px;
+}
+.moveable-control.moveable-direction.moveable-w {
+  left: -4px;
+  top: 50%;
+  margin-top: -4px;
+}
+.moveable-control.moveable-direction.moveable-ne {
+  right: -4px;
+  top: -4px;
+}
+.moveable-control.moveable-direction.moveable-nw {
+  left: -4px;
+  top: -4px;
+}
+.moveable-control.moveable-direction.moveable-se {
+  right: -4px;
+  bottom: -4px;
+}
+.moveable-control.moveable-direction.moveable-sw {
+  left: -4px;
+  bottom: -4px;
+}
+.moveable-control.moveable-rotation {
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border: 2px solid #4af;
+  border-radius: 50%;
+  margin-left: -6px;
+  margin-top: -6px;
+  z-index: 12;
+}
+.moveable-control.moveable-rotation.moveable-n {
+  top: -24px;
+  left: 50%;
+}
+.moveable-control.moveable-rotation.moveable-s {
+  bottom: -24px;
+  left: 50%;
+}
+.moveable-control.moveable-rotation.moveable-e {
+  right: -24px;
+  top: 50%;
+}
+.moveable-control.moveable-rotation.moveable-w {
+  left: -24px;
+  top: 50%;
+}
+.moveable-control.moveable-rotation.moveable-ne {
+  right: -24px;
+  top: -24px;
+}
+.moveable-control.moveable-rotation.moveable-nw {
+  left: -24px;
+  top: -24px;
+}
+.moveable-control.moveable-rotation.moveable-se {
+  right: -24px;
+  bottom: -24px;
+}
+.moveable-control.moveable-rotation.moveable-sw {
+  left: -24px;
+  bottom: -24px;
+}
+.moveable-control.moveable-rotation.moveable-center {
+  left: 50%;
+  top: 50%;
+}
+.moveable-control.moveable-highlight {
+  background: #ff0;
+  border-color: #fa0;
+}
+.moveable-control.moveable-drag {
+  background: #4af;
+  border-color: #fff;
+}
+.moveable-control.moveable-drag.moveable-highlight {
+  background: #fa0;
+  border-color: #ff0;
+}
+.moveable-control.moveable-drag.moveable-disabled {
+  background: #ccc;
+  border-color: #eee;
+}
+.moveable-control.moveable-disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+.moveable-snap-line {
+  position: absolute;
+  background: #fa0;
+  z-index: 9999;
+  pointer-events: none;
+}
+.moveable-snap-line.moveable-horizontal {
+  height: 1px;
+  width: 100vw;
+  left: 0;
+}
+.moveable-snap-line.moveable-vertical {
+  width: 1px;
+  height: 100vh;
+  top: 0;
+}
+.moveable-snap-line.moveable-guide {
+  background: #4af;
+  opacity: 0.5;
+}
+.moveable-snap-line.moveable-guide.moveable-horizontal {
+  height: 1px;
+  width: 100vw;
+  left: 0;
+}
+.moveable-snap-line.moveable-guide.moveable-vertical {
+  width: 1px;
+  height: 100vh;
+  top: 0;
+}
+.moveable-snap-line,
+.moveable-snap-line.moveable-guide {
+  background: #ff0000 !important;
+  border: 2px solid #000 !important;
+  opacity: 1 !important;
+  z-index: 99999 !important;
+}
+.moveable-snap-line.moveable-horizontal,
+.moveable-snap-line.moveable-guide.moveable-horizontal {
+  height: 4px !important;
+  width: 100vw !important;
+  left: 0;
+}
+.moveable-snap-line.moveable-vertical,
+.moveable-snap-line.moveable-guide.moveable-vertical {
+  width: 4px !important;
+  height: 100vh !important;
+  top: 0;
+} 
