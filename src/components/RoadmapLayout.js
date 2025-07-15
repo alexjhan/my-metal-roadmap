@@ -183,7 +183,7 @@ export default function RoadmapLayout({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 roadmap-page" style={{ minHeight: '100vh', height: '100vh', overflow: 'visible' }}>
+    <div className="min-h-screen bg-gray-50 roadmap-page" style={{ overflow: 'visible' }}>
       {/* Espacio superior reducido para móviles */}
       <div className="h-2 sm:h-4 md:h-6 lg:h-8" />
       
@@ -264,11 +264,9 @@ export default function RoadmapLayout({
       </div>
       
       {/* Contenedor del contenido */}
-      <div className="max-w-6xl mx-auto px-8 sm:px-12 md:px-16 lg:px-20 xl:px-24" style={{ height: '100%', overflow: 'visible' }}>
+      <div className="max-w-6xl mx-auto px-8 sm:px-12 md:px-16 lg:px-20 xl:px-24" style={{ overflow: 'visible' }}>
         <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-          <div className="h-[600px] sm:h-[700px] lg:h-[800px]">
-            {children}
-          </div>
+          {children}
         </div>
       </div>
     </div>

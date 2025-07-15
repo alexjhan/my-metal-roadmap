@@ -10,7 +10,9 @@ const PropertiesPanel = ({
   propertiesTab, 
   onTabChange 
 }) => {
-  if (!showPropertiesPanel || (!selectedNode && !selectedEdge)) return null;
+  if (!showPropertiesPanel || (!selectedNode && !selectedEdge)) {
+    return null;
+  }
 
   const nodeType = selectedNode?.data.nodeType || selectedNode?.data.type;
   const shouldShowTabs = selectedNode && ['topic', 'subtopic', 'todo'].includes(nodeType);
@@ -746,10 +748,17 @@ const PropertiesPanel = ({
   };
 
   return (
-    <div className="fixed right-0 top-[4.5rem] w-80 h-[calc(100vh-5rem)] bg-white border-l border-gray-200 z-40 flex flex-col shadow-none">
+    <div 
+      className="fixed right-0 w-80 bg-white border-l border-gray-200 z-50 flex flex-col shadow-lg properties-panel"
+      style={{
+        top: '5rem',
+        height: 'calc(100vh - 5rem)'
+      }}
+    >
+
       {/* Pestañas para tema, subtema y tarea */}
       {shouldShowTabs && (
-        <div className="mt-4 flex gap-2 px-4 pb-6">
+        <div className="flex gap-2 px-4 py-4 border-b border-gray-100">
           <button 
             className={`focus:outline-hidden rounded-full px-3 py-1 text-sm font-medium ${
               propertiesTab === 'properties' 
@@ -774,7 +783,7 @@ const PropertiesPanel = ({
       )}
       
       {/* Contenido de propiedades */}
-      <div className="grow basis-0 overflow-hidden overflow-y-auto p-4 pt-0">
+      <div className="grow basis-0 overflow-hidden overflow-y-auto p-4">
         {selectedEdge ? (
           // Mostrar propiedades de flecha si se seleccionó una
           renderEdgeProperties()

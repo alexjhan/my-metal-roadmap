@@ -7,7 +7,7 @@ const Sidebar = ({
   onToggleRoadmapsPanel 
 }) => {
   return (
-    <div className="fixed left-0 top-[4.5rem] w-12 h-[calc(100vh-5rem)] bg-white flex flex-col items-center justify-start z-40">
+    <div className="w-12 h-full bg-white flex flex-col items-center justify-start z-30 border-r border-gray-200">
       {/* Botón Componentes */}
       <button
         onClick={onToggleComponentsPanel}

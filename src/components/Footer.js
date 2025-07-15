@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function Footer() {
   return (
-    <footer className="bg-blue-900 py-6 pb-10 text-white sm:py-16 mt-12 relative z-10">
+    <footer className="bg-blue-900 py-6 pb-10 text-white sm:py-16 relative z-10">
       <div className="container mx-auto px-4">
         <p className="mb-8 flex flex-col justify-center gap-0 font-medium text-blue-200 sm:mb-16 sm:flex-row sm:gap-4">
           <a className="border-b border-b-blue-700 px-2 py-1.5 transition-colors hover:text-white sm:border-b-0 sm:px-0 sm:py-0" href="/roadmaps">Roadmaps</a>

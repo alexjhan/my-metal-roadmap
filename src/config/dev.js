@@ -1,7 +1,7 @@
 // Configuración para desarrollo local
 export const devConfig = {
   // Indicar si estamos en modo desarrollo
-  isDevelopment: false, // Forzar uso de BD real para testing
+  isDevelopment: true, // Permitir acceso sin autenticación en desarrollo
   
   // Configuración de Supabase para desarrollo
   supabase: {
