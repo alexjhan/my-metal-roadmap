@@ -320,15 +320,18 @@ const EditRoadmapRefactored = () => {
 
   // Cargar datos de versión específica si está disponible
   useEffect(() => {
-    if (versionId) {
-      const storageKey = `roadmap_${roadmapType}_version_${versionId}`;
-      const versionData = localStorage.getItem(storageKey);
-      
-      if (versionData) {
-        try {
+    const loadVersionData = async () => {
+      if (!versionId) return;
+
+      try {
+        // Primero intentar cargar desde localStorage (para compatibilidad)
+        const storageKey = `roadmap_${roadmapType}_version_${versionId}`;
+        const versionData = localStorage.getItem(storageKey);
+        
+        if (versionData) {
           const parsedData = JSON.parse(versionData);
           if (parsedData.nodes && parsedData.edges) {
-            console.log('Cargando datos de versión específica:', versionId);
+            console.log('Cargando datos de versión desde localStorage:', versionId);
             setNodes(parsedData.nodes);
             setEdges(parsedData.edges.map(edge => ({
               ...edge,
@@ -342,21 +345,92 @@ const EditRoadmapRefactored = () => {
             
             // Limpiar los datos del localStorage después de cargarlos
             localStorage.removeItem(storageKey);
-            
-            // Activar automáticamente el modo propuesta cuando se carga una versión específica
-            setProposalMode(false); // No activar modo propuesta automáticamente
+            return;
           }
-        } catch (error) {
-          console.error('Error cargando datos de versión:', error);
         }
+
+        // Si no hay datos en localStorage, cargar desde la base de datos
+        if (!isDevelopment && user) {
+          console.log('Cargando datos de versión desde BD:', versionId);
+          const { data: version, error } = await supabase
+            .from('roadmap_versions')
+            .select('*')
+            .eq('id', versionId)
+            .single();
+
+          if (error) {
+            console.error('Error cargando versión desde BD:', error);
+            return;
+          }
+
+          if (version && version.nodes && version.edges) {
+            console.log('Versión cargada desde BD:', version);
+            setNodes(version.nodes);
+            setEdges(version.edges.map(edge => ({
+              ...edge,
+              type: edge.type || 'straight',
+              markerEnd: edge.markerEnd || { 
+                type: MarkerType.ArrowClosed,
+                color: '#1e3a8a'
+              },
+              style: edge.style || { stroke: '#1e3a8a', strokeWidth: 3 }
+            })));
+          }
+        }
+      } catch (error) {
+        console.error('Error cargando datos de versión:', error);
       }
-    }
-  }, [versionId, roadmapType, setNodes, setEdges]);
+    };
+
+    loadVersionData();
+  }, [versionId, roadmapType, setNodes, setEdges, isDevelopment, user]);
 
   // Activar modo propuesta automáticamente solo si mode=proposal
   useEffect(() => {
     setProposalMode(mode === 'proposal');
   }, [mode]);
+
+  // Cargar la versión más reciente del usuario si no hay versionId específico
+  useEffect(() => {
+    const loadUserLatestVersion = async () => {
+      if (versionId || isDevelopment || !user) return; // Solo si no hay versionId específico
+
+      try {
+        console.log('Cargando versión más reciente del usuario para:', roadmapType);
+        const { data: latestVersion, error } = await supabase
+          .from('roadmap_versions')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('roadmap_type', roadmapType)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error cargando versión más reciente:', error);
+          return;
+        }
+
+        if (latestVersion && latestVersion.nodes && latestVersion.edges) {
+          console.log('Cargando versión más reciente del usuario:', latestVersion.id);
+          setNodes(latestVersion.nodes);
+          setEdges(latestVersion.edges.map(edge => ({
+            ...edge,
+            type: edge.type || 'straight',
+            markerEnd: edge.markerEnd || { 
+              type: MarkerType.ArrowClosed,
+              color: '#1e3a8a'
+            },
+            style: edge.style || { stroke: '#1e3a8a', strokeWidth: 3 }
+          })));
+        }
+      } catch (error) {
+        console.error('Error cargando versión más reciente del usuario:', error);
+      }
+    };
+
+    loadUserLatestVersion();
+  }, [versionId, roadmapType, user, isDevelopment, setNodes, setEdges]);
 
   const [selectedNodeId, setSelectedNodeId] = useState(null);
   const [selectedEdgeId, setSelectedEdgeId] = useState(null);

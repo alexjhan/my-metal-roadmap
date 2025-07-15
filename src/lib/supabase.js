@@ -111,6 +111,42 @@ export const roadmapService = {
     return data
   },
 
+  // Obtener versiones del usuario para un roadmap específico
+  async getUserRoadmapVersions(userId, roadmapType) {
+    if (!isConfigured) {
+      throw new Error('Supabase no está configurado. Por favor, configura las variables de entorno.');
+    }
+    
+    const { data, error } = await supabase
+      .from('roadmap_versions')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('roadmap_type', roadmapType)
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+    return data
+  },
+
+  // Obtener la versión más reciente del usuario para un roadmap
+  async getUserLatestVersion(userId, roadmapType) {
+    if (!isConfigured) {
+      throw new Error('Supabase no está configurado. Por favor, configura las variables de entorno.');
+    }
+    
+    const { data, error } = await supabase
+      .from('roadmap_versions')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('roadmap_type', roadmapType)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single()
+
+    if (error && error.code !== 'PGRST116') throw error // PGRST116 = no encontrado
+    return data || null
+  },
+
   // Crear nodo
   async createNode(roadmapId, nodeData) {
     if (!isConfigured) {
