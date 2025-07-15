@@ -26,6 +26,9 @@ export default function RoadmapGrid() {
   const handleCardClick = (item) => {
     if (item.status === "active") {
       navigate(item.link);
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
     } else {
       alert(`Próximamente: ${item.title} - Esta funcionalidad estará disponible pronto!`);
     }
