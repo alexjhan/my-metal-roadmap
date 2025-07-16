@@ -350,7 +350,7 @@ const EditRoadmapRefactored = () => {
         }
 
         // Si no hay datos en localStorage, cargar desde la base de datos
-        if (!isDevelopment && user) {
+        if (user) {
           console.log('Cargando datos de versión desde BD:', versionId);
           const { data: version, error } = await supabase
             .from('roadmap_versions')
@@ -383,7 +383,7 @@ const EditRoadmapRefactored = () => {
     };
 
     loadVersionData();
-  }, [versionId, roadmapType, setNodes, setEdges, isDevelopment, user]);
+  }, [versionId, roadmapType, setNodes, setEdges, user]);
 
   // Activar modo propuesta automáticamente solo si mode=proposal
   useEffect(() => {
@@ -393,7 +393,7 @@ const EditRoadmapRefactored = () => {
   // Cargar la versión más reciente del usuario si no hay versionId específico
   useEffect(() => {
     const loadUserLatestVersion = async () => {
-      if (versionId || isDevelopment || !user) return; // Solo si no hay versionId específico
+      if (versionId || !user) return; // Solo si no hay versionId específico
 
       try {
         console.log('Cargando versión más reciente del usuario para:', roadmapType);
@@ -430,7 +430,7 @@ const EditRoadmapRefactored = () => {
     };
 
     loadUserLatestVersion();
-  }, [versionId, roadmapType, user, isDevelopment, setNodes, setEdges]);
+  }, [versionId, roadmapType, user, setNodes, setEdges]);
 
   const [selectedNodeId, setSelectedNodeId] = useState(null);
   const [selectedEdgeId, setSelectedEdgeId] = useState(null);

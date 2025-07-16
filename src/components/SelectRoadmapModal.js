@@ -46,14 +46,21 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
       for (const roadmap of data) {
         if (roadmap.status === 'active') {
           try {
+            const roadmapType = roadmap.link.replace('/roadmap/', '');
+            console.log(`Cargando versiones para roadmap: ${roadmapType}`);
+            
             // Obtener versiones del usuario para este roadmap
-            const userVersions = await roadmapService.getUserRoadmapVersions(user.id, roadmap.link.replace('/roadmap/', ''));
+            const userVersions = await roadmapService.getUserRoadmapVersions(user.id, roadmapType);
+            console.log(`Versiones del usuario para ${roadmapType}:`, userVersions);
+            
             // Obtener también versiones públicas
-            const publicVersions = await roadmapService.getRoadmapVersions(roadmap.link.replace('/roadmap/', ''));
+            const publicVersions = await roadmapService.getRoadmapVersions(roadmapType);
+            console.log(`Versiones públicas para ${roadmapType}:`, publicVersions);
             
             // Combinar versiones del usuario y públicas
             const allVersions = [...userVersions, ...publicVersions];
-            versionsByRoadmap[roadmap.link.replace('/roadmap/', '')] = allVersions;
+            versionsByRoadmap[roadmapType] = allVersions;
+            console.log(`Total de versiones para ${roadmapType}:`, allVersions.length);
           } catch (error) {
             console.error(`Error cargando versiones para ${roadmap.title}:`, error);
             versionsByRoadmap[roadmap.link.replace('/roadmap/', '')] = [];
@@ -61,6 +68,7 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
         }
       }
       
+      console.log('Todas las versiones cargadas:', versionsByRoadmap);
       setRoadmapVersions(versionsByRoadmap);
     } catch (error) {
       console.error('Error cargando versiones:', error);
@@ -94,15 +102,22 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
   });
 
   const handleVersionSelect = (roadmapType, version) => {
+    console.log('handleVersionSelect llamado con:', { roadmapType, version });
+    
     // Verificar si la versión pertenece al usuario actual
     const isUserVersion = version.user_id === user.id;
+    console.log('¿Es versión del usuario?', isUserVersion);
     
     if (isUserVersion) {
       // Si es la versión del usuario, ir al modo editor normal
-      navigate(`/edit/${roadmapType}?version=${version.id}`);
+      const url = `/edit/${roadmapType}?version=${version.id}`;
+      console.log('Navegando a:', url);
+      navigate(url);
     } else {
       // Si no es la versión del usuario, ir al modo propuesta
-      navigate(`/edit/${roadmapType}?version=${version.id}&mode=proposal`);
+      const url = `/edit/${roadmapType}?version=${version.id}&mode=proposal`;
+      console.log('Navegando a (modo propuesta):', url);
+      navigate(url);
     }
     onClose();
   };

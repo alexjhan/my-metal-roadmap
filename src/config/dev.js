@@ -1,7 +1,7 @@
 // Configuración para desarrollo local
 export const devConfig = {
   // Indicar si estamos en modo desarrollo
-  isDevelopment: true, // Permitir acceso sin autenticación en desarrollo
+  isDevelopment: process.env.NODE_ENV === 'development', // Solo true si realmente estamos en desarrollo
   
   // Configuración de Supabase para desarrollo
   supabase: {
