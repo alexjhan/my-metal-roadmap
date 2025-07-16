@@ -623,118 +623,7 @@ const EditRoadmapRefactored = () => {
     event.dataTransfer.dropEffect = 'move';
   }, []);
 
-  // --- INICIO: handleCreateProposal ---
-  const handleCreateProposal = useCallback(async () => {
-    if (!user) {
-      alert('Debes iniciar sesión para guardar cambios');
-      return;
-    }
-
-    if (isProposalOnlyMode) {
-      // En modo propuesta, crear propuesta en lugar de versión
-      handleCreateProposalFromEditor();
-      return;
-    }
-
-    setSaveStatus('saving');
-    console.log('Iniciando guardado de versión...');
-
-    try {
-      // Usar la nueva función del servicio que maneja automáticamente el upsert
-      const description = versionId 
-        ? `Versión actualizada por ${user.email}`
-        : `Nueva versión creada por ${user.email}`;
-      
-      const savedVersion = await roadmapService.saveRoadmapVersion(
-        user.id, 
-        roadmapType, 
-        nodes, 
-        edges, 
-        description
-      );
-      
-      console.log('Versión guardada exitosamente:', savedVersion);
-
-      // En modo desarrollo, también guardar en localStorage como respaldo
-      if (isDevelopment) {
-        roadmapStorageService.saveRoadmap(roadmapType, nodes, edges);
-        console.log('Respaldo en localStorage guardado (modo desarrollo)');
-      }
-      
-      setSaveStatus('saved');
-      setHasUnsavedChanges(false);
-      
-      // Mostrar notificación de éxito
-      const notification = document.createElement('div');
-      notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300 translate-x-full';
-      notification.innerHTML = `
-        <div class="flex items-center space-x-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-          </svg>
-          <span class="font-medium">
-            ${versionId ? '¡Versión actualizada exitosamente!' : '¡Versión guardada exitosamente!'}
-          </span>
-        </div>
-      `;
-      document.body.appendChild(notification);
-      
-      // Animar entrada
-      setTimeout(() => {
-        notification.classList.remove('translate-x-full');
-      }, 100);
-      
-      // Remover después de 3 segundos
-      setTimeout(() => {
-        notification.classList.add('translate-x-full');
-        setTimeout(() => {
-          document.body.removeChild(notification);
-        }, 300);
-      }, 3000);
-      
-      setSaveStatus('idle');
-      
-      // Actualizar la URL para incluir el versionId si es una nueva versión
-      if (!versionId && savedVersion && savedVersion.id) {
-        const newUrl = `/edit/${roadmapType}?version=${savedVersion.id}`;
-        window.history.replaceState({}, '', newUrl);
-        console.log('URL actualizada con nuevo versionId:', newUrl);
-      }
-      
-    } catch (error) {
-      console.error('Error saving changes:', error);
-      setSaveStatus('error');
-      
-      // Mostrar notificación de error
-      const notification = document.createElement('div');
-      notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300 translate-x-full';
-      notification.innerHTML = `
-        <div class="flex items-center space-x-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-          <span class="font-medium">Error al guardar: ${error.message}</span>
-        </div>
-      `;
-      document.body.appendChild(notification);
-      
-      // Animar entrada
-      setTimeout(() => {
-        notification.classList.remove('translate-x-full');
-      }, 100);
-      
-      // Remover después de 5 segundos
-      setTimeout(() => {
-        notification.classList.add('translate-x-full');
-        setTimeout(() => {
-          document.body.removeChild(notification);
-        }, 300);
-      }, 5000);
-    }
-  }, [isDevelopment, user, nodes, edges, roadmapType, versionId, isProposalOnlyMode, handleCreateProposalFromEditor]);
-  // --- FIN: handleCreateProposal ---
-
-
+  // --- INICIO: handleCreateProposalFromEditor ---
   const handleCreateProposalFromEditor = useCallback(async () => {
     if (!user) {
       alert('Debes iniciar sesión para crear una propuesta');
@@ -930,14 +819,127 @@ const EditRoadmapRefactored = () => {
         alert('Propuesta creada exitosamente');
       }
       
+      setUserExistingProposal(result);
       setProposalMode(false);
       setProposalDescription('');
       
     } catch (error) {
-      console.error('Error creating/updating proposal:', error);
-      alert('Error al procesar la propuesta: ' + error.message);
+      console.error('Error creando propuesta:', error);
+      alert('Error al crear la propuesta: ' + error.message);
     }
-  }, [user, nodes, edges, roadmapInfo, roadmapType, proposalDescription, isDevelopment]);
+  }, [user, roadmapType, nodes, edges, roadmapInfo, proposalDescription, userExistingProposal, isDevelopment]);
+  // --- FIN: handleCreateProposalFromEditor ---
+
+  // --- INICIO: handleCreateProposal ---
+  const handleCreateProposal = useCallback(async () => {
+    if (!user) {
+      alert('Debes iniciar sesión para guardar cambios');
+      return;
+    }
+
+    if (isProposalOnlyMode) {
+      // En modo propuesta, crear propuesta en lugar de versión
+      handleCreateProposalFromEditor();
+      return;
+    }
+
+    setSaveStatus('saving');
+    console.log('Iniciando guardado de versión...');
+
+    try {
+      // Usar la nueva función del servicio que maneja automáticamente el upsert
+      const description = versionId 
+        ? `Versión actualizada por ${user.email}`
+        : `Nueva versión creada por ${user.email}`;
+      
+      const savedVersion = await roadmapService.saveRoadmapVersion(
+        user.id, 
+        roadmapType, 
+        nodes, 
+        edges, 
+        description
+      );
+      
+      console.log('Versión guardada exitosamente:', savedVersion);
+
+      // En modo desarrollo, también guardar en localStorage como respaldo
+      if (isDevelopment) {
+        roadmapStorageService.saveRoadmap(roadmapType, nodes, edges);
+        console.log('Respaldo en localStorage guardado (modo desarrollo)');
+      }
+      
+      setSaveStatus('saved');
+      setHasUnsavedChanges(false);
+      
+      // Mostrar notificación de éxito
+      const notification = document.createElement('div');
+      notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300 translate-x-full';
+      notification.innerHTML = `
+        <div class="flex items-center space-x-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          <span class="font-medium">
+            ${versionId ? '¡Versión actualizada exitosamente!' : '¡Versión guardada exitosamente!'}
+          </span>
+        </div>
+      `;
+      document.body.appendChild(notification);
+      
+      // Animar entrada
+      setTimeout(() => {
+        notification.classList.remove('translate-x-full');
+      }, 100);
+      
+      // Remover después de 3 segundos
+      setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 300);
+      }, 3000);
+      
+      setSaveStatus('idle');
+      
+      // Actualizar la URL para incluir el versionId si es una nueva versión
+      if (!versionId && savedVersion && savedVersion.id) {
+        const newUrl = `/edit/${roadmapType}?version=${savedVersion.id}`;
+        window.history.replaceState({}, '', newUrl);
+        console.log('URL actualizada con nuevo versionId:', newUrl);
+      }
+      
+    } catch (error) {
+      console.error('Error saving changes:', error);
+      setSaveStatus('error');
+      
+      // Mostrar notificación de error
+      const notification = document.createElement('div');
+      notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300 translate-x-full';
+      notification.innerHTML = `
+        <div class="flex items-center space-x-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+          <span class="font-medium">Error al guardar: ${error.message}</span>
+        </div>
+      `;
+      document.body.appendChild(notification);
+      
+      // Animar entrada
+      setTimeout(() => {
+        notification.classList.remove('translate-x-full');
+      }, 100);
+      
+      // Remover después de 5 segundos
+      setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 300);
+      }, 5000);
+    }
+  }, [isDevelopment, user, nodes, edges, roadmapType, versionId, isProposalOnlyMode, handleCreateProposalFromEditor]);
+  // --- FIN: handleCreateProposal ---
 
   const handleVote = useCallback(async (proposalId, vote, comment) => {
     try {
