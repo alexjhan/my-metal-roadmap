@@ -95,24 +95,59 @@ export const roadmapService = {
     return data
   },
 
-  // Obtener versión específica de roadmap
-  async getRoadmapVersion(versionId) {
+  // Obtener versiones de roadmaps del usuario
+  async getUserRoadmapVersions(userId, roadmapType = null) {
+    if (!isConfigured) {
+      throw new Error('Supabase no está configurado. Por favor, configura las variables de entorno.');
+    }
+    
+    let query = supabase
+      .from('roadmap_versions')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    
+    if (roadmapType) {
+      query = query.eq('roadmap_type', roadmapType);
+    }
+    
+    const { data, error } = await query;
+    if (error) throw error;
+    return data;
+  },
+
+  // Guardar o actualizar versión de roadmap (una sola por usuario por roadmap)
+  async saveRoadmapVersion(userId, roadmapType, nodes, edges, description = null) {
     if (!isConfigured) {
       throw new Error('Supabase no está configurado. Por favor, configura las variables de entorno.');
     }
     
     const { data, error } = await supabase
       .from('roadmap_versions')
-      .select('*')
-      .eq('id', versionId)
-      .single()
+      .upsert({
+        roadmap_type: roadmapType,
+        user_id: userId,
+        nodes: nodes,
+        edges: edges,
+        description: description || `Versión guardada por usuario - ${new Date().toLocaleString()}`,
+        is_public: true,
+        total_votes: 0,
+        up_votes: 0,
+        down_votes: 0,
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'user_id,roadmap_type', // Conflicto en la restricción UNIQUE
+        ignoreDuplicates: false // Actualizar en lugar de ignorar
+      })
+      .select()
+      .single();
 
-    if (error) throw error
-    return data
+    if (error) throw error;
+    return data;
   },
 
-  // Obtener versiones del usuario para un roadmap específico
-  async getUserRoadmapVersions(userId, roadmapType) {
+  // Obtener la versión específica del usuario para un roadmap
+  async getUserVersion(userId, roadmapType) {
     if (!isConfigured) {
       throw new Error('Supabase no está configurado. Por favor, configura las variables de entorno.');
     }
@@ -122,10 +157,10 @@ export const roadmapService = {
       .select('*')
       .eq('user_id', userId)
       .eq('roadmap_type', roadmapType)
-      .order('created_at', { ascending: false })
+      .single();
 
-    if (error) throw error
-    return data
+    if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no encontrado
+    return data || null;
   },
 
   // Obtener la versión más reciente del usuario para un roadmap

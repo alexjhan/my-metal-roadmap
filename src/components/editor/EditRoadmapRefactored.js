@@ -396,25 +396,15 @@ const EditRoadmapRefactored = () => {
       if (versionId || !user) return; // Solo si no hay versionId específico
 
       try {
-        console.log('Cargando versión más reciente del usuario para:', roadmapType);
-        const { data: latestVersion, error } = await supabase
-          .from('roadmap_versions')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('roadmap_type', roadmapType)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .single();
+        console.log('Cargando versión del usuario para:', roadmapType);
+        
+        // Usar la nueva función del servicio
+        const userVersion = await roadmapService.getUserVersion(user.id, roadmapType);
 
-        if (error && error.code !== 'PGRST116') {
-          console.error('Error cargando versión más reciente:', error);
-          return;
-        }
-
-        if (latestVersion && latestVersion.nodes && latestVersion.edges) {
-          console.log('Cargando versión más reciente del usuario:', latestVersion.id);
-          setNodes(latestVersion.nodes);
-          setEdges(latestVersion.edges.map(edge => ({
+        if (userVersion && userVersion.nodes && userVersion.edges) {
+          console.log('Cargando versión del usuario:', userVersion.id);
+          setNodes(userVersion.nodes);
+          setEdges(userVersion.edges.map(edge => ({
             ...edge,
             type: edge.type || 'straight',
             markerEnd: edge.markerEnd || { 
@@ -423,9 +413,11 @@ const EditRoadmapRefactored = () => {
             },
             style: edge.style || { stroke: '#1e3a8a', strokeWidth: 3 }
           })));
+        } else {
+          console.log('No se encontró versión del usuario, usando datos estáticos');
         }
       } catch (error) {
-        console.error('Error cargando versión más reciente del usuario:', error);
+        console.error('Error cargando versión del usuario:', error);
       }
     };
 
@@ -633,79 +625,35 @@ const EditRoadmapRefactored = () => {
 
   // --- INICIO: handleCreateProposal ---
   const handleCreateProposal = useCallback(async () => {
-    // Si estamos en modo solo propuesta, no permitir guardar como versión
-    if (isProposalOnlyMode) {
-      alert('No puedes guardar como nueva versión cuando estás editando una versión específica. Usa el botón "Crear Propuesta" para proponer cambios.');
-      return;
-    }
-
-    // Verificar autenticación
     if (!user) {
       alert('Debes iniciar sesión para guardar cambios');
       return;
     }
 
+    if (isProposalOnlyMode) {
+      // En modo propuesta, crear propuesta en lugar de versión
+      handleCreateProposalFromEditor();
+      return;
+    }
+
     setSaveStatus('saving');
+    console.log('Iniciando guardado de versión...');
 
     try {
-      let savedVersion = null;
-
-      // Guardar versión en la base de datos (tanto en desarrollo como en producción)
-      console.log('Guardando versión en BD para roadmap:', roadmapType);
-      console.log('Datos a guardar:', { 
+      // Usar la nueva función del servicio que maneja automáticamente el upsert
+      const description = versionId 
+        ? `Versión actualizada por ${user.email} - ${new Date().toLocaleString()}`
+        : `Nueva versión creada por ${user.email} - ${new Date().toLocaleString()}`;
+      
+      const savedVersion = await roadmapService.saveRoadmapVersion(
+        user.id, 
         roadmapType, 
-        userId: user.id, 
-        nodesCount: nodes.length, 
-        edgesCount: edges.length,
-        versionId: versionId || 'nueva versión'
-      });
-
-      if (versionId) {
-        // Actualizar versión existente
-        const { data: version, error } = await supabase
-          .from('roadmap_versions')
-          .update({
-            nodes: nodes,
-            edges: edges,
-            description: `Versión actualizada por ${user.email} - ${new Date().toLocaleString()}`,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', versionId)
-          .eq('user_id', user.id) // Asegurar que solo el propietario puede actualizar
-          .select()
-          .single();
-        
-        if (error) {
-          console.error('Error al actualizar versión:', error);
-          throw error;
-        }
-        savedVersion = version;
-        console.log('Versión actualizada exitosamente:', version);
-      } else {
-        // Crear nueva versión
-        const { data: version, error } = await supabase
-          .from('roadmap_versions')
-          .insert({
-            roadmap_type: roadmapType,
-            user_id: user.id,
-            nodes: nodes,
-            edges: edges,
-            description: `Nueva versión creada por ${user.email} - ${new Date().toLocaleString()}`,
-            is_public: true,
-            total_votes: 0,
-            up_votes: 0,
-            down_votes: 0
-          })
-          .select()
-          .single();
-        
-        if (error) {
-          console.error('Error al guardar en BD:', error);
-          throw error;
-        }
-        savedVersion = version;
-        console.log('Nueva versión guardada exitosamente:', version);
-      }
+        nodes, 
+        edges, 
+        description
+      );
+      
+      console.log('Versión guardada exitosamente:', savedVersion);
 
       // En modo desarrollo, también guardar en localStorage como respaldo
       if (isDevelopment) {
@@ -725,7 +673,7 @@ const EditRoadmapRefactored = () => {
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
           </svg>
           <span class="font-medium">
-            ${versionId ? '¡Versión actualizada exitosamente!' : '¡Nueva versión guardada exitosamente!'}
+            ${versionId ? '¡Versión actualizada exitosamente!' : '¡Versión guardada exitosamente!'}
           </span>
         </div>
       `;
@@ -746,7 +694,7 @@ const EditRoadmapRefactored = () => {
       
       setSaveStatus('idle');
       
-      // Si es una nueva versión, actualizar la URL para incluir el versionId
+      // Actualizar la URL para incluir el versionId si es una nueva versión
       if (!versionId && savedVersion && savedVersion.id) {
         const newUrl = `/edit/${roadmapType}?version=${savedVersion.id}`;
         window.history.replaceState({}, '', newUrl);
@@ -783,7 +731,7 @@ const EditRoadmapRefactored = () => {
         }, 300);
       }, 5000);
     }
-  }, [isDevelopment, user, nodes, edges, roadmapInfo, roadmapType, versionId, isProposalOnlyMode]);
+  }, [isDevelopment, user, nodes, edges, roadmapType, versionId, isProposalOnlyMode, handleCreateProposalFromEditor]);
   // --- FIN: handleCreateProposal ---
 
 

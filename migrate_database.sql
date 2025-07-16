@@ -1,5 +1,90 @@
--- Migración de base de datos para sistema de versiones y votación
+-- Migración de base de datos para MetalRoadmap
 -- Ejecutar este script en el editor SQL de Supabase
+
+-- Habilitar RLS
+ALTER TABLE auth.users ENABLE ROW LEVEL SECURITY;
+
+-- Tabla de roadmaps
+CREATE TABLE IF NOT EXISTS roadmaps (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  description TEXT,
+  emoji TEXT DEFAULT '🔥',
+  is_public BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Tabla de nodos
+CREATE TABLE IF NOT EXISTS nodes (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  roadmap_id UUID REFERENCES roadmaps(id) ON DELETE CASCADE,
+  label TEXT NOT NULL,
+  description TEXT,
+  icon TEXT DEFAULT '📚',
+  position_x INTEGER DEFAULT 0,
+  position_y INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Tabla de recursos
+CREATE TABLE IF NOT EXISTS resources (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  node_id UUID REFERENCES nodes(id) ON DELETE CASCADE,
+  type TEXT NOT NULL CHECK (type IN ('artículo', 'video', 'libro')),
+  title TEXT NOT NULL,
+  url TEXT,
+  is_premium BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Tabla de personalizaciones de roadmaps
+CREATE TABLE IF NOT EXISTS roadmap_customizations (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  roadmap_type TEXT NOT NULL,
+  node_positions JSONB DEFAULT '{}',
+  user_notes JSONB DEFAULT '{}',
+  custom_connections JSONB DEFAULT '[]',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(user_id, roadmap_type)
+);
+
+-- Tabla de propuestas de edición
+CREATE TABLE IF NOT EXISTS edit_proposals (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  roadmap_type TEXT NOT NULL,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  changes JSONB NOT NULL,
+  description TEXT,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected', 'applied')),
+  votes JSONB DEFAULT '[]',
+  comments JSONB DEFAULT '[]',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Tabla de votos en propuestas
+CREATE TABLE IF NOT EXISTS proposal_votes (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  proposal_id UUID REFERENCES edit_proposals(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  vote TEXT NOT NULL CHECK (vote IN ('approve', 'reject')),
+  comment TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(proposal_id, user_id)
+);
+
+-- Tabla de comentarios en propuestas
+CREATE TABLE IF NOT EXISTS proposal_comments (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  proposal_id UUID REFERENCES edit_proposals(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  text TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
 -- Tabla de versiones de roadmaps
 CREATE TABLE IF NOT EXISTS roadmap_versions (
@@ -26,6 +111,40 @@ CREATE TABLE IF NOT EXISTS roadmap_votes (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   UNIQUE(version_id, user_id)
 );
+
+-- Tabla de progreso del usuario
+CREATE TABLE IF NOT EXISTS user_progress (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  roadmap_type TEXT NOT NULL,
+  completed_nodes JSONB DEFAULT '[]',
+  current_node TEXT,
+  time_spent INTEGER DEFAULT 0,
+  last_accessed TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  progress_percentage INTEGER DEFAULT 0,
+  notes JSONB DEFAULT '{}',
+  bookmarks JSONB DEFAULT '[]',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(user_id, roadmap_type)
+);
+
+-- ===== NUEVA MIGRACIÓN: Agregar restricción UNIQUE a roadmap_versions =====
+-- Esta migración asegura que cada usuario solo pueda tener una versión por roadmap
+
+-- Agregar restricción UNIQUE para roadmap_versions
+-- Esto reemplazará cualquier versión existente cuando se cree una nueva
+ALTER TABLE roadmap_versions 
+ADD CONSTRAINT roadmap_versions_user_roadmap_unique 
+UNIQUE (user_id, roadmap_type);
+
+-- Crear índice para mejorar el rendimiento de las consultas
+CREATE INDEX IF NOT EXISTS idx_roadmap_versions_user_roadmap 
+ON roadmap_versions (user_id, roadmap_type);
+
+-- Comentario explicativo
+COMMENT ON CONSTRAINT roadmap_versions_user_roadmap_unique ON roadmap_versions 
+IS 'Restricción que asegura que cada usuario solo pueda tener una versión por roadmap. Las nuevas versiones reemplazarán las existentes.';
 
 -- Políticas RLS para versiones de roadmaps
 CREATE POLICY "Anyone can view public roadmap versions" ON roadmap_versions
