@@ -46,8 +46,14 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
       for (const roadmap of data) {
         if (roadmap.status === 'active') {
           try {
-            const versions = await roadmapService.getRoadmapVersions(roadmap.link.replace('/roadmap/', ''));
-            versionsByRoadmap[roadmap.link.replace('/roadmap/', '')] = versions;
+            // Obtener versiones del usuario para este roadmap
+            const userVersions = await roadmapService.getUserRoadmapVersions(user.id, roadmap.link.replace('/roadmap/', ''));
+            // Obtener también versiones públicas
+            const publicVersions = await roadmapService.getRoadmapVersions(roadmap.link.replace('/roadmap/', ''));
+            
+            // Combinar versiones del usuario y públicas
+            const allVersions = [...userVersions, ...publicVersions];
+            versionsByRoadmap[roadmap.link.replace('/roadmap/', '')] = allVersions;
           } catch (error) {
             console.error(`Error cargando versiones para ${roadmap.title}:`, error);
             versionsByRoadmap[roadmap.link.replace('/roadmap/', '')] = [];

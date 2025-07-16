@@ -13,6 +13,7 @@ export default function MyRoadmaps() {
   const [userProgress, setUserProgress] = useState({});
   const [progressStats, setProgressStats] = useState({});
   const [roadmapsLoading, setRoadmapsLoading] = useState(true);
+  const [userVersions, setUserVersions] = useState([]);
   
   // Filtros y búsqueda
   const [searchTerm, setSearchTerm] = useState('');
@@ -39,10 +40,11 @@ export default function MyRoadmaps() {
   const loadUserData = useCallback(async (userId) => {
     try {
       // Cargar datos en paralelo para mejor rendimiento
-      const [userRoadmaps, progress, stats] = await Promise.all([
+      const [userRoadmaps, progress, stats, userVersions] = await Promise.all([
         roadmapService.getUserRoadmaps(userId),
         progressService.getAllProgress(userId),
-        progressService.getProgressStats(userId)
+        progressService.getProgressStats(userId),
+        roadmapService.getUserRoadmapVersions(userId)
       ]);
 
       setRoadmaps(userRoadmaps);
@@ -54,6 +56,9 @@ export default function MyRoadmaps() {
       }, {});
       setUserProgress(progressMap);
       setProgressStats(stats);
+
+      // Guardar las versiones del usuario para usarlas en el renderizado
+      setUserVersions(userVersions);
     } catch (error) {
       console.error('Error cargando datos:', error);
       alert('Error al cargar tus roadmaps');
@@ -86,7 +91,7 @@ export default function MyRoadmaps() {
     if (versionId) {
       navigate(`/edit/${roadmapId}?version=${versionId}`);
     } else {
-    navigate(`/edit/${roadmapId}`);
+      navigate(`/edit/${roadmapId}`);
     }
   }, [navigate]);
 
@@ -96,7 +101,22 @@ export default function MyRoadmaps() {
 
   // Memoizar roadmaps filtrados para evitar re-cálculos
   const filteredRoadmaps = useMemo(() => {
-    let filtered = allRoadmaps;
+    // Combinar roadmaps estáticos con versiones del usuario
+    let combinedRoadmaps = allRoadmaps.map(roadmap => {
+      // Buscar la versión más reciente del usuario para este roadmap
+      const userVersion = userVersions
+        .filter(v => v.roadmap_type === roadmap.id)
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+      
+      return {
+        ...roadmap,
+        versionId: userVersion?.id || null,
+        hasUserVersion: !!userVersion,
+        lastModified: userVersion?.updated_at || null
+      };
+    });
+
+    let filtered = combinedRoadmaps;
 
     // Filtrar por búsqueda
     if (searchTerm) {
@@ -151,7 +171,7 @@ export default function MyRoadmaps() {
     });
 
     return filtered;
-  }, [searchTerm, selectedCategory, selectedDifficulty, sortBy, showCompleted, showInProgress, showNotStarted, userProgress]);
+  }, [searchTerm, selectedCategory, selectedDifficulty, sortBy, showCompleted, showInProgress, showNotStarted, userProgress, userVersions]);
 
   const getProgressForRoadmap = useCallback((roadmapId) => {
     return userProgress[roadmapId] || {
@@ -371,13 +391,19 @@ export default function MyRoadmaps() {
                   {/* Header del card */}
                   <div className="p-6">
                     <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center space-x-3">
+                      <div className="flex items-center space-x-3">
                         <span className="text-3xl">{roadmap.icon}</span>
                         <div>
                           <h3 className="text-lg font-semibold text-gray-900">{roadmap.title}</h3>
                           <p className="text-sm text-gray-600">{roadmap.description}</p>
                         </div>
                       </div>
+                      {roadmap.hasUserVersion && (
+                        <div className="flex items-center space-x-1 bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          <span>Personalizado</span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Metadatos */}
@@ -427,8 +453,13 @@ export default function MyRoadmaps() {
                       <div>
                         <span className="font-medium">Tiempo:</span> {formatTime(progress.time_spent)}
                       </div>
-                    <div>
-                        <span className="font-medium">Versión:</span> {roadmap.version}
+                      <div>
+                        <span className="font-medium">Versión:</span> 
+                        {roadmap.hasUserVersion ? (
+                          <span className="text-green-600 font-semibold">Personalizada</span>
+                        ) : (
+                          <span className="text-gray-500">Original</span>
+                        )}
                       </div>
                     </div>
 
