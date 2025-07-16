@@ -438,16 +438,16 @@ const EditRoadmapRefactored = () => {
   const [saveStatus, setSaveStatus] = useState('idle');
 
   // Guardado automático cuando hay cambios sin guardar
-  useEffect(() => {
-    if (!hasUnsavedChanges || !user) return;
+  // useEffect(() => {
+  //   if (!hasUnsavedChanges || !user) return;
 
-    const autoSaveTimer = setTimeout(() => {
-      console.log('Guardado automático iniciado...');
-      handleCreateProposal();
-    }, 30000); // Guardar automáticamente después de 30 segundos de inactividad
+  //   const autoSaveTimer = setTimeout(() => {
+  //     console.log('Guardado automático iniciado...');
+  //     handleCreateProposal();
+  //   }, 30000); // Guardar automáticamente después de 30 segundos de inactividad
 
-    return () => clearTimeout(autoSaveTimer);
-  }, [hasUnsavedChanges, user, handleCreateProposal]);
+  //   return () => clearTimeout(autoSaveTimer);
+  // }, [hasUnsavedChanges, user, handleCreateProposal]);
   const [showProposalModal, setShowProposalModal] = useState(false);
   const [proposals, setProposals] = useState([]);
   const [selectedProposal, setSelectedProposal] = useState(null);
