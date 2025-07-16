@@ -77,6 +77,8 @@ export const roadmapService = {
       throw new Error('Supabase no está configurado. Por favor, configura las variables de entorno.');
     }
     
+    console.log(`Consultando versiones para roadmap: ${roadmapType}`);
+    
     const { data, error } = await supabase
       .from('roadmap_versions')
       .select(`
@@ -92,13 +94,21 @@ export const roadmapService = {
       .eq('is_public', true)
       .order('created_at', { ascending: false })
 
-    if (error) throw error
+    if (error) {
+      console.error(`Error consultando versiones para ${roadmapType}:`, error);
+      throw error;
+    }
+    
+    console.log(`Versiones encontradas para ${roadmapType}:`, data);
     
     // Extraer el email del perfil del usuario
-    return data.map(version => ({
+    const versionsWithEmail = data.map(version => ({
       ...version,
       user_email: version.profiles?.email || null
     }));
+    
+    console.log(`Versiones procesadas para ${roadmapType}:`, versionsWithEmail);
+    return versionsWithEmail;
   },
 
   // Obtener versiones de roadmaps del usuario
@@ -158,6 +168,8 @@ export const roadmapService = {
       throw new Error('Supabase no está configurado. Por favor, configura las variables de entorno.');
     }
     
+    console.log(`Consultando versión del usuario ${userId} para roadmap: ${roadmapType}`);
+    
     const { data, error } = await supabase
       .from('roadmap_versions')
       .select(`
@@ -168,15 +180,21 @@ export const roadmapService = {
       .eq('roadmap_type', roadmapType)
       .single();
 
-    if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no encontrado
+    if (error && error.code !== 'PGRST116') {
+      console.error(`Error consultando versión del usuario para ${roadmapType}:`, error);
+      throw error;
+    } // PGRST116 = no encontrado
     
     if (data) {
-      return {
+      const versionWithEmail = {
         ...data,
         user_email: data.profiles?.email || null
       };
+      console.log(`Versión del usuario encontrada para ${roadmapType}:`, versionWithEmail);
+      return versionWithEmail;
     }
     
+    console.log(`No se encontró versión del usuario para ${roadmapType}`);
     return null;
   },
 

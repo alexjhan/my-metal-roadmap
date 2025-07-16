@@ -36,8 +36,12 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
   };
 
   const loadAllRoadmapVersions = async () => {
-    if (!user) return;
+    if (!user) {
+      console.log('No hay usuario autenticado');
+      return;
+    }
     
+    console.log('Iniciando carga de versiones para usuario:', user.id);
     setLoadingVersions(true);
     try {
       const versionsByRoadmap = {};
@@ -55,6 +59,7 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
             
             // Obtener versiones públicas (excluyendo la del usuario actual)
             const publicVersions = await roadmapService.getRoadmapVersions(roadmapType);
+            console.log(`Versiones públicas obtenidas para ${roadmapType}:`, publicVersions);
             const otherUserVersions = publicVersions.filter(v => v.user_id !== user.id);
             console.log(`Versiones de otros usuarios para ${roadmapType}:`, otherUserVersions);
             
