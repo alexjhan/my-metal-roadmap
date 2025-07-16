@@ -642,8 +642,8 @@ const EditRoadmapRefactored = () => {
     try {
       // Usar la nueva función del servicio que maneja automáticamente el upsert
       const description = versionId 
-        ? `Versión actualizada por ${user.email} - ${new Date().toLocaleString()}`
-        : `Nueva versión creada por ${user.email} - ${new Date().toLocaleString()}`;
+        ? `Versión actualizada por ${user.email}`
+        : `Nueva versión creada por ${user.email}`;
       
       const savedVersion = await roadmapService.saveRoadmapVersion(
         user.id, 

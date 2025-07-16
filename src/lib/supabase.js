@@ -85,14 +85,20 @@ export const roadmapService = {
         created_at,
         description,
         is_public,
-        total_votes
+        total_votes,
+        profiles:user_id(email)
       `)
       .eq('roadmap_type', roadmapType)
       .eq('is_public', true)
       .order('created_at', { ascending: false })
 
     if (error) throw error
-    return data
+    
+    // Extraer el email del perfil del usuario
+    return data.map(version => ({
+      ...version,
+      user_email: version.profiles?.email || null
+    }));
   },
 
   // Obtener versiones de roadmaps del usuario
@@ -154,13 +160,24 @@ export const roadmapService = {
     
     const { data, error } = await supabase
       .from('roadmap_versions')
-      .select('*')
+      .select(`
+        *,
+        profiles:user_id(email)
+      `)
       .eq('user_id', userId)
       .eq('roadmap_type', roadmapType)
       .single();
 
     if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no encontrado
-    return data || null;
+    
+    if (data) {
+      return {
+        ...data,
+        user_email: data.profiles?.email || null
+      };
+    }
+    
+    return null;
   },
 
   // Obtener la versión más reciente del usuario para un roadmap

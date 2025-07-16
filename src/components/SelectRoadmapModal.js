@@ -49,16 +49,22 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
             const roadmapType = roadmap.link.replace('/roadmap/', '');
             console.log(`Cargando versiones para roadmap: ${roadmapType}`);
             
-            // Obtener versiones del usuario para este roadmap
-            const userVersions = await roadmapService.getUserRoadmapVersions(user.id, roadmapType);
-            console.log(`Versiones del usuario para ${roadmapType}:`, userVersions);
+            // Obtener solo la versión del usuario para este roadmap (una sola)
+            const userVersion = await roadmapService.getUserVersion(user.id, roadmapType);
+            console.log(`Versión del usuario para ${roadmapType}:`, userVersion);
             
-            // Obtener también versiones públicas
+            // Obtener versiones públicas (excluyendo la del usuario actual)
             const publicVersions = await roadmapService.getRoadmapVersions(roadmapType);
-            console.log(`Versiones públicas para ${roadmapType}:`, publicVersions);
+            const otherUserVersions = publicVersions.filter(v => v.user_id !== user.id);
+            console.log(`Versiones de otros usuarios para ${roadmapType}:`, otherUserVersions);
             
-            // Combinar versiones del usuario y públicas
-            const allVersions = [...userVersions, ...publicVersions];
+            // Combinar: versión del usuario (si existe) + versiones de otros usuarios
+            const allVersions = [];
+            if (userVersion) {
+              allVersions.push(userVersion);
+            }
+            allVersions.push(...otherUserVersions);
+            
             versionsByRoadmap[roadmapType] = allVersions;
             console.log(`Total de versiones para ${roadmapType}:`, allVersions.length);
           } catch (error) {
@@ -135,6 +141,37 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
   const getUserVersion = (roadmapType) => {
     const versions = getRoadmapVersions(roadmapType);
     return versions.find(version => version.user_id === user.id);
+  };
+
+  // Función para obtener el nombre del usuario desde el email
+  const getUserDisplayName = (email) => {
+    if (!email) return 'Usuario';
+    
+    // Si es un UUID (user_id), usar un nombre genérico
+    if (email.includes('-') && email.length > 20) {
+      return 'Usuario';
+    }
+    
+    // Extraer el nombre del email (parte antes del @)
+    const namePart = email.split('@')[0];
+    
+    // Capitalizar la primera letra y reemplazar puntos/guiones bajos con espacios
+    return namePart
+      .replace(/[._-]/g, ' ')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
+  // Función para limpiar la descripción de la versión
+  const getCleanVersionDescription = (description) => {
+    if (!description) return 'Versión personalizada';
+    
+    // Remover la fecha y hora si están al final
+    const cleanDescription = description.replace(/\s*-\s*\d{1,2}\/\d{1,2}\/\d{4}\s*\d{1,2}:\d{2}:\d{2}\s*[AP]M?$/, '');
+    
+    // Si la descripción está vacía después de limpiar, usar un texto por defecto
+    return cleanDescription.trim() || 'Versión personalizada';
   };
 
   return (
@@ -298,12 +335,12 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
                                           </span>
                                         ) : (
                                           <span className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full font-medium">
-                                            Versión de Otro
+                                            Versión de {getUserDisplayName(version.user_email || version.user_id)}
                                           </span>
                                         )}
                                       </div>
                                       <p className="text-sm font-medium text-gray-900">
-                                        {version.description || `Versión creada el ${new Date(version.created_at).toLocaleDateString()}`}
+                                        {getCleanVersionDescription(version.description)}
                                       </p>
                                       <p className="text-xs text-gray-500">
                                         {new Date(version.created_at).toLocaleDateString()}
