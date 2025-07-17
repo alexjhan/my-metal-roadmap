@@ -39,7 +39,7 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
         .eq('roadmap_type', roadmapType)
         .eq('is_public', true)
         .order('total_votes', { ascending: false })
-        .limit(5);
+        .limit(10); // Aumentar límite para mejor ranking
 
       if (error) {
         console.error('Error en consulta Supabase:', error);
@@ -51,7 +51,38 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
       
       console.log('Versiones encontradas:', versions);
       console.log('Query ejecutada correctamente');
-      setTopVersions(versions || []);
+      
+      // Mejorar el ranking considerando ratio de votos positivos
+      const rankedVersions = (versions || []).map(version => {
+        const totalVotes = version.total_votes || 0;
+        const upVotes = version.up_votes || 0;
+        const downVotes = version.down_votes || 0;
+        
+        // Calcular ratio de votos positivos (0 a 1)
+        const positiveRatio = totalVotes > 0 ? upVotes / totalVotes : 0;
+        
+        // Score combinado: votos totales * ratio positivo
+        const score = totalVotes * positiveRatio;
+        
+        // Determinar calidad basada en votos y ratio
+        let quality = 'normal';
+        if (totalVotes >= 10 && positiveRatio >= 0.8) {
+          quality = 'excellent';
+        } else if (totalVotes >= 5 && positiveRatio >= 0.7) {
+          quality = 'good';
+        } else if (totalVotes >= 3 && positiveRatio >= 0.6) {
+          quality = 'fair';
+        }
+        
+        return {
+          ...version,
+          positiveRatio,
+          score,
+          quality
+        };
+      }).sort((a, b) => b.score - a.score); // Ordenar por score mejorado
+      
+      setTopVersions(rankedVersions);
     } catch (error) {
       console.error('Error loading top versions:', error);
       // En caso de error, mostrar versión vacía
@@ -308,9 +339,19 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-gray-900">Versiones Mejor Votadas</h3>
-        <div className="text-sm text-gray-600">
-          {topVersions.length} versiones públicas
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900">Versiones Mejor Votadas</h3>
+          <p className="text-sm text-gray-600 mt-1">
+            Versiones ordenadas por calidad y votos de la comunidad
+          </p>
+        </div>
+        <div className="text-right">
+          <div className="text-sm font-medium text-gray-900">
+            {topVersions.length} versiones
+          </div>
+          <div className="text-xs text-gray-500">
+            {topVersions.filter(v => v.quality === 'excellent').length} excelentes
+          </div>
         </div>
       </div>
 
@@ -340,6 +381,10 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
           </div>
           <h4 className="text-lg font-medium text-gray-900 mb-2">No hay versiones públicas</h4>
           <p className="text-gray-600">Aún no se han publicado versiones públicas de este roadmap.</p>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 w-md mx-auto">
+            <p className="text-sm text-blue-80">           <strong>¿Quieres ser el primero?</strong> Puedes crear tu propia versión editando el roadmap y publicándola para que otros usuarios la voten.
+            </p>
+          </div>
         </div>
       ) : (
         <div className="space-y-4">
@@ -354,9 +399,26 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
                     <span className="text-sm font-medium text-blue-600">#{index + 1}</span>
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">
-                      Versión por Usuario
-                    </p>
+                    <div className="flex items-center space-x-2">
+                      <p className="font-medium text-gray-900">
+                        Versión por Usuario
+                      </p>
+                      {/* Badge de calidad */}
+                      <span className={`px-2 py-1 text-xs rounded-full font-medium ${
+                        version.quality === 'excellent' 
+                          ? 'bg-green-100 text-green-800' 
+                          : version.quality === 'good'
+                          ? 'bg-blue-100' 
+                          : version.quality === 'fair'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-gray-100'
+                      }`}>
+                        {version.quality === 'excellent' && '⭐ Excelente'}
+                        {version.quality === 'good' && '👍 Buena'}
+                        {version.quality === 'fair' && '⚖️ Regular'}
+                        {version.quality === 'normal' && 'Normal'}
+                      </span>
+                    </div>
                     <p className="text-sm text-gray-500">
                       {new Date(version.created_at).toLocaleDateString('es-ES', {
                         year: 'numeric',
@@ -366,7 +428,8 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-4">
+                  {/* Estadísticas mejoradas */}
                   <div className="text-center">
                     <div className="text-lg font-bold text-gray-900">
                       {version.total_votes || 0}
@@ -378,6 +441,19 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
                       +{version.up_votes || 0}
                     </div>
                     <div className="text-xs text-gray-500">positivos</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-sm font-medium text-red-600">
+                      -{version.down_votes || 0}
+                    </div>
+                    <div className="text-xs text-gray-500">negativos</div>
+                  </div>
+                  {/* Ratio de aprobación */}
+                  <div className="text-center">
+                    <div className="text-sm font-medium text-blue-600">
+                      {Math.round((version.positiveRatio || 0) * 100)}%
+                    </div>
+                    <div className="text-xs text-gray-500">aprobación</div>
                   </div>
                 </div>
               </div>
@@ -392,10 +468,10 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
                     onClick={() => handleVote(version.id, 'up')}
                     className={`p-2 rounded-lg transition-colors ${
                       userVotes[version.id] === 'up'
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-gray-100 text-gray-600 hover:bg-green-100 hover:text-green-700'
+                        ? 'bg-green-100 text-green-700 border-2 border-green-300'
+                        : 'bg-gray-100 text-gray-600 hover:bg-green-100 hover:text-green-700 border-transparent'
                     }`}
-                    title="Votar positivamente"
+                    title={`Votar positivamente${userVotes[version.id] === 'up' ? ' (click para quitar voto)' : ''}`}
                   >
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
@@ -405,15 +481,21 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
                     onClick={() => handleVote(version.id, 'down')}
                     className={`p-2 rounded-lg transition-colors ${
                       userVotes[version.id] === 'down'
-                        ? 'bg-red-100 text-red-700'
-                        : 'bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-700'
+                        ? 'bg-red-100 text-red-700 border-2 border-red-300'
+                        : 'bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-700 border-transparent'
                     }`}
-                    title="Votar negativamente"
+                    title={`Votar negativamente${userVotes[version.id] === 'down' ? ' (click para quitar voto)' : ''}`}
                   >
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </button>
+                  {/* Indicador de voto actual */}
+                  {userVotes[version.id] && (
+                    <span className="text-xs text-gray-500">
+                      Tu voto: {userVotes[version.id] === 'up' ? '👍' : '👎'}
+                    </span>
+                  )}
                 </div>
                 <div className="flex space-x-2">
                   <button
