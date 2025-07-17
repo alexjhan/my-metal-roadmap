@@ -18,7 +18,7 @@ import { useUser } from '../../UserContext';
 import { roadmapStorage } from '../../lib/roadmapStorage';
 import { proposalService } from '../../lib/roadmapStorage';
 import { roadmapStorageService } from '../../lib/roadmapStorage';
-import { supabase } from '../../lib/supabase';
+import { supabase, roadmapService } from '../../lib/supabase';
 import EditProposal from '../EditProposal';
 import LiveView from '../LiveView';
 import CustomNode from '../CustomNode';
