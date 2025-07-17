@@ -25,8 +25,8 @@ export default function RoadmapPage() {
   const roadmapInfo = allRoadmapsData[roadmapType];
   
   // Verificar si hay datos guardados
-  const savedData = roadmapStorageService.loadRoadmap(roadmapType);
-  const hasSavedData = savedData !== null;
+  // const savedData = roadmapStorageService.loadRoadmap(roadmapType);
+  // const hasSavedData = savedData !== null;
   
   // Cargar la versión mejor votada
   useEffect(() => {
@@ -133,6 +133,7 @@ export default function RoadmapPage() {
         recognitionPanel={topVersion ? <RecognitionPanel topVersion={topVersion} authorInfo={authorInfo} /> : <div className="text-xs text-red-500">No hay versión mejor votada</div>}
       >
         {/* Indicador de datos guardados */}
+        {/*
         {hasSavedData && savedData && (
           <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
             <div className="flex items-center justify-between">
@@ -159,7 +160,7 @@ export default function RoadmapPage() {
             </div>
           </div>
         )}
-        
+        */}
         {/* Indicador de carga */}
         {loadingTopVersion && (
           <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
