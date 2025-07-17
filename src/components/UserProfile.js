@@ -22,7 +22,6 @@ import {
 export function UserProfileDropdown() {
   const { user, loading } = useUser();
   const [isOpen, setIsOpen] = useState(false);
-  const [profile, setProfile] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -67,6 +66,10 @@ export function UserProfileDropdown() {
 
   if (loading || !user) return null;
 
+  // Usar datos de auth.users
+  const avatarUrl = user.user_metadata?.avatar_url || '';
+  const fullName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'Usuario';
+
   return (
     <div className="relative user-profile-dropdown">
       <button
@@ -74,9 +77,9 @@ export function UserProfileDropdown() {
         className="flex items-center space-x-2 text-blue-200 hover:text-white transition-colors"
       >
         <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
-          {profile?.avatar_url ? (
+          {avatarUrl ? (
             <img 
-              src={profile.avatar_url} 
+              src={avatarUrl} 
               alt="Avatar" 
               className="w-8 h-8 rounded-full object-cover"
             />
@@ -85,7 +88,7 @@ export function UserProfileDropdown() {
           )}
         </div>
         <span className="hidden sm:block text-sm font-medium">
-          {profile?.full_name || user.email?.split('@')[0]}
+          {fullName}
         </span>
       </button>
 
@@ -94,9 +97,9 @@ export function UserProfileDropdown() {
           <div className="p-4 border-b border-gray-200">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
-                {profile?.avatar_url ? (
+                {avatarUrl ? (
                   <img 
-                    src={profile.avatar_url} 
+                    src={avatarUrl} 
                     alt="Avatar" 
                     className="w-10 h-10 rounded-full object-cover"
                   />
@@ -106,7 +109,7 @@ export function UserProfileDropdown() {
               </div>
               <div>
                 <p className="font-medium text-gray-900">
-                  {profile?.full_name || 'Usuario'}
+                  {fullName}
                 </p>
                 <p className="text-sm text-gray-500">{user.email}</p>
               </div>
@@ -148,21 +151,20 @@ export function UserProfileDropdown() {
   );
 }
 
-// Componente original para la página completa
+// Componente principal adaptado para usar solo auth.users
 export default function UserProfile() {
   const { user, loading } = useUser();
-  const [profile, setProfile] = useState(null);
   const [progressStats, setProgressStats] = useState({});
   const [recentActivity, setRecentActivity] = useState([]);
   const [topRoadmaps, setTopRoadmaps] = useState([]);
   const [achievements, setAchievements] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
-    full_name: '',
-    avatar_url: '',
-    bio: '',
-    linkedin: '',
-    facebook: ''
+    full_name: user?.user_metadata?.full_name || user?.user_metadata?.name || '',
+    avatar_url: user?.user_metadata?.avatar_url || '',
+    bio: user?.user_metadata?.bio || '',
+    linkedin: user?.user_metadata?.linkedin || '',
+    facebook: user?.user_metadata?.facebook || ''
   });
 
   useEffect(() => {
@@ -173,30 +175,13 @@ export default function UserProfile() {
 
   const loadUserData = useCallback(async () => {
     try {
-      // Cargar datos en paralelo para mejor rendimiento
-      const [profileData, stats, activity] = await Promise.all([
-        supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single()
-          .then(({ data }) => data),
+      // Solo cargar stats y actividad, no perfil extendido
+      const [stats, activity] = await Promise.all([
         progressService.getProgressStats(user.id),
         progressService.getAllProgress(user.id)
       ]);
-
-      setProfile(profileData);
-      setEditForm({
-        full_name: profileData?.full_name || user.user_metadata?.full_name || '',
-        avatar_url: profileData?.avatar_url || '',
-        bio: profileData?.bio || '',
-        linkedin: user.user_metadata?.linkedin || '',
-        facebook: user.user_metadata?.facebook || ''
-      });
-
       setProgressStats(stats);
       setRecentActivity(activity.slice(0, 5));
-
       // Calcular roadmaps más populares de manera más eficiente
       const roadmapProgress = activity
         .map(p => ({
@@ -206,12 +191,9 @@ export default function UserProfile() {
         .filter(p => p.roadmap)
         .sort((a, b) => b.progress_percentage - a.progress_percentage)
         .slice(0, 3);
-
       setTopRoadmaps(roadmapProgress);
-
       // Calcular logros
       calculateAchievements(stats, activity);
-
     } catch (error) {
       console.error('Error cargando datos del usuario:', error);
     }
@@ -219,8 +201,6 @@ export default function UserProfile() {
 
   const calculateAchievements = useCallback((stats, activity) => {
     const newAchievements = [];
-
-    // Logros basados en progreso
     if (stats.completedRoadmaps >= 1) {
       newAchievements.push({
         id: 'first_complete',
@@ -230,91 +210,38 @@ export default function UserProfile() {
         color: '#10B981'
       });
     }
-
     if (stats.completedRoadmaps >= 5) {
       newAchievements.push({
         id: 'roadmap_master',
         title: 'Maestro de Roadmaps',
         description: 'Completaste 5 roadmaps',
         icon: '🏆',
-        color: '#F59E0B'
+        color: '#F59E42'
       });
     }
-
-    if (stats.totalTimeSpent >= 1000) { // 1000 minutos = ~16 horas
-      newAchievements.push({
-        id: 'dedicated_learner',
-        title: 'Estudiante Dedicado',
-        description: 'Pasaste más de 16 horas aprendiendo',
-        icon: '⏰',
-        color: '#3B82F6'
-      });
-    }
-
-    if (stats.averageProgress >= 80) {
-      newAchievements.push({
-        id: 'high_performer',
-        title: 'Alto Rendimiento',
-        description: 'Progreso promedio superior al 80%',
-        icon: '🚀',
-        color: '#8B5CF6'
-      });
-    }
-
-    // Logros basados en categorías
-    const categoryProgress = activity.reduce((acc, p) => {
-      const roadmap = allRoadmaps.find(r => r.id === p.roadmap_type);
-      if (roadmap && p.progress_percentage === 100) {
-        acc[roadmap.category] = (acc[roadmap.category] || 0) + 1;
-      }
-      return acc;
-    }, {});
-
-    Object.entries(categoryProgress).forEach(([category, count]) => {
-      if (count >= 2) {
-        const categoryInfo = roadmapCategories.find(c => c.id === category);
-        newAchievements.push({
-          id: `category_${category}`,
-          title: `Experto en ${categoryInfo?.name}`,
-          description: `Completaste ${count} roadmaps de ${categoryInfo?.name}`,
-          icon: categoryInfo?.icon || '📚',
-          color: categoryInfo?.color || '#6B7280'
-        });
-      }
-    });
-
     setAchievements(newAchievements);
   }, []);
 
   const handleSaveProfile = useCallback(async () => {
     try {
-      // Guardar en tabla profiles si existe
-      await supabase
-        .from('profiles')
-        .upsert({
-          id: user.id,
-          full_name: editForm.full_name,
-          avatar_url: editForm.avatar_url,
-          bio: editForm.bio,
-          updated_at: new Date().toISOString()
-        });
-      // Guardar en user_metadata de Supabase Auth
+      // Guardar solo en user_metadata de Supabase Auth
       const { error: authError } = await supabase.auth.updateUser({
         data: {
           full_name: editForm.full_name,
+          avatar_url: editForm.avatar_url,
+          bio: editForm.bio,
           linkedin: editForm.linkedin,
           facebook: editForm.facebook
         }
       });
       if (authError) throw authError;
-      setProfile(prev => ({ ...prev, ...editForm }));
       setIsEditing(false);
       alert('Perfil actualizado exitosamente');
     } catch (error) {
       console.error('Error actualizando perfil:', error);
       alert('Error al actualizar el perfil');
     }
-  }, [user?.id, editForm]);
+  }, [editForm]);
 
   const formatTime = useCallback((minutes) => {
     if (minutes < 60) return `${minutes}m`;
@@ -420,9 +347,9 @@ export default function UserProfile() {
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="text-center mb-6">
                 <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gray-200 flex items-center justify-center">
-                  {profile?.avatar_url ? (
+                  {user?.user_metadata?.avatar_url ? (
                     <img 
-                      src={profile.avatar_url} 
+                      src={user.user_metadata.avatar_url} 
                       alt="Avatar" 
                       className="w-24 h-24 rounded-full object-cover"
                     />
@@ -485,11 +412,11 @@ export default function UserProfile() {
                 ) : (
                   <div>
                     <h2 className="text-xl font-semibold text-gray-900">
-                      {profile?.full_name || user.email}
+                      {user?.user_metadata?.full_name || user?.user_metadata?.name || user.email?.split('@')[0]}
                     </h2>
                     <p className="text-gray-600 mt-1">{user.email}</p>
-                    {profile?.bio && (
-                      <p className="text-gray-700 mt-3">{profile.bio}</p>
+                    {user?.user_metadata?.bio && (
+                      <p className="text-gray-700 mt-3">{user.user_metadata.bio}</p>
                     )}
                     <div className="flex items-center justify-center mt-4 text-sm text-gray-500">
                       <FiCalendar className="w-4 h-4 mr-1" />
