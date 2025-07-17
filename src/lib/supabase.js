@@ -79,6 +79,13 @@ export const roadmapService = {
     
     console.log(`Consultando versiones para roadmap: ${roadmapType}`);
     
+    // Primero intentar actualizar versiones existentes con datos del usuario
+    try {
+      await this.updateExistingVersionsWithUserData();
+    } catch (error) {
+      console.log('No se pudieron actualizar versiones existentes:', error.message);
+    }
+    
     const { data, error } = await supabase
       .from('roadmap_versions')
       .select('*')
@@ -235,6 +242,84 @@ export const roadmapService = {
     } catch (error) {
       console.error('Error en saveRoadmapVersion:', error);
       throw error;
+    }
+  },
+
+  // Función para actualizar versiones existentes con datos del usuario
+  async updateExistingVersionsWithUserData() {
+    if (!isConfigured) {
+      throw new Error('Supabase no está configurado. Por favor, configura las variables de entorno.');
+    }
+    
+    try {
+      // Obtener todas las versiones que no tienen user_name o user_email
+      const { data: versionsToUpdate, error: fetchError } = await supabase
+        .from('roadmap_versions')
+        .select('id, user_id')
+        .or('user_name.is.null,user_email.is.null')
+        .limit(50);
+
+      if (fetchError) {
+        console.error('Error obteniendo versiones para actualizar:', fetchError);
+        return;
+      }
+
+      console.log(`Encontradas ${versionsToUpdate?.length || 0} versiones para actualizar`);
+
+      if (!versionsToUpdate || versionsToUpdate.length === 0) {
+        console.log('No hay versiones que necesiten actualización');
+        return;
+      }
+
+      // Obtener datos del usuario actual
+      const { data: currentUser, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !currentUser.user) {
+        console.error('Error obteniendo usuario actual:', userError);
+        return;
+      }
+
+      const user = currentUser.user;
+      const userName = user.user_metadata?.full_name || 
+                      user.user_metadata?.name || 
+                      user.user_metadata?.display_name ||
+                      user.email?.split('@')[0] || 'Usuario';
+      const userEmail = user.email || '';
+
+      // Actualizar solo las versiones del usuario actual
+      const userVersions = versionsToUpdate.filter(v => v.user_id === user.id);
+      
+      if (userVersions.length === 0) {
+        console.log('No hay versiones del usuario actual que necesiten actualización');
+        return;
+      }
+
+      console.log(`Actualizando ${userVersions.length} versiones del usuario actual`);
+
+      for (const version of userVersions) {
+        try {
+          const { error: updateError } = await supabase
+            .from('roadmap_versions')
+            .update({
+              user_name: userName,
+              user_email: userEmail,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', version.id);
+
+          if (updateError) {
+            console.error(`Error actualizando versión ${version.id}:`, updateError);
+          } else {
+            console.log(`Versión ${version.id} actualizada con datos del usuario: ${userName}`);
+          }
+        } catch (error) {
+          console.error(`Error procesando versión ${version.id}:`, error);
+        }
+      }
+
+      console.log('Proceso de actualización completado');
+    } catch (error) {
+      console.error('Error en updateExistingVersionsWithUserData:', error);
     }
   },
 
