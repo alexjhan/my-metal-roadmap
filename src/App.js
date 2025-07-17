@@ -51,7 +51,7 @@ function App() {
         <Route path="/graph" element={<MainLayout><GraphLayout /></MainLayout>} />
         <Route path="/create" element={<MainLayout><CreateRoadmap /></MainLayout>} />
         <Route path="/my-roadmaps" element={<MainLayout><MyRoadmaps /></MainLayout>} />
-        {/* <Route path="/profile" element={<MainLayout><UserProfile /></MainLayout>} /> */}
+        <Route path="/profile" element={<MainLayout><UserProfile /></MainLayout>} />
         <Route path="/privacy" element={<MainLayout><PrivacyPolicy /></MainLayout>} />
         <Route path="/privacidad" element={<MainLayout><PrivacyPolicy /></MainLayout>} />
         <Route path="/auth/callback" element={<AuthCallback />} />

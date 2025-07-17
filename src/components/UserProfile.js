@@ -115,12 +115,11 @@ export function UserProfileDropdown() {
 
           <div className="p-2">
             <button
-              disabled
-              className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-400 cursor-not-allowed opacity-50"
+              onClick={() => window.location.href = '/profile'}
+              className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
             >
               <FiUser className="w-4 h-4" />
-              <span className="line-through">Mi Perfil</span>
-              <span className="text-xs text-gray-500">(No disponible)</span>
+              <span>Mi Perfil</span>
             </button>
             
             <button
