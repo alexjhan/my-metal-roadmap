@@ -125,7 +125,7 @@ export const roadmapService = {
   },
 
   // Guardar o actualizar versión de roadmap (una sola por usuario por roadmap)
-  async saveRoadmapVersion(userId, roadmapType, nodes, edges, description = null) {
+  async saveRoadmapVersion(userId, roadmapType, nodes, edges, description = null, userInfo = null) {
     if (!isConfigured) {
       throw new Error('Supabase no está configurado. Por favor, configura las variables de entorno.');
     }
@@ -134,6 +134,28 @@ export const roadmapService = {
     console.log('Datos a guardar:', { nodes: nodes.length, edges: edges.length, description });
     
     try {
+      // Obtener información del usuario si no se proporciona
+      let userData = userInfo;
+      if (!userData) {
+        const { data: user, error: userError } = await supabase.auth.getUser();
+        if (!userError && user.user) {
+          userData = {
+            email: user.user.email,
+            user_metadata: user.user.user_metadata || {}
+          };
+        }
+      }
+      
+      // Preparar datos del usuario para guardar
+      const userEmail = userData?.email || '';
+      const userName = userData?.user_metadata?.full_name || 
+                      userData?.user_metadata?.name || 
+                      userData?.user_metadata?.display_name ||
+                      userEmail?.split('@')[0] || '';
+      const userLinkedIn = userData?.user_metadata?.linkedin_url || 
+                          userData?.user_metadata?.linkedin || '';
+      const userFacebook = userData?.user_metadata?.facebook_url || 
+                          userData?.user_metadata?.facebook || '';    
       // Primero, verificar si ya existe una versión
       const existingVersion = await roadmapService.getUserVersion(userId, roadmapType);
       
@@ -147,6 +169,11 @@ export const roadmapService = {
             nodes: nodes,
             edges: edges,
             description: description || existingVersion.description,
+            user_email: userEmail,
+            user_name: userName,
+            user_linkedin: userLinkedIn,
+            user_facebook: userFacebook,
+            user_metadata: userData?.user_metadata || {},
             updated_at: new Date().toISOString()
           })
           .eq('id', existingVersion.id)
@@ -172,6 +199,11 @@ export const roadmapService = {
             nodes: nodes,
             edges: edges,
             description: description || `Versión guardada por usuario - ${new Date().toLocaleString()}`,
+            user_email: userEmail,
+            user_name: userName,
+            user_linkedin: userLinkedIn,
+            user_facebook: userFacebook,
+            user_metadata: userData?.user_metadata || {},
             is_public: true,
             total_votes: 0,
             up_votes: 0,

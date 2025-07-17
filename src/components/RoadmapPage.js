@@ -49,21 +49,10 @@ export default function RoadmapPage() {
           console.log('Versión mejor votada cargada:', version);
           setTopVersion(version);
           setCurrentVersion(version); // Establecer como versión actual por defecto
-          // Obtener datos del autor
-          if (version.user_id) {
-            const { data: user, error: userError } = await supabase
-              .from('auth.users')
-              .select('id, email, user_metadata')
-              .eq('id', version.user_id)
-              .single();
-            if (!userError && user) {
-              setAuthorInfo(user);
-            } else {
-              setAuthorInfo(null);
-            }
-          } else {
-            setAuthorInfo(null);
-          }
+          
+          // Los datos del autor ya están incluidos en la versión
+          // No necesitamos hacer consultas adicionales
+          setAuthorInfo(null); // Ya no necesitamos authorInfo separado
         }
       } catch (error) {
         console.error('Error cargando versión mejor votada:', error);
@@ -130,7 +119,7 @@ export default function RoadmapPage() {
         title={roadmapInfo.title}
         description={roadmapInfo.description}
         icon={roadmapInfo.icon}
-        recognitionPanel={topVersion ? <RecognitionPanel topVersion={topVersion} authorInfo={authorInfo} /> : <div className="text-xs text-red-500">No hay versión mejor votada</div>}
+        recognitionPanel={topVersion ? <RecognitionPanel topVersion={topVersion} /> : <div className="text-xs text-red-500">No hay versión mejor votada</div>}
       >
         {/* Indicador de datos guardados */}
         {/*

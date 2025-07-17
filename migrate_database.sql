@@ -178,3 +178,34 @@ CREATE POLICY "Users can delete their own votes" ON roadmap_votes
 -- Habilitar RLS en las nuevas tablas
 ALTER TABLE roadmap_versions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE roadmap_votes ENABLE ROW LEVEL SECURITY; 
+
+-- Script de migración para agregar columnas de información del usuario a roadmap_versions
+-- Ejecutar en el editor SQL de Supabase
+
+-- Agregar columnas para información del usuario en roadmap_versions
+ALTER TABLE roadmap_versions 
+ADD COLUMN IF NOT EXISTS user_email TEXT,
+ADD COLUMN IF NOT EXISTS user_name TEXT,
+ADD COLUMN IF NOT EXISTS user_linkedin TEXT,
+ADD COLUMN IF NOT EXISTS user_facebook TEXT,
+ADD COLUMN IF NOT EXISTS user_metadata JSONB DEFAULT '{}';
+
+-- Crear índice para mejorar el rendimiento de búsquedas por email
+CREATE INDEX IF NOT EXISTS idx_roadmap_versions_user_email ON roadmap_versions(user_email);
+
+-- Actualizar versiones existentes con información del usuario (si es posible)
+-- Esto es opcional y solo se ejecutará si hay datos existentes
+UPDATE roadmap_versions 
+SET user_email = (
+  SELECT email 
+  FROM auth.users 
+  WHERE auth.users.id = roadmap_versions.user_id
+)
+WHERE user_email IS NULL AND user_id IS NOT NULL;
+
+-- Comentarios sobre las nuevas columnas
+COMMENT ON COLUMN roadmap_versions.user_email IS 'Email del usuario que creó la versión';
+COMMENT ON COLUMN roadmap_versions.user_name IS 'Nombre del usuario que creó la versión';
+COMMENT ON COLUMN roadmap_versions.user_linkedin IS 'URL de LinkedIn del usuario';
+COMMENT ON COLUMN roadmap_versions.user_facebook IS 'URL de Facebook del usuario';
+COMMENT ON COLUMN roadmap_versions.user_metadata IS 'Metadatos adicionales del usuario (JSON)'; 
