@@ -35,14 +35,7 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
       // Obtener versiones públicas ordenadas por votos
       const { data: versions, error } = await supabase
         .from('roadmap_versions')
-        .select(`
-          *,
-          user:user_id (
-            id,
-            email,
-            user_metadata
-          )
-        `)
+        .select('*')
         .eq('roadmap_type', roadmapType)
         .eq('is_public', true)
         .order('total_votes', { ascending: false })
@@ -412,7 +405,7 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2">
                       <span className="text-sm font-medium text-gray-900 truncate">
-                        Versión realizada por {version.user?.user_metadata?.full_name || version.user?.email?.split('@')[0]}
+                        Versión realizada por Usuario
                       </span>
                       {/* Badge de calidad compacto */}
                       {(version.quality === 'excellent' || version.quality === 'good' || version.quality === 'fair') && (
