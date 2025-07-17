@@ -115,11 +115,12 @@ export function UserProfileDropdown() {
 
           <div className="p-2">
             <button
-              onClick={() => window.location.href = '/profile'}
-              className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+              disabled
+              className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-400 cursor-not-allowed opacity-50"
             >
               <FiUser className="w-4 h-4" />
-              <span>Mi Perfil</span>
+              <span className="line-through">Mi Perfil</span>
+              <span className="text-xs text-gray-500">(No disponible)</span>
             </button>
             
             <button
@@ -442,22 +443,22 @@ export default function UserProfile() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">LinkedIn</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1 line-through">LinkedIn <span className="text-xs text-gray-400">(No disponible)</span></label>
                       <input
                         type="url"
                         value={editForm.linkedin}
-                        onChange={e => setEditForm(f => ({ ...f, linkedin: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        disabled
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-400 cursor-not-allowed line-through focus:outline-none"
                         placeholder="https://linkedin.com/in/tu-perfil"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Facebook</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1 line-through">Facebook <span className="text-xs text-gray-400">(No disponible)</span></label>
                       <input
                         type="url"
                         value={editForm.facebook}
-                        onChange={e => setEditForm(f => ({ ...f, facebook: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        disabled
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-400 cursor-not-allowed line-through focus:outline-none"
                         placeholder="https://facebook.com/tu-perfil"
                       />
                     </div>
