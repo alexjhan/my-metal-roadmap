@@ -35,7 +35,14 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
       // Obtener versiones públicas ordenadas por votos
       const { data: versions, error } = await supabase
         .from('roadmap_versions')
-        .select('*')
+        .select(`
+          *,
+          user:user_id (
+            id,
+            email,
+            user_metadata
+          )
+        `)
         .eq('roadmap_type', roadmapType)
         .eq('is_public', true)
         .order('total_votes', { ascending: false })
@@ -405,7 +412,7 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2">
                       <span className="text-sm font-medium text-gray-900 truncate">
-                        Versión realizada por {version.user_name || version.user_email?.split('@')[0]}
+                        Versión realizada por {version.user?.user_metadata?.full_name || version.user?.email?.split('@')[0]}
                       </span>
                       {/* Badge de calidad compacto */}
                       {(version.quality === 'excellent' || version.quality === 'good' || version.quality === 'fair') && (
@@ -425,13 +432,7 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
                     <div className="flex items-center space-x-4 text-xs text-gray-500 mt-1">
                       <span>{new Date(version.created_at).toLocaleDateString('es-ES')}</span>
                       <span>•</span>
-                      <span>{version.total_votes || 0} votos</span>
-                      <span>•</span>
-                      <span className="text-green-600">+{version.up_votes || 0}</span>
-                      <span>•</span>
-                      <span className="text-red-600">-{version.down_votes || 0}</span>
-                      <span>•</span>
-                      <span className="text-blue-600">{Math.round((version.positiveRatio || 0) * 100)}% aprobación</span>
+                      <span className="text-green-600">👍 {version.up_votes || 0}</span>
                     </div>
                   </div>
                 </div>
