@@ -405,23 +405,22 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2">
                       <span className="text-sm font-medium text-gray-900 truncate">
-                        Versión por Usuario
+                        {version.user_name || version.user_email?.split('@')[0] || 'Usuario'}
                       </span>
                       {/* Badge de calidad compacto */}
-                      <span className={`px-2 py-0.5 text-xs rounded-full font-medium flex-shrink-0 ${
-                        version.quality === 'excellent' 
-                          ? 'bg-green-100 text-green-800' 
-                          : version.quality === 'good'
-                          ? 'bg-blue-100' 
-                          : version.quality === 'fair'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-gray-100'
-                      }`}>
-                        {version.quality === 'excellent' && '⭐'}
-                        {version.quality === 'good' && '👍'}
-                        {version.quality === 'fair' && '⚖️'}
-                        {version.quality === 'normal' && 'Normal'}
-                      </span>
+                      {(version.quality === 'excellent' || version.quality === 'good' || version.quality === 'fair') && (
+                        <span className={`px-2 py-0.5 text-xs rounded-full font-medium flex-shrink-0 ${
+                          version.quality === 'excellent' 
+                            ? 'bg-green-100 text-green-800' 
+                            : version.quality === 'good'
+                            ? 'bg-blue-100' 
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {version.quality === 'excellent' && '⭐'}
+                          {version.quality === 'good' && '👍'}
+                          {version.quality === 'fair' && '⚖️'}
+                        </span>
+                      )}
                     </div>
                     <div className="flex items-center space-x-4 text-xs text-gray-500 mt-1">
                       <span>{new Date(version.created_at).toLocaleDateString('es-ES')}</span>
