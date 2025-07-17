@@ -25,7 +25,7 @@ export function UserProfileDropdown() {
 
   useEffect(() => {
     if (user) {
-      loadProfile();
+      // Ya no necesitamos cargar perfil desde tabla profiles
     }
   }, [user]);
 
@@ -41,19 +41,6 @@ export function UserProfileDropdown() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen]);
-
-  const loadProfile = async () => {
-    try {
-      const { data } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-      setProfile(data);
-    } catch (error) {
-      console.error('Error cargando perfil:', error);
-    }
-  };
 
   const handleSignOut = async () => {
     try {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '../UserContext';
-import { supabase } from '../lib/supabase';
+import { supabase, roadmapService } from '../lib/supabase';
 import CreateProposalModal from './CreateProposalModal';
 import ProposalDetailModal from './ProposalDetailModal';
 
@@ -32,22 +32,8 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
       setLoading(true);
       console.log('Cargando versiones para roadmap:', roadmapType);
       
-      // Obtener versiones públicas ordenadas por votos
-      const { data: versions, error } = await supabase
-        .from('roadmap_versions')
-        .select('*')
-        .eq('roadmap_type', roadmapType)
-        .eq('is_public', true)
-        .order('total_votes', { ascending: false })
-        .limit(10); // Aumentar límite para mejor ranking
-
-      if (error) {
-        console.error('Error en consulta Supabase:', error);
-        console.log('Detalles del error:', error.message, error.details, error.hint);
-        // No lanzar error, solo mostrar versión vacía
-        setTopVersions([]);
-        return;
-      }
+      // Usar la función de roadmapService que procesa los nombres de autor
+      const versions = await roadmapService.getRoadmapVersions(roadmapType);
       
       console.log('Versiones encontradas:', versions);
       console.log('Query ejecutada correctamente');
