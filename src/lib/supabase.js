@@ -81,15 +81,7 @@ export const roadmapService = {
     
     const { data, error } = await supabase
       .from('roadmap_versions')
-      .select(`
-        *,
-        user_id,
-        created_at,
-        description,
-        is_public,
-        total_votes,
-        profiles:user_id(email)
-      `)
+      .select('*')
       .eq('roadmap_type', roadmapType)
       .eq('is_public', true)
       .order('created_at', { ascending: false })
@@ -101,10 +93,10 @@ export const roadmapService = {
     
     console.log(`Versiones encontradas para ${roadmapType}:`, data);
     
-    // Extraer el email del perfil del usuario
+    // Por ahora, no obtenemos emails para evitar problemas de permisos
     const versionsWithEmail = data.map(version => ({
       ...version,
-      user_email: version.profiles?.email || null
+      user_email: null
     }));
     
     console.log(`Versiones procesadas para ${roadmapType}:`, versionsWithEmail);
@@ -172,10 +164,7 @@ export const roadmapService = {
     
     const { data, error } = await supabase
       .from('roadmap_versions')
-      .select(`
-        *,
-        profiles:user_id(email)
-      `)
+      .select('*')
       .eq('user_id', userId)
       .eq('roadmap_type', roadmapType)
       .single();
@@ -188,7 +177,7 @@ export const roadmapService = {
     if (data) {
       const versionWithEmail = {
         ...data,
-        user_email: data.profiles?.email || null
+        user_email: null // Por ahora, no obtenemos email para evitar problemas de permisos
       };
       console.log(`Versión del usuario encontrada para ${roadmapType}:`, versionWithEmail);
       return versionWithEmail;
