@@ -19,7 +19,7 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
       loadUserRoadmaps();
       loadAllRoadmapVersions();
     }
-  }, [isOpen, user]);
+  }, [isOpen, user, searchTerm, selectedCategory]);
 
   const loadUserRoadmaps = async () => {
     if (!user) return;
@@ -36,50 +36,25 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
   };
 
   const loadAllRoadmapVersions = async () => {
-    if (!user) {
-      console.log('No hay usuario autenticado');
-      return;
-    }
-    
-    console.log('Iniciando carga de versiones para usuario:', user.id);
+    if (!user) return;
     setLoadingVersions(true);
     try {
       const versionsByRoadmap = {};
-      
-      // Cargar versiones para cada roadmap disponible
-      for (const roadmap of data) {
-        if (roadmap.status === 'active') {
-          try {
-            const roadmapType = roadmap.link.replace('/roadmap/', '');
-            console.log(`Cargando versiones para roadmap: ${roadmapType}`);
-            
-            // Obtener solo la versión del usuario para este roadmap (una sola)
-            const userVersion = await roadmapService.getUserVersion(user.id, roadmapType);
-            console.log(`Versión del usuario para ${roadmapType}:`, userVersion);
-            
-            // Obtener versiones públicas (excluyendo la del usuario actual)
-            const publicVersions = await roadmapService.getRoadmapVersions(roadmapType);
-            console.log(`Versiones públicas obtenidas para ${roadmapType}:`, publicVersions);
-            const otherUserVersions = publicVersions.filter(v => v.user_id !== user.id);
-            console.log(`Versiones de otros usuarios para ${roadmapType}:`, otherUserVersions);
-            
-            // Combinar: versión del usuario (si existe) + versiones de otros usuarios
-            const allVersions = [];
-            if (userVersion) {
-              allVersions.push(userVersion);
-            }
-            allVersions.push(...otherUserVersions);
-            
-            versionsByRoadmap[roadmapType] = allVersions;
-            console.log(`Total de versiones para ${roadmapType}:`, allVersions.length);
-          } catch (error) {
-            console.error(`Error cargando versiones para ${roadmap.title}:`, error);
-            versionsByRoadmap[roadmap.link.replace('/roadmap/', '')] = [];
-          }
+      // Solo cargar versiones para los roadmaps filtrados
+      for (const roadmap of filteredRoadmaps) {
+        try {
+          const roadmapType = roadmap.link.replace('/roadmap/', '');
+          const userVersion = await roadmapService.getUserVersion(user.id, roadmapType);
+          const publicVersions = await roadmapService.getRoadmapVersions(roadmapType);
+          const otherUserVersions = publicVersions.filter(v => v.user_id !== user.id).slice(0, 5); // Limita a 5
+          const allVersions = [];
+          if (userVersion) allVersions.push(userVersion);
+          allVersions.push(...otherUserVersions);
+          versionsByRoadmap[roadmapType] = allVersions;
+        } catch (error) {
+          versionsByRoadmap[roadmap.link.replace('/roadmap/', '')] = [];
         }
       }
-      
-      console.log('Todas las versiones cargadas:', versionsByRoadmap);
       setRoadmapVersions(versionsByRoadmap);
     } catch (error) {
       console.error('Error cargando versiones:', error);
