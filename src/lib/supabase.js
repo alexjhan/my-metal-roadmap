@@ -78,10 +78,10 @@ export const roadmapService = {
     }
     
     console.log(`Consultando versiones para roadmap: ${roadmapType}`);
-    // Traer el nombre del usuario desde auth.users (preferentemente el nombre, si no el email)
+    
     const { data, error } = await supabase
       .from('roadmap_versions')
-      .select(`*, user:auth.users(id, email, user_metadata)`)
+      .select('*')
       .eq('roadmap_type', roadmapType)
       .eq('is_public', true)
       .order('created_at', { ascending: false });
@@ -91,20 +91,27 @@ export const roadmapService = {
       throw error;
     }
     
-    // Procesar para obtener el nombre real del usuario
+    // Procesar para obtener el nombre real del usuario usando campos guardados
     const versionsWithUser = data.map(version => {
+      console.log('Procesando versión:', version.id, 'user_name:', version.user_name, 'user_email:', version.user_email);
+      
       let nombre = 'Usuario';
-      if (version.user) {
-        // user_metadata puede tener name, full_name, display_name, etc.
-        const meta = version.user.user_metadata || {};
-        nombre = meta.full_name || meta.name || meta.display_name || version.user.email || 'Usuario';
+      // Usar user_name si está disponible, si no user_email, si no Usuario'
+      if (version.user_name && version.user_name.trim() !== '') {
+        nombre = version.user_name;
+      } else if (version.user_email && version.user_email.trim() !== '') {
+        nombre = version.user_email.split('@')[0]; // Solo la parte antes del @
       }
+      
+      console.log(`Nombre final para versión ${version.id}:`, nombre);
+      
       return {
         ...version,
         autor_nombre: nombre
       };
     });
     
+    console.log(`Versiones procesadas para ${roadmapType}:`, versionsWithUser);
     return versionsWithUser;
   },
 
