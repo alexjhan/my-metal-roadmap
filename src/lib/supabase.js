@@ -130,28 +130,68 @@ export const roadmapService = {
       throw new Error('Supabase no está configurado. Por favor, configura las variables de entorno.');
     }
     
-    const { data, error } = await supabase
-      .from('roadmap_versions')
-      .upsert({
-        roadmap_type: roadmapType,
-        user_id: userId,
-        nodes: nodes,
-        edges: edges,
-        description: description || `Versión guardada por usuario - ${new Date().toLocaleString()}`,
-        is_public: true,
-        total_votes: 0,
-        up_votes: 0,
-        down_votes: 0,
-        updated_at: new Date().toISOString()
-      }, {
-        onConflict: 'user_id,roadmap_type', // Conflicto en la restricción UNIQUE
-        ignoreDuplicates: false // Actualizar en lugar de ignorar
-      })
-      .select()
-      .single();
+    console.log(`Guardando versión para usuario ${userId}, roadmap ${roadmapType}`);
+    console.log('Datos a guardar:', { nodes: nodes.length, edges: edges.length, description });
+    
+    try {
+      // Primero, verificar si ya existe una versión
+      const existingVersion = await roadmapService.getUserVersion(userId, roadmapType);
+      
+      if (existingVersion) {
+        console.log('Actualizando versión existente:', existingVersion.id);
+        
+        // Actualizar versión existente
+        const { data, error } = await supabase
+          .from('roadmap_versions')
+          .update({
+            nodes: nodes,
+            edges: edges,
+            description: description || existingVersion.description,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingVersion.id)
+          .select()
+          .single();
 
-    if (error) throw error;
-    return data;
+        if (error) {
+          console.error('Error actualizando versión:', error);
+          throw error;
+        }
+        
+        console.log('Versión actualizada exitosamente:', data);
+        return data;
+      } else {
+        console.log('Creando nueva versión');
+        
+        // Crear nueva versión
+        const { data, error } = await supabase
+          .from('roadmap_versions')
+          .insert({
+            roadmap_type: roadmapType,
+            user_id: userId,
+            nodes: nodes,
+            edges: edges,
+            description: description || `Versión guardada por usuario - ${new Date().toLocaleString()}`,
+            is_public: true,
+            total_votes: 0,
+            up_votes: 0,
+            down_votes: 0
+          })
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Error creando versión:', error);
+          throw error;
+        }
+        
+        console.log('Nueva versión creada exitosamente:', data);
+        return data;
+      }
+    } catch (error) {
+      console.error('Error en saveRoadmapVersion:', error);
+      throw error;
+    }
   },
 
   // Obtener la versión específica del usuario para un roadmap

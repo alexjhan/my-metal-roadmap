@@ -852,6 +852,15 @@ const EditRoadmapRefactored = () => {
         ? `Versión actualizada por ${user.email}`
         : `Nueva versión creada por ${user.email}`;
       
+      console.log('Datos a enviar al servidor:', {
+        userId: user.id,
+        roadmapType,
+        nodesCount: nodes.length,
+        edgesCount: edges.length,
+        description,
+        versionId
+      });
+      
       const savedVersion = await roadmapService.saveRoadmapVersion(
         user.id, 
         roadmapType, 
