@@ -387,24 +387,28 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
           </div>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-2">
           {topVersions.map((version, index) => (
             <div
               key={version.id}
-              className="p-4 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors"
+              className="border border-gray-200 rounded-lg hover:border-blue-300 transition-colors"
             >
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-medium text-blue-600">#{index + 1}</span>
+              {/* Línea principal compacta */}
+              <div className="p-3 flex items-center justify-between">
+                <div className="flex items-center space-x-3 flex-1 min-w-0">
+                  {/* Ranking */}
+                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-xs font-medium text-blue-600">#{index + 1}</span>
                   </div>
-                  <div>
+                  
+                  {/* Información básica */}
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2">
-                      <p className="font-medium text-gray-900">
+                      <span className="text-sm font-medium text-gray-900 truncate">
                         Versión por Usuario
-                      </p>
-                      {/* Badge de calidad */}
-                      <span className={`px-2 py-1 text-xs rounded-full font-medium ${
+                      </span>
+                      {/* Badge de calidad compacto */}
+                      <span className={`px-2 py-0.5 text-xs rounded-full font-medium flex-shrink-0 ${
                         version.quality === 'excellent' 
                           ? 'bg-green-100 text-green-800' 
                           : version.quality === 'good'
@@ -413,94 +417,33 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
                           ? 'bg-yellow-100 text-yellow-800'
                           : 'bg-gray-100'
                       }`}>
-                        {version.quality === 'excellent' && '⭐ Excelente'}
-                        {version.quality === 'good' && '👍 Buena'}
-                        {version.quality === 'fair' && '⚖️ Regular'}
+                        {version.quality === 'excellent' && '⭐'}
+                        {version.quality === 'good' && '👍'}
+                        {version.quality === 'fair' && '⚖️'}
                         {version.quality === 'normal' && 'Normal'}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-500">
-                      {new Date(version.created_at).toLocaleDateString('es-ES', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </p>
+                    <div className="flex items-center space-x-4 text-xs text-gray-500 mt-1">
+                      <span>{new Date(version.created_at).toLocaleDateString('es-ES')}</span>
+                      <span>•</span>
+                      <span>{version.total_votes || 0} votos</span>
+                      <span>•</span>
+                      <span className="text-green-600">+{version.up_votes || 0}</span>
+                      <span>•</span>
+                      <span className="text-red-600">-{version.down_votes || 0}</span>
+                      <span>•</span>
+                      <span className="text-blue-600">{Math.round((version.positiveRatio || 0) * 100)}% aprobación</span>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center space-x-4">
-                  {/* Estadísticas mejoradas */}
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-gray-900">
-                      {version.total_votes || 0}
-                    </div>
-                    <div className="text-xs text-gray-500">votos</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-sm font-medium text-green-600">
-                      +{version.up_votes || 0}
-                    </div>
-                    <div className="text-xs text-gray-500">positivos</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-sm font-medium text-red-600">
-                      -{version.down_votes || 0}
-                    </div>
-                    <div className="text-xs text-gray-500">negativos</div>
-                  </div>
-                  {/* Ratio de aprobación */}
-                  <div className="text-center">
-                    <div className="text-sm font-medium text-blue-600">
-                      {Math.round((version.positiveRatio || 0) * 100)}%
-                    </div>
-                    <div className="text-xs text-gray-500">aprobación</div>
-                  </div>
-                </div>
-              </div>
-              
-              {version.description && (
-                <p className="text-gray-700 mb-3 text-sm">{version.description}</p>
-              )}
-              
-              <div className="flex items-center justify-between">
+                
+                {/* Botones de acción */}
                 <div className="flex items-center space-x-2">
-                  <button
-                    onClick={() => handleVote(version.id, 'up')}
-                    className={`p-2 rounded-lg transition-colors ${
-                      userVotes[version.id] === 'up'
-                        ? 'bg-green-100 text-green-700 border-2 border-green-300'
-                        : 'bg-gray-100 text-gray-600 hover:bg-green-100 hover:text-green-700 border-transparent'
-                    }`}
-                    title={`Votar positivamente${userVotes[version.id] === 'up' ? ' (click para quitar voto)' : ''}`}
-                  >
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => handleVote(version.id, 'down')}
-                    className={`p-2 rounded-lg transition-colors ${
-                      userVotes[version.id] === 'down'
-                        ? 'bg-red-100 text-red-700 border-2 border-red-300'
-                        : 'bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-700 border-transparent'
-                    }`}
-                    title={`Votar negativamente${userVotes[version.id] === 'down' ? ' (click para quitar voto)' : ''}`}
-                  >
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </button>
-                  {/* Indicador de voto actual */}
-                  {userVotes[version.id] && (
-                    <span className="text-xs text-gray-500">
-                      Tu voto: {userVotes[version.id] === 'up' ? '👍' : '👎'}
-                    </span>
-                  )}
-                </div>
-                <div className="flex space-x-2">
+                  {/* Botón desplegable */}
                   <button
                     onClick={() => toggleProposals(version.id)}
-                    className="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors flex items-center space-x-1 relative"
+                    className="p-2 text-gray-600 hover:text-gray-800 transition-colors"
+                    title="Ver detalles"
                   >
                     <svg 
                       className={`w-4 h-4 transition-transform duration-200 ${expandedVersions[version.id] ? 'rotate-90' : ''}`} 
@@ -510,29 +453,67 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
                     >
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
-                    <span>Propuestas</span>
-                    {proposals[version.id] && proposals[version.id].length > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                        {proposals[version.id].length}
-                      </span>
-                    )}
                   </button>
+                  
+                  {/* Botón mostrar versión */}
                   {onVersionSelect && (
                     <button
                       onClick={() => onVersionSelect(version)}
-                      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
+                      className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
                     >
-                      Mostrar Aquí
+                      Mostrar
                     </button>
                   )}
                 </div>
               </div>
 
-              {/* Sección de Propuestas de Edición */}
+              {/* Contenido desplegable */}
               {expandedVersions[version.id] && (
-                <div className="mt-4 pt-4 border-t border-gray-200">
+                <div className="border-t border-gray-200 bg-gray-50 p-4">
+                  {/* Descripción */}
+                  {version.description && (
+                    <div className="mb-3">
+                      <p className="text-sm text-gray-700">{version.description}</p>
+                    </div>
+                  )}
+                  
+                  {/* Sección de votación */}
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="text-sm font-medium text-gray-900">Propuestas de Edición</h4>
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => handleVote(version.id, 'up')}
+                        className={`p-2 rounded-lg transition-colors ${
+                          userVotes[version.id] === 'up'
+                            ? 'bg-green-100 text-green-700 border-2 border-green-300'
+                            : 'bg-gray-100 text-gray-600 hover:bg-green-100 hover:text-green-700 border-transparent'
+                        }`}
+                        title={`Votar positivamente${userVotes[version.id] === 'up' ? ' (click para quitar voto)' : ''}`}
+                      >
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => handleVote(version.id, 'down')}
+                        className={`p-2 rounded-lg transition-colors ${
+                          userVotes[version.id] === 'down'
+                            ? 'bg-red-100 text-red-700 border-2 border-red-300'
+                            : 'bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-700 border-transparent'
+                        }`}
+                        title={`Votar negativamente${userVotes[version.id] === 'down' ? ' (click para quitar voto)' : ''}`}
+                      >
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </button>
+                      {userVotes[version.id] && (
+                        <span className="text-xs text-gray-500">
+                          Tu voto: {userVotes[version.id] === 'up' ? '👍' : '👎'}
+                        </span>
+                      )}
+                    </div>
+                    
+                    {/* Botón para crear propuesta */}
                     {userProposal ? (
                       <div className="px-3 py-1 text-xs bg-gray-300 text-gray-600 rounded-lg flex items-center space-x-1 cursor-not-allowed" title="Ya tienes una propuesta pendiente">
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -553,69 +534,65 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
                     )}
                   </div>
 
-                  {loadingProposals[version.id] ? (
-                    <div className="flex items-center justify-center py-4">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
-                    </div>
-                  ) : proposals[version.id] && proposals[version.id].length > 0 ? (
-                    <div className="space-y-3">
-                      {proposals[version.id].map((proposal) => (
-                        <div key={proposal.id} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center space-x-2">
+                  {/* Propuestas de edición */}
+                  <div className="border-t border-gray-200 pt-3">
+                    <h4 className="text-sm font-medium text-gray-900 mb-2">Propuestas de Edición</h4>
+                    {loadingProposals[version.id] ? (
+                      <div className="flex items-center justify-center py-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+                      </div>
+                    ) : proposals[version.id] && proposals[version.id].length > 0 ? (
+                      <div className="space-y-2">
+                        {proposals[version.id].map((proposal) => (
+                          <div key={proposal.id} className="bg-white rounded p-2 border border-gray-200">
+                            <div className="flex items-center justify-between mb-1">
                               <span className="text-xs font-medium text-gray-700">
                                 {proposal.author.name}
                               </span>
-                              <span className="text-xs text-gray-500">•</span>
-                              <span className="text-xs text-gray-500">
-                                {new Date(proposal.created_at).toLocaleDateString('es-ES')}
+                              <span className={`px-2 py-0.5 rounded-full text-xs ${
+                                proposal.status === 'pending'
+                                  ? 'bg-yellow-100 text-yellow-800'
+                                  : proposal.status === 'approved'
+                                  ? 'bg-green-100 text-green-800'
+                                  : 'bg-red-100 text-red-800'
+                              }`}>
+                                {proposal.status === 'pending' && 'En votación'}
+                                {proposal.status === 'approved' && 'Aprobado'}
+                                {proposal.status === 'rejected' && 'Rechazado'}
                               </span>
                             </div>
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              proposal.status === 'pending'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : proposal.status === 'approved'
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-red-100 text-red-800'
-                            }`}>
-                              {proposal.status === 'pending' && 'En votación'}
-                              {proposal.status === 'approved' && 'Aprobado'}
-                              {proposal.status === 'rejected' && 'Rechazado'}
-                            </span>
-                          </div>
-                          
-                          <div className="text-xs text-gray-600 mb-2">
-                            {proposal.changes.map((change, index) => (
-                              <div key={index} className="mb-1">
-                                <span className="font-medium">{change.action}:</span> {change.after}
+                            <div className="text-xs text-gray-600 mb-1">
+                              {proposal.changes.map((change, index) => (
+                                <div key={index}>
+                                  <span className="font-medium">{change.action}:</span> {change.after}
+                                </div>
+                              ))}
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-3 text-xs">
+                                <span className="text-green-600">
+                                  👍 {proposal.votes.filter(v => v.vote === 'approve').length}
+                                </span>
+                                <span className="text-red-600">
+                                  👎 {proposal.votes.filter(v => v.vote === 'reject').length}
+                                </span>
                               </div>
-                            ))}
-                          </div>
-
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-4 text-xs">
-                              <span className="text-green-600">
-                                👍 {proposal.votes.filter(v => v.vote === 'approve').length}
-                              </span>
-                              <span className="text-red-600">
-                                👎 {proposal.votes.filter(v => v.vote === 'reject').length}
-                              </span>
+                              <button 
+                                onClick={() => handleViewProposalDetails(proposal)}
+                                className="text-xs text-blue-600 hover:text-blue-800"
+                              >
+                                Ver detalles
+                              </button>
                             </div>
-                            <button 
-                              onClick={() => handleViewProposalDetails(proposal)}
-                              className="text-xs text-blue-600 hover:text-blue-800"
-                            >
-                              Ver detalles
-                            </button>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-4 text-gray-500 text-sm">
-                      No hay propuestas de edición para esta versión
-                    </div>
-                  )}
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-2 text-gray-500 text-xs">
+                        No hay propuestas de edición para esta versión
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
