@@ -78,29 +78,34 @@ export const roadmapService = {
     }
     
     console.log(`Consultando versiones para roadmap: ${roadmapType}`);
-    
+    // Traer el nombre del usuario desde auth.users (preferentemente el nombre, si no el email)
     const { data, error } = await supabase
       .from('roadmap_versions')
-      .select('*')
+      .select(`*, user:auth.users(id, email, user_metadata)`)
       .eq('roadmap_type', roadmapType)
       .eq('is_public', true)
-      .order('created_at', { ascending: false })
+      .order('created_at', { ascending: false });
 
     if (error) {
       console.error(`Error consultando versiones para ${roadmapType}:`, error);
       throw error;
     }
     
-    console.log(`Versiones encontradas para ${roadmapType}:`, data);
+    // Procesar para obtener el nombre real del usuario
+    const versionsWithUser = data.map(version => {
+      let nombre = 'Usuario';
+      if (version.user) {
+        // user_metadata puede tener name, full_name, display_name, etc.
+        const meta = version.user.user_metadata || {};
+        nombre = meta.full_name || meta.name || meta.display_name || version.user.email || 'Usuario';
+      }
+      return {
+        ...version,
+        autor_nombre: nombre
+      };
+    });
     
-    // Por ahora, no obtenemos emails para evitar problemas de permisos
-    const versionsWithEmail = data.map(version => ({
-      ...version,
-      user_email: null
-    }));
-    
-    console.log(`Versiones procesadas para ${roadmapType}:`, versionsWithEmail);
-    return versionsWithEmail;
+    return versionsWithUser;
   },
 
   // Obtener versiones de roadmaps del usuario

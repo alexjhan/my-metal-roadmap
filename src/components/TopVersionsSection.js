@@ -405,7 +405,7 @@ const TopVersionsSection = ({ roadmapType, onVersionSelect, onEditVersion }) => 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2">
                       <span className="text-sm font-medium text-gray-900 truncate">
-                        Versión realizada por Usuario
+                        Versión realizada por {version.autor_nombre}
                       </span>
                       {/* Badge de calidad compacto */}
                       {(version.quality === 'excellent' || version.quality === 'good' || version.quality === 'fair') && (
