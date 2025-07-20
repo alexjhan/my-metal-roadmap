@@ -128,20 +128,20 @@ function NodeDrawer({ node, onClose }) {
 
           </div>
           <div className="flex flex-grow justify-end gap-1">
-            <button 
+          <button
               type="button" 
               id="close-topic" 
               className="flex items-center gap-1.5 rounded-lg bg-gray-200 px-1.5 py-1 text-xs text-black hover:bg-gray-300 hover:text-gray-900"
-              onClick={onClose}
-            >
+            onClick={onClose}
+          >
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x size-4" aria-hidden="true">
                 <path d="M18 6 6 18"></path>
                 <path d="m6 6 12 12"></path>
-              </svg>
-            </button>
+            </svg>
+          </button>
           </div>
         </div>
-        
+
         <div className="prose prose-quoteless prose-h1:mb-2.5 prose-h1:mt-7 prose-h1:text-balance prose-h2:mb-3 prose-h2:mt-0 prose-h3:mb-[5px] prose-h3:mt-[10px] prose-p:mb-2 prose-p:mt-0 prose-blockquote:font-normal prose-blockquote:not-italic prose-blockquote:text-gray-700 prose-li:m-0 prose-li:mb-0.5">
           <div id="topic-content">
             <h1 className="text-3xl font-bold text-gray-900 mb-6">{nodeData.title}</h1>
@@ -188,7 +188,7 @@ function NodeDrawer({ node, onClose }) {
                       <span className="relative left-3 z-50 inline-flex items-center gap-1 rounded-md border border-current bg-white px-2 py-0.5 text-xs font-medium">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-play inline-block h-3 w-3 fill-current" aria-hidden="true">
                           <polygon points="5,3 19,12 5,21"></polygon>
-                        </svg>
+                      </svg>
                         Videos
                       </span>
                       <span className="absolute inset-x-0 h-px w-full grow bg-current"></span>
@@ -244,7 +244,7 @@ function NodeDrawer({ node, onClose }) {
                       <span className="relative left-3 z-50 inline-flex items-center gap-1 rounded-md border border-current bg-white px-2 py-0.5 text-xs font-medium">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-github inline-block h-3 w-3 fill-current" aria-hidden="true">
                           <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2s-.28 1.15 0 3.5c-.73 1.02-1.08 2.25-1 3.5 0 3.5 3 5.5 6 5.5-.19.98-.3 2-.16 3.04A6.6 6.6 0 0 0 9 22c0 .55.45 1 1 1h4c.55 0 1-.45 1-1Z"></path>
-                        </svg>
+                      </svg>
                         Open Source
                       </span>
                       <span className="absolute inset-x-0 h-px w-full grow bg-current"></span>
@@ -268,9 +268,9 @@ function NodeDrawer({ node, onClose }) {
             
 
           </div>
+          </div>
         </div>
       </div>
-    </div>
     </>
   );
 }
@@ -315,7 +315,7 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
       markerEnd: { type: MarkerType.ArrowClosed }
     }))
   );
-
+  
   // Actualizar nodos y edges cuando cambien customNodes/customEdges
   useEffect(() => {
     if (customNodes && customEdges) {
@@ -378,9 +378,9 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
       const shouldShowOffCanvas = ['topic', 'subtopic', 'todo'].includes(nodeType);
       
       return {
-        ...node,
-        data: {
-          ...node.data,
+    ...node,
+    data: {
+      ...node.data,
           shouldShowOffCanvas,
           nodeId: node.id,
         },
