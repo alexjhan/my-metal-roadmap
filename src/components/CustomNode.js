@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Handle, Position, useReactFlow } from 'reactflow';
 
-const CustomNode = React.memo(({ id, data, selected, onClick, readOnly = false }) => {
+const CustomNode = React.memo(({ id, data, selected, onClick, readOnly = false, onNodeSelect }) => {
   console.log('CustomNode props:', { id, hasOnClick: !!onClick, hasDataOnClick: !!data?.onClick });
   const { getConnectionLineStyle, getNode, getViewport } = useReactFlow();
   const [isConnectionActive, setIsConnectionActive] = useState(false);
@@ -296,13 +296,18 @@ const CustomNode = React.memo(({ id, data, selected, onClick, readOnly = false }
   const handleClick = useCallback((event) => {
     console.log('CustomNode handleClick triggered for node:', id);
     event.stopPropagation();
-    if (onClick) {
+    
+    // Si estamos en modo readOnly y el nodo debe mostrar off-canvas
+    if (readOnly && data.shouldShowOffCanvas && onNodeSelect) {
+      console.log('Opening off-canvas for node:', id);
+      onNodeSelect(id);
+    } else if (onClick) {
       console.log('Calling onClick with id:', id);
       onClick(id);
     } else {
-      console.log('onClick is not defined for node:', id);
+      console.log('No action defined for node:', id);
     }
-  }, [onClick, id]);
+  }, [onClick, onNodeSelect, id, readOnly, data.shouldShowOffCanvas]);
 
   // Memoizar los handles - en modo readOnly están invisibles pero presentes para las flechas
   const handles = useMemo(() => {
