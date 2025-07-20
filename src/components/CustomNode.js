@@ -299,19 +299,33 @@ const CustomNode = React.memo(({ id, data, selected, onClick, readOnly = false }
     }
   }, [onClick, id]);
 
-  // Memoizar los handles - solo mostrar si NO está en modo readOnly
+  // Memoizar los handles - en modo readOnly están invisibles pero presentes para las flechas
   const handles = useMemo(() => {
-    // Si está en modo readOnly, no mostrar handles
-    if (readOnly) {
-      return null;
-    }
-
     const nodeType = data.nodeType || data.type || 'default';
     
     // No mostrar handles para líneas
     if (nodeType === 'horizontal-line' || nodeType === 'vertical-line') {
       return null;
     }
+
+    // Estilos base para los handles
+    const baseHandleStyle = {
+      width: '16px',
+      height: '16px',
+      border: '3px solid white',
+    };
+
+    // En modo readOnly, los handles están invisibles pero presentes para las flechas
+    const handleStyle = readOnly ? {
+      ...baseHandleStyle,
+      background: 'transparent',
+      border: 'none',
+      opacity: 0,
+      pointerEvents: 'none'
+    } : {
+      ...baseHandleStyle,
+      background: isConnectionActive ? '#10b981' : '#6b7280',
+    };
 
     return (
       <>
@@ -320,10 +334,7 @@ const CustomNode = React.memo(({ id, data, selected, onClick, readOnly = false }
           position={Position.Top}
           id="top"
           style={{
-            background: isConnectionActive ? '#10b981' : '#6b7280',
-            width: '16px',
-            height: '16px',
-            border: '3px solid white',
+            ...handleStyle,
             top: '-8px',
             left: '50%',
             transform: 'translateX(-50%)'
@@ -334,10 +345,7 @@ const CustomNode = React.memo(({ id, data, selected, onClick, readOnly = false }
           position={Position.Top}
           id="top"
           style={{
-            background: isConnectionActive ? '#10b981' : '#6b7280',
-            width: '16px',
-            height: '16px',
-            border: '3px solid white',
+            ...handleStyle,
             top: '-8px',
             left: '50%',
             transform: 'translateX(-50%)'
@@ -348,10 +356,7 @@ const CustomNode = React.memo(({ id, data, selected, onClick, readOnly = false }
           position={Position.Right}
           id="right"
           style={{
-            background: isConnectionActive ? '#10b981' : '#6b7280',
-            width: '16px',
-            height: '16px',
-            border: '3px solid white',
+            ...handleStyle,
             right: '-8px',
             top: '50%',
             transform: 'translateY(-50%)'
@@ -362,10 +367,7 @@ const CustomNode = React.memo(({ id, data, selected, onClick, readOnly = false }
           position={Position.Right}
           id="right"
           style={{
-            background: isConnectionActive ? '#10b981' : '#6b7280',
-            width: '16px',
-            height: '16px',
-            border: '3px solid white',
+            ...handleStyle,
             right: '-8px',
             top: '50%',
             transform: 'translateY(-50%)'
@@ -376,10 +378,7 @@ const CustomNode = React.memo(({ id, data, selected, onClick, readOnly = false }
           position={Position.Bottom}
           id="bottom"
           style={{
-            background: isConnectionActive ? '#10b981' : '#6b7280',
-            width: '16px',
-            height: '16px',
-            border: '3px solid white',
+            ...handleStyle,
             bottom: '-8px',
             left: '50%',
             transform: 'translateX(-50%)'
@@ -390,10 +389,7 @@ const CustomNode = React.memo(({ id, data, selected, onClick, readOnly = false }
           position={Position.Bottom}
           id="bottom"
           style={{
-            background: isConnectionActive ? '#10b981' : '#6b7280',
-            width: '16px',
-            height: '16px',
-            border: '3px solid white',
+            ...handleStyle,
             bottom: '-8px',
             left: '50%',
             transform: 'translateX(-50%)'
@@ -404,10 +400,7 @@ const CustomNode = React.memo(({ id, data, selected, onClick, readOnly = false }
           position={Position.Left}
           id="left"
           style={{
-            background: isConnectionActive ? '#10b981' : '#6b7280',
-            width: '16px',
-            height: '16px',
-            border: '3px solid white',
+            ...handleStyle,
             left: '-8px',
             top: '50%',
             transform: 'translateY(-50%)'
@@ -418,10 +411,7 @@ const CustomNode = React.memo(({ id, data, selected, onClick, readOnly = false }
           position={Position.Left}
           id="left"
           style={{
-            background: isConnectionActive ? '#10b981' : '#6b7280',
-            width: '16px',
-            height: '16px',
-            border: '3px solid white',
+            ...handleStyle,
             left: '-8px',
             top: '50%',
             transform: 'translateY(-50%)'
