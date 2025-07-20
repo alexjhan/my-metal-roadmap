@@ -18,6 +18,7 @@ import { nodes as initialNodes } from '../data/nodes';
 import { edges as initialEdges } from '../data/edges';
 import { allRoadmapsData } from '../data/allRoadmaps';
 import { roadmapStorageService } from '../lib/roadmapStorage';
+import { supabase } from '../lib/supabase';
 import Auth from './Auth';
 import { useUser } from '../UserContext';
 import { useNavigate } from 'react-router-dom';
@@ -219,11 +220,7 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
   const initialRoadmapNodes = customNodes || (savedRoadmap ? savedRoadmap.nodes : (roadmapInfo ? roadmapInfo.nodes : initialNodes));
   const initialRoadmapEdges = customEdges || (savedRoadmap ? savedRoadmap.edges : (roadmapInfo ? roadmapInfo.edges : initialEdges));
   
-  console.log('GraphLayout - customNodes:', customNodes);
-  console.log('GraphLayout - customEdges:', customEdges);
-  console.log('GraphLayout - initialRoadmapNodes:', initialRoadmapNodes);
-  console.log('GraphLayout - initialRoadmapEdges:', initialRoadmapEdges);
-  
+  // Estado para los nodos y edges cargados desde la base de datos
   const [nodes, setNodes, onNodesChange] = useNodesState(initialRoadmapNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(
     initialRoadmapEdges.map(edge => ({
@@ -231,6 +228,45 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
       markerEnd: { type: MarkerType.ArrowClosed }
     }))
   );
+  
+  // Cargar datos desde la base de datos si estamos en modo lectura y no hay customNodes
+  useEffect(() => {
+    const loadDataFromDatabase = async () => {
+      if (readOnly && !customNodes) {
+        try {
+          // Cargar la versión más reciente desde Supabase
+          const { data: versions, error } = await supabase
+            .from('roadmap_versions')
+            .select('*')
+            .eq('roadmap_type', roadmapType)
+            .order('created_at', { ascending: false })
+            .limit(1);
+          
+          if (!error && versions && versions.length > 0) {
+            const latestVersion = versions[0];
+            console.log('Cargando versión desde base de datos:', latestVersion);
+            
+            if (latestVersion.nodes && latestVersion.edges) {
+              setNodes(latestVersion.nodes);
+              setEdges(latestVersion.edges.map(edge => ({
+                ...edge,
+                markerEnd: { type: MarkerType.ArrowClosed }
+              })));
+            }
+          }
+        } catch (error) {
+          console.error('Error cargando datos desde base de datos:', error);
+        }
+      }
+    };
+    
+    loadDataFromDatabase();
+  }, [readOnly, customNodes, roadmapType, setNodes, setEdges]);
+  
+  console.log('GraphLayout - customNodes:', customNodes);
+  console.log('GraphLayout - customEdges:', customEdges);
+  console.log('GraphLayout - initialRoadmapNodes:', initialRoadmapNodes);
+  console.log('GraphLayout - initialRoadmapEdges:', initialRoadmapEdges);
   
   // Si hay nodos personalizados, asegurarse de que se usen
   useEffect(() => {

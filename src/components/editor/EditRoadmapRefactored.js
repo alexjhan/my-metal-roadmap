@@ -109,7 +109,7 @@ const CurvedEdge = React.memo(({ id, sourceX, sourceY, targetX, targetY, sourceP
 
 // Definir nodeTypes y edgeTypes como objetos estáticos
 const nodeTypes = {
-  custom: CustomNode,
+  custom: (props) => <CustomNode {...props} onClick={props.data.onClick} />,
 };
 
 const edgeTypes = {
@@ -528,6 +528,7 @@ const EditRoadmapRefactored = () => {
   const [showPropertiesPanel, setShowPropertiesPanel] = useState(false);
   const [showComponentsPanel, setShowComponentsPanel] = useState(false);
   const [showRoadmapsPanel, setShowRoadmapsPanel] = useState(false);
+
   const [searchRoadmaps, setSearchRoadmaps] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
   const [editTitle, setEditTitle] = useState(roadmapInfo.title);
@@ -561,9 +562,11 @@ const EditRoadmapRefactored = () => {
   );
 
   // Obtener nodo y flecha seleccionados
-  const selectedNode = useMemo(() => 
-    selectedNodeId ? nodes.find(node => node.id === selectedNodeId) : null
-  , [selectedNodeId, nodes]);
+  const selectedNode = useMemo(() => {
+    const node = selectedNodeId ? nodes.find(node => node.id === selectedNodeId) : null;
+    console.log('Selected node:', node);
+    return node;
+  }, [selectedNodeId, nodes]);
 
   const selectedEdge = useMemo(() => 
     selectedEdgeId ? edges.find(edge => edge.id === selectedEdgeId) : null
@@ -613,6 +616,7 @@ const EditRoadmapRefactored = () => {
 
   // Handlers principales
   const handleNodeClick = useCallback((id) => {
+    console.log('Node clicked:', id);
     setSelectedNodeId(id);
     setSelectedEdgeId(null);
     setShowPropertiesPanel(true);
@@ -1295,8 +1299,17 @@ const EditRoadmapRefactored = () => {
   //   })), [nodes, handleNodeClick, setNodes]
   // );
 
-  // Usar los nodos tal cual, sin pasar onNodeClick ni onClick
-  const nodesWithClick = nodes;
+  // Pasar onClick a los nodos para que CustomNode pueda usarlo
+  const nodesWithClick = useMemo(() => 
+    nodes.map(node => ({
+      ...node,
+      data: {
+        ...node.data,
+        onClick: handleNodeClick
+      }
+    }))
+  , [nodes, handleNodeClick]);
+  console.log('Nodes being rendered with onClick:', nodes.length, nodes.map(n => ({ id: n.id, type: n.type, hasOnClick: !!n.data?.onClick })));
 
   const onConnect = useCallback(
     (params) => {
@@ -1633,7 +1646,10 @@ const EditRoadmapRefactored = () => {
             snapToGrid={false}
             snapGrid={[15, 15]}
               className="w-full h-full"
-            onNodeClick={(event, node) => handleNodeClick(node.id)}
+            onNodeClick={(event, node) => {
+              console.log('ReactFlow onNodeClick triggered:', node.id);
+              handleNodeClick(node.id);
+            }}
             onNodeDrag={onNodeDrag}
             onNodeDragStop={onNodeDragStop}
           >
@@ -1653,12 +1669,13 @@ const EditRoadmapRefactored = () => {
           {/* Overlay para cerrar panel al hacer clic fuera */}
           {showPropertiesPanel && (
             <div 
-              className="fixed inset-0 z-35 bg-transparent properties-overlay"
+              className="fixed inset-0 z-[90] bg-transparent properties-overlay"
               onClick={handleClickOutside}
             />
           )}
 
           {/* Panel de propiedades */}
+      {console.log('Rendering PropertiesPanel:', { showPropertiesPanel, selectedNode: !!selectedNode, selectedEdge: !!selectedEdge })}
       <PropertiesPanel
         showPropertiesPanel={showPropertiesPanel}
         selectedNode={selectedNode}

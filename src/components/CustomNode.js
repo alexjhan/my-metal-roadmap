@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Handle, Position, useReactFlow } from 'reactflow';
 
 const CustomNode = React.memo(({ id, data, selected, onClick, readOnly = false }) => {
+  console.log('CustomNode props:', { id, hasOnClick: !!onClick, hasDataOnClick: !!data?.onClick });
   const { getConnectionLineStyle, getNode, getViewport } = useReactFlow();
   const [isConnectionActive, setIsConnectionActive] = useState(false);
 
@@ -293,9 +294,13 @@ const CustomNode = React.memo(({ id, data, selected, onClick, readOnly = false }
 
   // Memoizar el manejador de clic
   const handleClick = useCallback((event) => {
+    console.log('CustomNode handleClick triggered for node:', id);
     event.stopPropagation();
     if (onClick) {
+      console.log('Calling onClick with id:', id);
       onClick(id);
+    } else {
+      console.log('onClick is not defined for node:', id);
     }
   }, [onClick, id]);
 

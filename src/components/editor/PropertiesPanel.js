@@ -749,7 +749,7 @@ const PropertiesPanel = ({
 
   return (
     <div 
-      className="fixed right-0 w-80 bg-white border-l border-gray-200 z-50 flex flex-col shadow-lg properties-panel"
+      className="fixed right-0 w-80 bg-white border-l border-gray-200 z-[100] flex flex-col shadow-lg properties-panel"
       style={{
         top: '5rem',
         height: 'calc(100vh - 5rem)'
