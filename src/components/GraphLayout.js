@@ -248,19 +248,26 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
     custom: (props) => <CustomNode {...props} readOnly={readOnly} onClick={() => props.data.onNodeClick(props.id)} />,
   }), [readOnly]);
 
+  // Función de click memoizada
+  const handleNodeClick = useCallback((id) => {
+    setSelectedNodeId(id);
+  }, []);
+
   // Pasar función de click a cada nodo - solo para nodos con contenido
-  const nodesWithClick = nodes.map(node => {
-    const nodeType = node.data.nodeType || node.data.type;
-    const shouldShowOffCanvas = ['topic', 'subtopic', 'todo'].includes(nodeType);
-    
-    return {
-      ...node,
-      data: {
-        ...node.data,
-        onNodeClick: shouldShowOffCanvas ? (id) => setSelectedNodeId(id) : undefined,
-      },
-    };
-  });
+  const nodesWithClick = useMemo(() => {
+    return nodes.map(node => {
+      const nodeType = node.data.nodeType || node.data.type;
+      const shouldShowOffCanvas = ['topic', 'subtopic', 'todo'].includes(nodeType);
+      
+      return {
+        ...node,
+        data: {
+          ...node.data,
+          onNodeClick: shouldShowOffCanvas ? handleNodeClick : undefined,
+        },
+      };
+    });
+  }, [nodes, handleNodeClick]);
 
 
 
