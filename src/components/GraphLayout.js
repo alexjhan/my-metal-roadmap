@@ -248,26 +248,19 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
     custom: (props) => <CustomNode {...props} readOnly={readOnly} onClick={() => props.data.onNodeClick(props.id)} />,
   }), [readOnly]);
 
-  // Función de click para nodos - solo para nodos con contenido
-  const handleNodeClick = useCallback((id) => {
-    const clickedNode = nodes.find(n => n.id === id);
-    if (clickedNode) {
-      const nodeType = clickedNode.data.nodeType || clickedNode.data.type;
-      // Solo mostrar off-canvas para nodos con contenido
-      if (['topic', 'subtopic', 'todo'].includes(nodeType)) {
-        setSelectedNodeId(id);
-      }
-    }
-  }, [nodes]);
-
-  // Pasar función de click a cada nodo
-  const nodesWithClick = nodes.map(node => ({
-    ...node,
-    data: {
-      ...node.data,
-      onNodeClick: handleNodeClick,
-    },
-  }));
+  // Pasar función de click a cada nodo - solo para nodos con contenido
+  const nodesWithClick = nodes.map(node => {
+    const nodeType = node.data.nodeType || node.data.type;
+    const shouldShowOffCanvas = ['topic', 'subtopic', 'todo'].includes(nodeType);
+    
+    return {
+      ...node,
+      data: {
+        ...node.data,
+        onNodeClick: shouldShowOffCanvas ? (id) => setSelectedNodeId(id) : undefined,
+      },
+    };
+  });
 
 
 
