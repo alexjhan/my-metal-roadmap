@@ -234,24 +234,7 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
   console.log('GraphLayout - initialRoadmapNodes:', initialRoadmapNodes);
   console.log('GraphLayout - initialRoadmapEdges:', initialRoadmapEdges);
   
-  // Si hay nodos personalizados, asegurarse de que se usen
-  useEffect(() => {
-    if (customNodes && customNodes.length > 0) {
-      console.log('Aplicando nodos personalizados:', customNodes);
-      setNodes(customNodes);
-    }
-  }, [customNodes, setNodes]);
-  
-  // Si hay edges personalizados, asegurarse de que se usen
-  useEffect(() => {
-    if (customEdges && customEdges.length > 0) {
-      console.log('Aplicando edges personalizados:', customEdges);
-      setEdges(customEdges.map(edge => ({
-        ...edge,
-        markerEnd: { type: MarkerType.ArrowClosed }
-      })));
-    }
-  }, [customEdges, setEdges]);
+
   const [selectedNodeId, setSelectedNodeId] = useState(null);
   const [showAuth, setShowAuth] = useState(false);
   const { user } = useUser();
@@ -265,21 +248,24 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
     custom: (props) => <CustomNode {...props} readOnly={readOnly} onClick={() => props.data.onNodeClick(props.id)} />,
   }), [readOnly]);
 
-  // Pasar función de click a cada nodo - solo para nodos con contenido
+  // Función de click para nodos - solo para nodos con contenido
+  const handleNodeClick = useCallback((id) => {
+    const clickedNode = nodes.find(n => n.id === id);
+    if (clickedNode) {
+      const nodeType = clickedNode.data.nodeType || clickedNode.data.type;
+      // Solo mostrar off-canvas para nodos con contenido
+      if (['topic', 'subtopic', 'todo'].includes(nodeType)) {
+        setSelectedNodeId(id);
+      }
+    }
+  }, [nodes]);
+
+  // Pasar función de click a cada nodo
   const nodesWithClick = nodes.map(node => ({
     ...node,
     data: {
       ...node.data,
-      onNodeClick: (id) => {
-        const clickedNode = nodes.find(n => n.id === id);
-        if (clickedNode) {
-          const nodeType = clickedNode.data.nodeType || clickedNode.data.type;
-          // Solo mostrar off-canvas para nodos con contenido
-          if (['topic', 'subtopic', 'todo'].includes(nodeType)) {
-            setSelectedNodeId(id);
-          }
-        }
-      },
+      onNodeClick: handleNodeClick,
     },
   }));
 
