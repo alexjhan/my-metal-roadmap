@@ -124,29 +124,13 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
   };
 
   // Función para obtener el nombre del usuario desde el email o user_id
-  const getUserDisplayName = (email, userId) => {
-    if (email) {
-      // Si es un UUID (user_id), usar un nombre genérico
-      if (email.includes('-') && email.length > 20) {
-        return 'Usuario';
-      }
-      
-      // Extraer el nombre del email (parte antes del @)
-      const namePart = email.split('@')[0];
-      
-      // Capitalizar la primera letra y reemplazar puntos/guiones bajos con espacios
-      return namePart
-        .replace(/[._-]/g, ' ')
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-        .join(' ');
+  const getUserDisplayName = (userName, userId) => {
+    if (userName && userName.trim() !== '') {
+      return userName;
     }
-    
-    // Si no hay email, usar el user_id truncado
     if (userId) {
       return `Usuario ${userId.substring(0, 8)}...`;
     }
-    
     return 'Usuario';
   };
 
@@ -322,7 +306,7 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
                                           </span>
                                         ) : (
                                           <span className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full font-medium">
-                                            Versión de {getUserDisplayName(version.user_email, version.user_id)}
+                                            Versión de {getUserDisplayName(version.user_name, version.user_id)}
                                           </span>
                                         )}
                                       </div>

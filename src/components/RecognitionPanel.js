@@ -21,9 +21,7 @@ const RecognitionPanel = ({ topVersion, authorInfo, children }) => {
   }
   
   // Obtener email
-  if (topVersion.user_email) {
-    userEmail = topVersion.user_email;
-  } else if (authorInfo) {
+  if (authorInfo) {
     userEmail = authorInfo.email || '';
   }
   

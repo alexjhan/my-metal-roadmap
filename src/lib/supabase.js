@@ -188,7 +188,6 @@ export const roadmapService = {
             nodes: nodes,
             edges: edges,
             description: description || existingVersion.description,
-            user_email: userEmail,
             user_name: userName,
             user_linkedin: userLinkedIn,
             user_facebook: userFacebook,
@@ -218,7 +217,6 @@ export const roadmapService = {
             nodes: nodes,
             edges: edges,
             description: description || `Versión guardada por usuario - ${new Date().toLocaleString()}`,
-            user_email: userEmail,
             user_name: userName,
             user_linkedin: userLinkedIn,
             user_facebook: userFacebook,
@@ -302,7 +300,6 @@ export const roadmapService = {
             .from('roadmap_versions')
             .update({
               user_name: userName,
-              user_email: userEmail,
               updated_at: new Date().toISOString()
             })
             .eq('id', version.id);
