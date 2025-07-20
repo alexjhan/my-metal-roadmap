@@ -14,7 +14,7 @@ import TopVersionsSection from './TopVersionsSection';
 import RecognitionPanel from './RecognitionPanel';
 
 function NodeDrawer({ node, onClose }) {
-  const [activeTab, setActiveTab] = useState('resources');
+  const [activeTab, setActiveTab] = useState('resources'); // Solo Resources por ahora
 
   if (!node) return null;
 
@@ -58,38 +58,9 @@ function NodeDrawer({ node, onClose }) {
               </svg>
               <span className="hidden sm:block">Resources</span>
             </button>
-            <button 
-              className={`flex select-none disabled:pointer-events-none items-center gap-2 rounded-md border border-gray-300 px-2 py-1 text-sm text-gray-500 hover:border-gray-400 data-[state=active]:border-black data-[state=active]:bg-black data-[state=active]:text-white ${activeTab === 'ai' ? 'data-[state=active]:border-black data-[state=active]:bg-black data-[state=active]:text-white' : ''}`}
-              data-state={activeTab === 'ai' ? 'active' : 'inactive'}
-              type="button"
-              onClick={() => setActiveTab('ai')}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-wand-sparkles h-4 w-4" aria-hidden="true">
-                <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72"></path>
-                <path d="m14 7 3 3"></path>
-                <path d="M5 6v4"></path>
-                <path d="M19 14v4"></path>
-                <path d="M10 2v2"></path>
-                <path d="M7 8H3"></path>
-                <path d="M21 16h-4"></path>
-                <path d="M11 3H9"></path>
-              </svg>
-              <span className="hidden sm:block">AI Tutor</span>
-              <span className="hidden rounded-sm bg-yellow-400 px-1 text-xs text-black 2xl:block">New</span>
-            </button>
+
           </div>
           <div className="flex flex-grow justify-end gap-1">
-            <div className="relative inline-flex">
-              <button className="flex 2xl:min-w-[135px] cursor-pointer items-center rounded-md border border-gray-300 p-1 px-2 text-sm text-black hover:border-gray-400 disabled:pointer-events-none disabled:opacity-50">
-                <span className="flex h-2 w-2">
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-gray-300"></span>
-                </span>
-                <span className="ml-2 mr-2 capitalize">pending</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-down ml-auto h-4 w-4" aria-hidden="true">
-                  <path d="m6 9 6 6 6-6"></path>
-                </svg>
-              </button>
-            </div>
             <button 
               type="button" 
               id="close-topic" 
@@ -228,11 +199,7 @@ function NodeDrawer({ node, onClose }) {
               </>
             )}
             
-            {activeTab === 'ai' && (
-              <div className="mt-4">
-                <p className="text-gray-600">AI Tutor functionality coming soon...</p>
-              </div>
-            )}
+
           </div>
         </div>
       </div>
