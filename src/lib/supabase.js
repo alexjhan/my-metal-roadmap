@@ -100,14 +100,18 @@ export const roadmapService = {
     
     // Procesar para obtener el nombre real del usuario usando campos guardados
     const versionsWithUser = data.map(version => {
-      console.log('Procesando versión:', version.id, 'user_name:', version.user_name, 'user_email:', version.user_email);
+      console.log('Procesando versión:', version.id, 'user_metadata:', version.user_metadata);
       
       let nombre = 'Usuario';
-      // Usar user_name si está disponible, si no user_email, si no Usuario'
-      if (version.user_name && version.user_name.trim() !== '') {
-        nombre = version.user_name;
-      } else if (version.user_email && version.user_email.trim() !== '') {
-        nombre = version.user_email.split('@')[0]; // Solo la parte antes del @
+      // Usar user_metadata si está disponible
+      if (version.user_metadata?.full_name && version.user_metadata.full_name.trim() !== '') {
+        nombre = version.user_metadata.full_name;
+      } else if (version.user_metadata?.name && version.user_metadata.name.trim() !== '') {
+        nombre = version.user_metadata.name;
+      } else if (version.user_metadata?.display_name && version.user_metadata.display_name.trim() !== '') {
+        nombre = version.user_metadata.display_name;
+      } else if (version.user_metadata?.email && version.user_metadata.email.trim() !== '') {
+        nombre = version.user_metadata.email.split('@')[0]; // Solo la parte antes del @
       }
       
       console.log(`Nombre final para versión ${version.id}:`, nombre);
@@ -185,7 +189,6 @@ export const roadmapService = {
             nodes: nodes,
             edges: edges,
             description: description || existingVersion.description,
-            user_name: userName,
             user_metadata: userData?.user_metadata || {},
             updated_at: new Date().toISOString()
           })
@@ -212,7 +215,6 @@ export const roadmapService = {
             nodes: nodes,
             edges: edges,
             description: description || `Versión guardada por usuario - ${new Date().toLocaleString()}`,
-            user_name: userName,
             user_metadata: userData?.user_metadata || {},
             is_public: true,
             total_votes: 0,

@@ -10,8 +10,14 @@ const RecognitionPanel = ({ topVersion, authorInfo, children }) => {
   let userFacebook = '';
   
   // Priorizar datos de la versión (más confiables)
-  if (topVersion.user_name) {
-    userName = topVersion.user_name;
+  if (topVersion.user_metadata?.full_name) {
+    userName = topVersion.user_metadata.full_name;
+  } else if (topVersion.user_metadata?.name) {
+    userName = topVersion.user_metadata.name;
+  } else if (topVersion.user_metadata?.display_name) {
+    userName = topVersion.user_metadata.display_name;
+  } else if (topVersion.user_metadata?.email) {
+    userName = topVersion.user_metadata.email.split('@')[0];
   } else if (authorInfo) {
     userName = authorInfo.user_metadata?.full_name || 
                authorInfo.user_metadata?.name || 
@@ -21,18 +27,28 @@ const RecognitionPanel = ({ topVersion, authorInfo, children }) => {
   }
   
   // Obtener email
-  if (authorInfo) {
+  if (topVersion.user_metadata?.email) {
+    userEmail = topVersion.user_metadata.email;
+  } else if (authorInfo) {
     userEmail = authorInfo.email || '';
   }
   
   // Obtener enlaces de redes sociales
-  if (authorInfo?.user_metadata?.linkedin_url) {
+  if (topVersion.user_metadata?.linkedin_url) {
+    userLinkedIn = topVersion.user_metadata.linkedin_url;
+  } else if (topVersion.user_metadata?.linkedin) {
+    userLinkedIn = topVersion.user_metadata.linkedin;
+  } else if (authorInfo?.user_metadata?.linkedin_url) {
     userLinkedIn = authorInfo.user_metadata.linkedin_url;
   } else if (authorInfo?.user_metadata?.linkedin) {
     userLinkedIn = authorInfo.user_metadata.linkedin;
   }
   
-  if (authorInfo?.user_metadata?.facebook_url) {
+  if (topVersion.user_metadata?.facebook_url) {
+    userFacebook = topVersion.user_metadata.facebook_url;
+  } else if (topVersion.user_metadata?.facebook) {
+    userFacebook = topVersion.user_metadata.facebook;
+  } else if (authorInfo?.user_metadata?.facebook_url) {
     userFacebook = authorInfo.user_metadata.facebook_url;
   } else if (authorInfo?.user_metadata?.facebook) {
     userFacebook = authorInfo.user_metadata.facebook;

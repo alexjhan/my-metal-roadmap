@@ -123,10 +123,19 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
     return versions.find(version => version.user_id === user.id);
   };
 
-  // Función para obtener el nombre del usuario desde el email o user_id
-  const getUserDisplayName = (userName, userId) => {
-    if (userName && userName.trim() !== '') {
-      return userName;
+  // Función para obtener el nombre del usuario desde user_metadata o user_id
+  const getUserDisplayName = (userMetadata, userId) => {
+    if (userMetadata?.full_name && userMetadata.full_name.trim() !== '') {
+      return userMetadata.full_name;
+    }
+    if (userMetadata?.name && userMetadata.name.trim() !== '') {
+      return userMetadata.name;
+    }
+    if (userMetadata?.display_name && userMetadata.display_name.trim() !== '') {
+      return userMetadata.display_name;
+    }
+    if (userMetadata?.email) {
+      return userMetadata.email.split('@')[0];
     }
     if (userId) {
       return `Usuario ${userId.substring(0, 8)}...`;
@@ -306,7 +315,7 @@ const SelectRoadmapModal = ({ isOpen, onClose }) => {
                                           </span>
                                         ) : (
                                           <span className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full font-medium">
-                                            Versión de {getUserDisplayName(version.user_name, version.user_id)}
+                                            Versión de {getUserDisplayName(version.user_metadata, version.user_id)}
                                           </span>
                                         )}
                                       </div>
