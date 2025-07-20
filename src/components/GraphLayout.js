@@ -235,7 +235,7 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
   console.log('GraphLayout - initialRoadmapEdges:', initialRoadmapEdges);
   
 
-  const [selectedNodeId, setSelectedNodeId] = useState(null);
+
   const [showAuth, setShowAuth] = useState(false);
   const { user } = useUser();
   const navigate = useNavigate();
@@ -248,26 +248,16 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
     custom: (props) => <CustomNode {...props} readOnly={readOnly} onClick={() => props.data.onNodeClick(props.id)} />,
   }), [readOnly]);
 
-  // Función de click memoizada
-  const handleNodeClick = useCallback((id) => {
-    setSelectedNodeId(id);
-  }, []);
-
-  // Pasar función de click a cada nodo - solo para nodos con contenido
+  // En modo de lectura, no mostrar off-canvas al hacer clic en nodos
   const nodesWithClick = useMemo(() => {
-    return nodes.map(node => {
-      const nodeType = node.data.nodeType || node.data.type;
-      const shouldShowOffCanvas = ['topic', 'subtopic', 'todo'].includes(nodeType);
-      
-      return {
-        ...node,
-        data: {
-          ...node.data,
-          onNodeClick: shouldShowOffCanvas ? handleNodeClick : undefined,
-        },
-      };
-    });
-  }, [nodes, handleNodeClick]);
+    return nodes.map(node => ({
+      ...node,
+      data: {
+        ...node.data,
+        onNodeClick: undefined, // Deshabilitar clics en modo de lectura
+      },
+    }));
+  }, [nodes]);
 
 
 
@@ -276,7 +266,7 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
     [setEdges]
   );
 
-  const selectedNode = nodes.find(n => n.id === selectedNodeId);
+
 
   const handleEditClick = () => {
     // Detectar si la pantalla es pequeña
@@ -334,8 +324,7 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
           <FlowWithFitView />
         </ReactFlow>
       </div>
-      {/* Drawer lateral fullscreen */}
-      <NodeDrawer node={selectedNode} onClose={() => setSelectedNodeId(null)} />
+
       {/* Modal de autenticación */}
       {showAuth && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
