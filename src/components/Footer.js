@@ -10,7 +10,7 @@ export default function Footer() {
           <a className="border-b border-b-blue-700 px-2 py-1.5 transition-colors hover:text-white sm:border-b-0 sm:px-0 sm:py-0" href="/guides">Guides</a>
           <a className="border-b border-b-blue-700 px-2 py-1.5 transition-colors hover:text-white sm:border-b-0 sm:px-0 sm:py-0" href="/videos">Videos</a>
           <a className="border-b border-b-blue-700 px-2 py-1.5 transition-colors hover:text-white sm:border-b-0 sm:px-0 sm:py-0" href="/about">FAQs</a>
-          <a className="px-2 py-1.5 transition-colors hover:text-white sm:border-b-0 sm:px-0 sm:py-0" href="https://youtube.com/theroadmap?sub_confirmation=1" target="_blank" rel="noopener noreferrer">YouTube</a>
+          <a className="px-2 py-1.5 transition-colors hover:text-white sm:border-b-0 sm:px-0 sm:py-0" href="https://www.youtube.com/watch?v=miGx8jqkqWE" target="_blank" rel="noopener noreferrer">YouTube</a>
         </p>
         <div className="flex flex-col justify-between gap-8 lg:flex-row lg:gap-2">
           <div className="max-w-[425px]">
