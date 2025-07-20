@@ -13,7 +13,6 @@ const EditorHeader = ({
   saveStatus = 'idle',
   hasUnsavedChanges = false,
   proposalMode = false,
-  onToggleProposalMode = () => {},
   onCreateProposal = () => {},
   isProposalOnlyMode = false
 }) => {
@@ -51,21 +50,20 @@ const EditorHeader = ({
         {/* Botones de acción mejorados */}
         <div className="flex items-center space-x-3">
           {/* Botón de modo propuesta */}
-          {!isProposalOnlyMode && (
-            <button
-              onClick={onToggleProposalMode}
-              className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                proposalMode 
-                  ? 'bg-orange-100 text-orange-600' 
-                  : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
-              }`}
-              title="Modo propuesta de edición"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </button>
-          )}
+          {/* Eliminar el bloque del botón de modo propuesta: */}
+          {/* <button
+            onClick={onToggleProposalMode}
+            className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+              proposalMode 
+                ? 'bg-orange-100 text-orange-600' 
+                : 'text-gray-700 bg-gray-100 hover:bg-gray-200'
+            }`}
+            title="Modo propuesta de edición"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </button> */}
 
           <button
             onClick={onShowLiveView}

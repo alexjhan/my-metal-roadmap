@@ -198,7 +198,7 @@ const CustomNode = React.memo(({ id, data, selected, onClick }) => {
       justifyContent: 'center',
       textAlign: 'center',
       wordWrap: 'break-word',
-      overflow: 'hidden'
+      overflow: 'visible'
     };
 
     switch (nodeType) {
@@ -313,21 +313,113 @@ const CustomNode = React.memo(({ id, data, selected, onClick }) => {
         <Handle
           type="target"
           position={Position.Top}
+          id="top"
           style={{
             background: isConnectionActive ? '#10b981' : '#6b7280',
-            width: '8px',
-            height: '8px',
-            border: '2px solid white'
+            width: '16px',
+            height: '16px',
+            border: '3px solid white',
+            top: '-8px',
+            left: '50%',
+            transform: 'translateX(-50%)'
+          }}
+        />
+        <Handle
+          type="source"
+          position={Position.Top}
+          id="top"
+          style={{
+            background: isConnectionActive ? '#10b981' : '#6b7280',
+            width: '16px',
+            height: '16px',
+            border: '3px solid white',
+            top: '-8px',
+            left: '50%',
+            transform: 'translateX(-50%)'
+          }}
+        />
+        <Handle
+          type="target"
+          position={Position.Right}
+          id="right"
+          style={{
+            background: isConnectionActive ? '#10b981' : '#6b7280',
+            width: '16px',
+            height: '16px',
+            border: '3px solid white',
+            right: '-8px',
+            top: '50%',
+            transform: 'translateY(-50%)'
+          }}
+        />
+        <Handle
+          type="source"
+          position={Position.Right}
+          id="right"
+          style={{
+            background: isConnectionActive ? '#10b981' : '#6b7280',
+            width: '16px',
+            height: '16px',
+            border: '3px solid white',
+            right: '-8px',
+            top: '50%',
+            transform: 'translateY(-50%)'
+          }}
+        />
+        <Handle
+          type="target"
+          position={Position.Bottom}
+          id="bottom"
+          style={{
+            background: isConnectionActive ? '#10b981' : '#6b7280',
+            width: '16px',
+            height: '16px',
+            border: '3px solid white',
+            bottom: '-8px',
+            left: '50%',
+            transform: 'translateX(-50%)'
           }}
         />
         <Handle
           type="source"
           position={Position.Bottom}
+          id="bottom"
           style={{
             background: isConnectionActive ? '#10b981' : '#6b7280',
-            width: '8px',
-            height: '8px',
-            border: '2px solid white'
+            width: '16px',
+            height: '16px',
+            border: '3px solid white',
+            bottom: '-8px',
+            left: '50%',
+            transform: 'translateX(-50%)'
+          }}
+        />
+        <Handle
+          type="target"
+          position={Position.Left}
+          id="left"
+          style={{
+            background: isConnectionActive ? '#10b981' : '#6b7280',
+            width: '16px',
+            height: '16px',
+            border: '3px solid white',
+            left: '-8px',
+            top: '50%',
+            transform: 'translateY(-50%)'
+          }}
+        />
+        <Handle
+          type="source"
+          position={Position.Left}
+          id="left"
+          style={{
+            background: isConnectionActive ? '#10b981' : '#6b7280',
+            width: '16px',
+            height: '16px',
+            border: '3px solid white',
+            left: '-8px',
+            top: '50%',
+            transform: 'translateY(-50%)'
           }}
         />
       </>

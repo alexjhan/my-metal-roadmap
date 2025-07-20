@@ -11,7 +11,7 @@ const Sidebar = ({
       {/* Botón Componentes */}
       <button
         onClick={onToggleComponentsPanel}
-        className={`w-10 h-10 ml-3 mt-2 mb-1 flex items-center justify-center rounded transition-colors hover:bg-blue-50 ${showComponentsPanel ? 'bg-blue-100 text-blue-600' : 'text-gray-500'}`}
+        className={`w-10 h-10 mt-2 mb-1 flex items-center justify-center rounded transition-colors hover:bg-blue-50 ${showComponentsPanel ? 'bg-blue-100 text-blue-600' : 'text-gray-500'}`}
         title="Componentes"
       >
         <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -22,7 +22,8 @@ const Sidebar = ({
       {/* Botón Roadmaps */}
       <button
         onClick={onToggleRoadmapsPanel}
-        className={`w-10 h-10 ml-3 mt-1 mb-2 flex items-center justify-center rounded transition-colors hover:bg-blue-50 ${showRoadmapsPanel ? 'bg-blue-100 text-blue-600' : 'text-gray-500'}`}
+        disabled
+        className={`w-10 h-10 mt-1 mb-2 flex items-center justify-center rounded transition-colors text-gray-400 bg-gray-100 cursor-not-allowed`}
         title="Roadmaps"
       >
         <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
