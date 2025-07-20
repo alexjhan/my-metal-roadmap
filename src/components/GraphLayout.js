@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -22,10 +22,6 @@ import Auth from './Auth';
 import { useUser } from '../UserContext';
 import { useNavigate } from 'react-router-dom';
 import EditWarningModal from './EditWarningModal';
-
-const nodeTypes = {
-  custom: (props) => <CustomNode {...props} readOnly={readOnly} onClick={() => props.data.onNodeClick(props.id)} />,
-};
 
 function NodeDrawer({ node, onClose }) {
   if (!node) return null;
@@ -261,6 +257,11 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
   const [showEditWarning, setShowEditWarning] = useState(false);
   // Variable de ejemplo para mostrar el panel de versiones (ajusta según tu lógica real)
   const [showVersionPanel, setShowVersionPanel] = useState(false);
+
+  // Crear nodeTypes dinámicamente para incluir readOnly
+  const nodeTypes = useMemo(() => ({
+    custom: (props) => <CustomNode {...props} readOnly={readOnly} onClick={() => props.data.onNodeClick(props.id)} />,
+  }), [readOnly]);
 
   // Pasar función de click a cada nodo
   const nodesWithClick = nodes.map(node => ({
