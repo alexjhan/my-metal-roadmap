@@ -309,9 +309,11 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
   }));
 
   // Layout radial - solo si no hay nodos personalizados y no estamos en modo readOnly
-  if (!customNodes && !readOnly) {
-    useLayout(nodes, edges, setNodes);
-  }
+  useEffect(() => {
+    if (!customNodes && !readOnly) {
+      useLayout(nodes, edges, setNodes);
+    }
+  }, [customNodes, readOnly, nodes, edges, setNodes]);
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
