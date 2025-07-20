@@ -276,10 +276,31 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
     }))
   );
 
+  // Actualizar nodos y edges cuando cambien customNodes/customEdges
+  useEffect(() => {
+    if (customNodes && customEdges) {
+      console.log('GraphLayout: Actualizando con customNodes/customEdges');
+      setNodes(customNodes);
+      setEdges(customEdges.map(edge => ({
+        ...edge,
+        markerEnd: { type: MarkerType.ArrowClosed }
+      })));
+    } else {
+      console.log('GraphLayout: Usando datos por defecto');
+      setNodes(initialRoadmapNodes);
+      setEdges(initialRoadmapEdges.map(edge => ({
+        ...edge,
+        markerEnd: { type: MarkerType.ArrowClosed }
+      })));
+    }
+  }, [customNodes, customEdges, initialRoadmapNodes, initialRoadmapEdges, setNodes, setEdges]);
+
   console.log('GraphLayout - customNodes:', customNodes);
   console.log('GraphLayout - customEdges:', customEdges);
   console.log('GraphLayout - initialRoadmapNodes:', initialRoadmapNodes);
   console.log('GraphLayout - initialRoadmapEdges:', initialRoadmapEdges);
+  console.log('GraphLayout - current nodes state:', nodes);
+  console.log('GraphLayout - current edges state:', edges);
 
   const [selectedNodeId, setSelectedNodeId] = useState(null);
   const [showAuth, setShowAuth] = useState(false);
