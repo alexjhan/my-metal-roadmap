@@ -13,7 +13,6 @@ import 'reactflow/dist/style.css';
 
 import CustomNode from './CustomNode';
 import RecognitionPanel from './RecognitionPanel';
-import useLayout from '../hooks/useLayout';
 import { nodes as initialNodes } from '../data/nodes';
 import { edges as initialEdges } from '../data/edges';
 import { allRoadmapsData } from '../data/allRoadmaps';
@@ -308,8 +307,7 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
     },
   }));
 
-  // Layout radial - solo si no hay nodos personalizados y no estamos en modo readOnly
-  const layoutResult = !customNodes && !readOnly ? useLayout(nodes, edges, setNodes) : null;
+
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
