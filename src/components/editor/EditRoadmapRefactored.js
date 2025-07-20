@@ -428,18 +428,97 @@ const EditRoadmapRefactored = () => {
   const [selectedEdgeId, setSelectedEdgeId] = useState(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [saveStatus, setSaveStatus] = useState('idle');
+  const [autoSaveStatus, setAutoSaveStatus] = useState('idle'); // 'idle', 'editing', 'saving', 'saved'
+  const [autoSaveTimer, setAutoSaveTimer] = useState(null);
+  const [lastEditTime, setLastEditTime] = useState(null);
 
-  // Guardado automático cuando hay cambios sin guardar
-  // useEffect(() => {
-  //   if (!hasUnsavedChanges || !user) return;
+  // Función para manejar el guardado automático
+  const handleAutoSave = useCallback(async () => {
+    if (!user || !hasUnsavedChanges) return;
+    
+    try {
+      setAutoSaveStatus('saving');
+      console.log('Guardado automático iniciado...');
+      
+      const description = versionId 
+        ? `Versión actualizada automáticamente por ${user.email}`
+        : `Nueva versión creada automáticamente por ${user.email}`;
+      
+      const savedVersion = await roadmapService.saveRoadmapVersion(
+        user.id, 
+        roadmapType, 
+        nodes, 
+        edges, 
+        description
+      );
+      
+      console.log('Guardado automático completado:', savedVersion);
+      setAutoSaveStatus('saved');
+      setHasUnsavedChanges(false);
+      
+      // Actualizar la URL si es una nueva versión
+      if (!versionId && savedVersion && savedVersion.id) {
+        const newUrl = `/edit/${roadmapType}?version=${savedVersion.id}`;
+        window.history.replaceState({}, '', newUrl);
+      }
+      
+      // Resetear estado después de 3 segundos
+      setTimeout(() => {
+        setAutoSaveStatus('idle');
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Error en guardado automático:', error);
+      setAutoSaveStatus('error');
+      
+      // Resetear estado después de 5 segundos
+      setTimeout(() => {
+        setAutoSaveStatus('idle');
+      }, 5000);
+    }
+  }, [user, hasUnsavedChanges, versionId, roadmapType, nodes, edges]);
 
-  //   const autoSaveTimer = setTimeout(() => {
-  //     console.log('Guardado automático iniciado...');
-  //     handleCreateProposal();
-  //   }, 30000); // Guardar automáticamente después de 30 segundos de inactividad
+  // Timer de guardado automático (10 segundos de inactividad)
+  useEffect(() => {
+    if (!hasUnsavedChanges || !user) {
+      if (autoSaveTimer) {
+        clearTimeout(autoSaveTimer);
+        setAutoSaveTimer(null);
+      }
+      setAutoSaveStatus('idle');
+      return;
+    }
 
-  //   return () => clearTimeout(autoSaveTimer);
-  // }, [hasUnsavedChanges, user, handleCreateProposal]);
+    // Limpiar timer anterior
+    if (autoSaveTimer) {
+      clearTimeout(autoSaveTimer);
+    }
+
+    // Establecer estado de edición
+    setAutoSaveStatus('editing');
+
+    // Crear nuevo timer de 10 segundos
+    const timer = setTimeout(() => {
+      handleAutoSave();
+    }, 10000);
+
+    setAutoSaveTimer(timer);
+
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [hasUnsavedChanges, user, handleAutoSave]);
+
+  // Limpiar timer al desmontar
+  useEffect(() => {
+    return () => {
+      if (autoSaveTimer) {
+        clearTimeout(autoSaveTimer);
+      }
+    };
+  }, [autoSaveTimer]);
   const [showProposalModal, setShowProposalModal] = useState(false);
   const [proposals, setProposals] = useState([]);
   const [selectedProposal, setSelectedProposal] = useState(null);
@@ -1739,13 +1818,76 @@ const EditRoadmapRefactored = () => {
         </div>
       )}
 
-      {/* Indicador de guardado automático */}
-      {hasUnsavedChanges && user && (
-        <div className="fixed bottom-4 left-4 z-50">
-          <div className="bg-blue-500 text-white text-xs px-3 py-2 rounded-lg shadow-lg opacity-90 hover:opacity-100 transition-opacity">
-            <div className="flex items-center space-x-2">
-              <div className="animate-pulse w-2 h-2 bg-white rounded-full"></div>
-              <span>Guardando automáticamente...</span>
+      {/* Notificación de guardado automático */}
+      {user && autoSaveStatus !== 'idle' && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <div className={`
+            text-white text-sm px-4 py-3 rounded-lg shadow-lg transition-all duration-300 transform
+            ${autoSaveStatus === 'editing' ? 'bg-sky-400' : ''}
+            ${autoSaveStatus === 'saving' ? 'bg-sky-500' : ''}
+            ${autoSaveStatus === 'saved' ? 'bg-green-500' : ''}
+            ${autoSaveStatus === 'error' ? 'bg-red-500' : ''}
+          `}>
+            <div className="flex items-center space-x-3">
+              {/* Icono según estado */}
+              {autoSaveStatus === 'editing' && (
+                <div className="animate-pulse">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+              )}
+              
+              {autoSaveStatus === 'saving' && (
+                <div className="animate-spin">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                  </svg>
+                </div>
+              )}
+              
+              {autoSaveStatus === 'saved' && (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              )}
+              
+              {autoSaveStatus === 'error' && (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              )}
+              
+              {/* Texto según estado */}
+              <div>
+                {autoSaveStatus === 'editing' && (
+                  <div>
+                    <div className="font-medium">Editando...</div>
+                    <div className="text-xs opacity-90">Se guardará en 10s</div>
+                  </div>
+                )}
+                
+                {autoSaveStatus === 'saving' && (
+                  <div>
+                    <div className="font-medium">Guardando...</div>
+                    <div className="text-xs opacity-90">Guardado automático</div>
+                  </div>
+                )}
+                
+                {autoSaveStatus === 'saved' && (
+                  <div>
+                    <div className="font-medium">¡Guardado!</div>
+                    <div className="text-xs opacity-90">Versión actualizada</div>
+                  </div>
+                )}
+                
+                {autoSaveStatus === 'error' && (
+                  <div>
+                    <div className="font-medium">Error al guardar</div>
+                    <div className="text-xs opacity-90">Intenta guardar manualmente</div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
