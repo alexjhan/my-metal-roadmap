@@ -171,10 +171,7 @@ export const roadmapService = {
                       userData?.user_metadata?.name || 
                       userData?.user_metadata?.display_name ||
                       userEmail?.split('@')[0] || '';
-      const userLinkedIn = userData?.user_metadata?.linkedin_url || 
-                          userData?.user_metadata?.linkedin || '';
-      const userFacebook = userData?.user_metadata?.facebook_url || 
-                          userData?.user_metadata?.facebook || '';    
+      
       // Primero, verificar si ya existe una versión
       const existingVersion = await roadmapService.getUserVersion(userId, roadmapType);
       
@@ -189,8 +186,6 @@ export const roadmapService = {
             edges: edges,
             description: description || existingVersion.description,
             user_name: userName,
-            user_linkedin: userLinkedIn,
-            user_facebook: userFacebook,
             user_metadata: userData?.user_metadata || {},
             updated_at: new Date().toISOString()
           })
@@ -218,8 +213,6 @@ export const roadmapService = {
             edges: edges,
             description: description || `Versión guardada por usuario - ${new Date().toLocaleString()}`,
             user_name: userName,
-            user_linkedin: userLinkedIn,
-            user_facebook: userFacebook,
             user_metadata: userData?.user_metadata || {},
             is_public: true,
             total_votes: 0,

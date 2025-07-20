@@ -26,17 +26,13 @@ const RecognitionPanel = ({ topVersion, authorInfo, children }) => {
   }
   
   // Obtener enlaces de redes sociales
-  if (topVersion.user_linkedin) {
-    userLinkedIn = topVersion.user_linkedin;
-  } else if (authorInfo?.user_metadata?.linkedin_url) {
+  if (authorInfo?.user_metadata?.linkedin_url) {
     userLinkedIn = authorInfo.user_metadata.linkedin_url;
   } else if (authorInfo?.user_metadata?.linkedin) {
     userLinkedIn = authorInfo.user_metadata.linkedin;
   }
   
-  if (topVersion.user_facebook) {
-    userFacebook = topVersion.user_facebook;
-  } else if (authorInfo?.user_metadata?.facebook_url) {
+  if (authorInfo?.user_metadata?.facebook_url) {
     userFacebook = authorInfo.user_metadata.facebook_url;
   } else if (authorInfo?.user_metadata?.facebook) {
     userFacebook = authorInfo.user_metadata.facebook;
