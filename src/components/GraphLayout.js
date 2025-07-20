@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { ReactFlow, useNodesState, useEdgesState, addEdge, MarkerType, Controls, Background, useReactFlow } from 'reactflow';
+import { ReactFlow, useNodesState, useEdgesState, addEdge, MarkerType, Controls, Background, useReactFlow, getBezierPath, getStraightPath, getSmoothStepPath } from 'reactflow';
 import 'reactflow/dist/style.css';
 import CustomNode from './CustomNode';
 import { allRoadmapsData } from '../data/allRoadmaps';
@@ -12,6 +12,73 @@ import Auth from './Auth';
 import EditWarningModal from './EditWarningModal';
 import TopVersionsSection from './TopVersionsSection';
 import RecognitionPanel from './RecognitionPanel';
+
+// Edge types personalizados - Memoizados para evitar re-renders
+const StraightEdge = React.memo(({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style = {}, markerEnd, markerStart }) => {
+  const [edgePath] = getStraightPath({
+    sourceX,
+    sourceY,
+    sourcePosition,
+    targetX,
+    targetY,
+    targetPosition,
+  });
+
+  return (
+    <path
+      id={id}
+      style={style}
+      className="react-flow__edge-path"
+      d={edgePath}
+      markerEnd={markerEnd}
+      markerStart={markerStart}
+    />
+  );
+});
+
+const AngleEdge = React.memo(({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style = {}, markerEnd, markerStart }) => {
+  const [edgePath] = getSmoothStepPath({
+    sourceX,
+    sourceY,
+    sourcePosition,
+    targetX,
+    targetY,
+    targetPosition,
+  });
+
+  return (
+    <path
+      id={id}
+      style={style}
+      className="react-flow__edge-path"
+      d={edgePath}
+      markerEnd={markerEnd}
+      markerStart={markerStart}
+    />
+  );
+});
+
+const CurvedEdge = React.memo(({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style = {}, markerEnd, markerStart }) => {
+  const [edgePath] = getBezierPath({
+    sourceX,
+    sourceY,
+    sourcePosition,
+    targetX,
+    targetY,
+    targetPosition,
+  });
+
+  return (
+    <path
+      id={id}
+      style={style}
+      className="react-flow__edge-path"
+      d={edgePath}
+      markerEnd={markerEnd}
+      markerStart={markerStart}
+    />
+  );
+});
 
 function NodeDrawer({ node, onClose }) {
   const [activeTab, setActiveTab] = useState('resources'); // Solo Resources por ahora
@@ -256,6 +323,8 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
       setNodes(customNodes);
       setEdges(customEdges.map(edge => ({
         ...edge,
+        // Preservar el tipo original de la flecha si existe, sino usar default
+        type: edge.type || 'default',
         markerEnd: { type: MarkerType.ArrowClosed }
       })));
     } else {
@@ -263,6 +332,7 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
       setNodes(initialRoadmapNodes);
       setEdges(initialRoadmapEdges.map(edge => ({
         ...edge,
+        type: edge.type || 'default',
         markerEnd: { type: MarkerType.ArrowClosed }
       })));
     }
@@ -282,6 +352,13 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
   const [showEditWarning, setShowEditWarning] = useState(false);
   // Variable de ejemplo para mostrar el panel de versiones (ajusta según tu lógica real)
   const [showVersionPanel, setShowVersionPanel] = useState(false);
+
+  // Definir edgeTypes para preservar los tipos de flechas editadas
+  const edgeTypes = useMemo(() => ({
+    straight: StraightEdge,
+    angle: AngleEdge,
+    curved: CurvedEdge,
+  }), []);
 
   // Crear nodeTypes dinámicamente para incluir readOnly
   const nodeTypes = useMemo(() => ({
@@ -346,6 +423,7 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
           fitView={false}
           fitViewOptions={{ padding: 0.2, includeHiddenNodes: false }}
           defaultViewport={{ x: 0, y: 0, zoom: 0.2 }}
