@@ -35,7 +35,12 @@ function NodeDrawer({ node, onClose }) {
   const nodeData = getNodeData(node);
 
   return (
-    <div className="fixed top-0 right-0 z-40 flex h-screen w-full flex-col overflow-y-auto bg-white p-4 focus:outline-0 sm:max-w-[600px] sm:p-6">
+    <>
+      {/* Overlay gris transparente */}
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-30" onClick={onClose}></div>
+      
+      {/* Off-canvas */}
+      <div className="fixed top-0 right-0 z-40 flex h-screen w-full flex-col overflow-y-auto bg-white p-4 focus:outline-0 sm:max-w-[600px] sm:p-6">
       <div className="flex-1">
         <div className="flex justify-between">
           <div className="flex w-max gap-1.5">
@@ -101,7 +106,7 @@ function NodeDrawer({ node, onClose }) {
         
         <div className="prose prose-quoteless prose-h1:mb-2.5 prose-h1:mt-7 prose-h1:text-balance prose-h2:mb-3 prose-h2:mt-0 prose-h3:mb-[5px] prose-h3:mt-[10px] prose-p:mb-2 prose-p:mt-0 prose-blockquote:font-normal prose-blockquote:not-italic prose-blockquote:text-gray-700 prose-li:m-0 prose-li:mb-0.5">
           <div id="topic-content">
-            <h1>{nodeData.title}</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-6">{nodeData.title}</h1>
             {nodeData.content && <p>{nodeData.content}</p>}
             
             {activeTab === 'resources' && (
@@ -232,6 +237,7 @@ function NodeDrawer({ node, onClose }) {
         </div>
       </div>
     </div>
+    </>
   );
 }
 
