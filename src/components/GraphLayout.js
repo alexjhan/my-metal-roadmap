@@ -245,7 +245,7 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
 
   // Crear nodeTypes dinámicamente para incluir readOnly
   const nodeTypes = useMemo(() => ({
-    custom: (props) => <CustomNode {...props} readOnly={readOnly} onClick={() => props.data.onNodeClick(props.id)} />,
+    custom: (props) => <CustomNode {...props} readOnly={readOnly} onClick={() => props.data.onNodeClick && props.data.onNodeClick(props.id)} />,
   }), [readOnly]);
 
   // En modo de lectura, no mostrar off-canvas al hacer clic en nodos
