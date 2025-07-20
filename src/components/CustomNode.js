@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Handle, Position, useReactFlow } from 'reactflow';
 
-const CustomNode = React.memo(({ id, data, selected, onClick }) => {
+const CustomNode = React.memo(({ id, data, selected, onClick, readOnly = false }) => {
   const { getConnectionLineStyle, getNode, getViewport } = useReactFlow();
   const [isConnectionActive, setIsConnectionActive] = useState(false);
 
@@ -191,7 +191,7 @@ const CustomNode = React.memo(({ id, data, selected, onClick }) => {
       border: data.border || '1px solid #e5e7eb',
       boxShadow: data.boxShadow || '0 2px 4px rgba(0, 0, 0, 0.1)',
       transition: 'all 0.3s ease',
-      cursor: 'pointer',
+      cursor: readOnly ? 'pointer' : 'pointer',
       position: 'relative',
       display: 'flex',
       alignItems: 'center',
@@ -289,18 +289,23 @@ const CustomNode = React.memo(({ id, data, selected, onClick }) => {
           color: data.color || '#374151'
         };
     }
-  }, [data]);
+  }, [data, readOnly]);
 
   // Memoizar el manejador de clic
-  // const handleClick = useCallback((event) => {
-  //   event.stopPropagation();
-  //   if (onClick) {
-  //     onClick(id);
-  //   }
-  // }, [onClick, id]);
+  const handleClick = useCallback((event) => {
+    event.stopPropagation();
+    if (onClick) {
+      onClick(id);
+    }
+  }, [onClick, id]);
 
-  // Memoizar los handles
+  // Memoizar los handles - solo mostrar si NO está en modo readOnly
   const handles = useMemo(() => {
+    // Si está en modo readOnly, no mostrar handles
+    if (readOnly) {
+      return null;
+    }
+
     const nodeType = data.nodeType || data.type || 'default';
     
     // No mostrar handles para líneas
@@ -424,7 +429,7 @@ const CustomNode = React.memo(({ id, data, selected, onClick }) => {
         />
       </>
     );
-  }, [isConnectionActive, data.nodeType, data.type]);
+  }, [isConnectionActive, data.nodeType, data.type, readOnly]);
 
   return (
     <div
@@ -434,8 +439,8 @@ const CustomNode = React.memo(({ id, data, selected, onClick }) => {
         border: selected ? '2px solid #3b82f6' : nodeStyles.border,
         boxShadow: selected ? '0 0 0 2px rgba(59, 130, 246, 0.2)' : nodeStyles.boxShadow
       }}
-      // onClick={handleClick} // Eliminado para que el click lo maneje React Flow
-      className={`custom-node moveable-node ${selected ? 'selected' : ''}`}
+      onClick={handleClick}
+      className={`custom-node moveable-node ${selected ? 'selected' : ''} ${readOnly ? 'readonly' : ''}`}
     >
       {handles}
       {nodeContent}

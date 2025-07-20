@@ -24,7 +24,7 @@ import { useNavigate } from 'react-router-dom';
 import EditWarningModal from './EditWarningModal';
 
 const nodeTypes = {
-  custom: (props) => <CustomNode {...props} onClick={() => props.data.onNodeClick(props.id)} />,
+  custom: (props) => <CustomNode {...props} readOnly={readOnly} onClick={() => props.data.onNodeClick(props.id)} />,
 };
 
 function NodeDrawer({ node, onClose }) {
@@ -48,11 +48,15 @@ function NodeDrawer({ node, onClose }) {
     // Obtener recursos premium (por ahora vacío, se puede expandir después)
     const premiumResources = [];
     
+    // Obtener icono del nodo
+    const icon = node.data.icon || '📚';
+    
     return {
       title,
       description,
       freeResources,
-      premiumResources
+      premiumResources,
+      icon
     };
   };
 
@@ -70,7 +74,7 @@ function NodeDrawer({ node, onClose }) {
         {/* Header */}
         <div className="flex items-center justify-between p-3 sm:p-4 md:p-6 border-b border-gray-200">
           <div className="flex items-center space-x-2 sm:space-x-3">
-            <span className="text-xl sm:text-2xl md:text-3xl">{node.data.icon}</span>
+            <span className="text-xl sm:text-2xl md:text-3xl">{nodeData.icon}</span>
             <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 truncate">{nodeData.title}</h3>
           </div>
           <button
@@ -94,7 +98,7 @@ function NodeDrawer({ node, onClose }) {
             </div>
 
             {/* Recursos gratuitos - Solo mostrar si hay recursos configurados */}
-            {nodeData.freeResources && nodeData.freeResources.length > 0 && (
+            {nodeData.freeResources && nodeData.freeResources.length > 0 ? (
               <div>
                 <div className="relative mb-3 sm:mb-4">
                   <div className="absolute top-1/2 left-0 right-0 border-t border-green-500"></div>
@@ -128,6 +132,20 @@ function NodeDrawer({ node, onClose }) {
                       </a>
                     </div>
                   ))}
+                </div>
+              </div>
+            ) : (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-center space-x-2">
+                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <div>
+                    <h4 className="text-sm font-medium text-blue-900">Información del nodo</h4>
+                    <p className="text-xs text-blue-700 mt-1">
+                      Este nodo aún no tiene recursos configurados. Los recursos se pueden agregar desde el editor.
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
