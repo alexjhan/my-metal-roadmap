@@ -91,7 +91,7 @@ function NodeDrawer({ node, onClose }) {
     
     return {
       title: label,
-      content: node.data.content || '',
+      content: node.data.description || node.data.content || '',
       links: node.data.links || [],
       videos: node.data.videos || [],
       articles: node.data.articles || [],
@@ -100,6 +100,13 @@ function NodeDrawer({ node, onClose }) {
   };
 
   const nodeData = getNodeData(node);
+  
+  // Debug: mostrar datos del nodo
+  console.log('NodeDrawer - Datos del nodo:', {
+    nodeId: node.id,
+    nodeData: node.data,
+    processedData: nodeData
+  });
 
   return (
     <>
