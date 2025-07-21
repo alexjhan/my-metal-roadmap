@@ -123,7 +123,7 @@ function NodeDrawer({ node, onClose }) {
                 <path d="M11 21.95V18a2 2 0 0 0-2-2a2 2 0 0 1-2-2v-1a2 2 0 0 0-2-2H2.05"></path>
                 <circle cx="12" cy="12" r="10"></circle>
               </svg>
-              <span className="hidden sm:block">Resources</span>
+              <span className="hidden sm:block">Recursos</span>
             </button>
 
           </div>
@@ -150,7 +150,7 @@ function NodeDrawer({ node, onClose }) {
             {activeTab === 'resources' && (
               <>
                 {(nodeData.links.length > 0 || nodeData.videos.length > 0 || nodeData.articles.length > 0 || nodeData.openSource.length > 0) && (
-                  <p>Visit the following resources to learn more:</p>
+                  <p>Visita los siguientes recursos para aprender más:</p>
                 )}
                 
                 {nodeData.links.length > 0 && (
@@ -163,7 +163,7 @@ function NodeDrawer({ node, onClose }) {
                           <path d="m18 15-2-2"></path>
                           <path d="m15 18-2-2"></path>
                         </svg>
-                        Free Resources
+                        Recursos Gratuitos
                       </span>
                       <span className="absolute inset-x-0 h-px w-full grow bg-current"></span>
                     </p>
@@ -172,7 +172,7 @@ function NodeDrawer({ node, onClose }) {
                         <li key={index}>
                           <a href={link.url} target="_blank" className="group font-medium text-gray-800 underline underline-offset-1 hover:text-black">
                             <span className="mr-2">
-                              <span className="inline-block rounded-sm px-1.5 py-0.5 text-xs capitalize no-underline bg-yellow-300">link</span>
+                              <span className="inline-block rounded-sm px-1.5 py-0.5 text-xs capitalize no-underline bg-yellow-300">enlace</span>
                             </span>
                             {link.title || link.url}
                           </a>
@@ -219,7 +219,7 @@ function NodeDrawer({ node, onClose }) {
                           <line x1="16" x2="8" y1="17" y2="17"></line>
                           <polyline points="10,9 9,9 8,9"></polyline>
                         </svg>
-                        Articles
+                        Artículos
                       </span>
                       <span className="absolute inset-x-0 h-px w-full grow bg-current"></span>
                     </p>
@@ -228,7 +228,7 @@ function NodeDrawer({ node, onClose }) {
                         <li key={index}>
                           <a href={article.url} target="_blank" className="group font-medium text-gray-800 underline underline-offset-1 hover:text-black">
                             <span className="mr-2">
-                              <span className="inline-block rounded-sm px-1.5 py-0.5 text-xs capitalize no-underline bg-yellow-300">article</span>
+                              <span className="inline-block rounded-sm px-1.5 py-0.5 text-xs capitalize no-underline bg-yellow-300">artículo</span>
                             </span>
                             {article.title || article.url}
                           </a>
@@ -245,7 +245,7 @@ function NodeDrawer({ node, onClose }) {
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-github inline-block h-3 w-3 fill-current" aria-hidden="true">
                           <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2s-.28 1.15 0 3.5c-.73 1.02-1.08 2.25-1 3.5 0 3.5 3 5.5 6 5.5-.19.98-.3 2-.16 3.04A6.6 6.6 0 0 0 9 22c0 .55.45 1 1 1h4c.55 0 1-.45 1-1Z"></path>
                       </svg>
-                        Open Source
+                        Código Abierto
                       </span>
                       <span className="absolute inset-x-0 h-px w-full grow bg-current"></span>
                     </p>
@@ -254,7 +254,7 @@ function NodeDrawer({ node, onClose }) {
                         <li key={index}>
                           <a href={repo.url} target="_blank" className="group font-medium text-gray-800 underline underline-offset-1 hover:text-black">
                             <span className="mr-2">
-                              <span className="inline-block rounded-sm px-1.5 py-0.5 text-xs capitalize no-underline bg-green-300">repo</span>
+                              <span className="inline-block rounded-sm px-1.5 py-0.5 text-xs capitalize no-underline bg-green-300">repositorio</span>
                             </span>
                             {repo.title || repo.url}
                           </a>
