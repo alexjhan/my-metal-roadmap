@@ -133,6 +133,7 @@ export default function RoadmapLayout({
       <html>
         <head>
           <title>${title} - MetalRoadmap</title>
+          <link rel="stylesheet" href="https://unpkg.com/reactflow/dist/style.css" />
           <style>
             body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
             .print-container { 
@@ -186,7 +187,6 @@ export default function RoadmapLayout({
             @media print {
               @page { margin: 1cm; }
             }
-            ${reactFlowStyles}
           </style>
         </head>
         <body>
