@@ -112,6 +112,20 @@ export default function RoadmapLayout({
       mapHtml = '<div style="color:red">No se pudo capturar el mapa conceptual.</div>';
     }
 
+    // Obtener los estilos de reactflow/dist/style.css
+    let reactFlowStyles = '';
+    try {
+      const styleSheets = Array.from(document.styleSheets);
+      styleSheets.forEach(sheet => {
+        if (sheet.href && sheet.href.includes('reactflow')) {
+          try {
+            const rules = Array.from(sheet.cssRules);
+            reactFlowStyles += rules.map(rule => rule.cssText).join('\n');
+          } catch (e) {}
+        }
+      });
+    } catch (e) {}
+
     // Crear contenido de impresión
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
@@ -172,6 +186,7 @@ export default function RoadmapLayout({
             @media print {
               @page { margin: 1cm; }
             }
+            ${reactFlowStyles}
           </style>
         </head>
         <body>
