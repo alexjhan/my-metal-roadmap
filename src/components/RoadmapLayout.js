@@ -89,10 +89,28 @@ export default function RoadmapLayout({
           margin-top: 20px !important;
           text-align: center !important;
         }
+        .print-map {
+          page-break-before: always;
+          width: 100% !important;
+          min-height: 600px !important;
+          background: white !important;
+          border-radius: 8px !important;
+          border: 1px solid #ccc !important;
+          padding: 20px !important;
+        }
         @page { margin: 1cm; }
       }
     `;
     document.head.appendChild(printStyles);
+
+    // Capturar el HTML del área del mapa conceptual
+    const mapArea = document.querySelector('.react-flow');
+    let mapHtml = '';
+    if (mapArea) {
+      mapHtml = mapArea.outerHTML;
+    } else {
+      mapHtml = '<div style="color:red">No se pudo capturar el mapa conceptual.</div>';
+    }
 
     // Crear contenido de impresión
     const printWindow = window.open('', '_blank');
@@ -142,6 +160,15 @@ export default function RoadmapLayout({
               margin-top: 20px;
               text-align: center;
             }
+            .print-map {
+              page-break-before: always;
+              width: 100%;
+              min-height: 600px;
+              background: white;
+              border-radius: 8px;
+              border: 1px solid #ccc;
+              padding: 20px;
+            }
             @media print {
               @page { margin: 1cm; }
             }
@@ -161,6 +188,9 @@ export default function RoadmapLayout({
               <p>Este roadmap contiene un mapa mental interactivo que se puede explorar en la versión digital.</p>
               <p>Para acceder al contenido completo, visita: ${window.location.href}</p>
             </div>
+            <div class="print-map">
+              ${mapHtml}
+            </div>
           </div>
         </body>
       </html>
@@ -171,15 +201,13 @@ export default function RoadmapLayout({
     setTimeout(() => {
       printWindow.print();
       printWindow.close();
-      
       // Restaurar elementos ocultos
       elementsToHide.forEach(el => {
         el.style.display = '';
       });
-      
       // Remover estilos de impresión
       document.head.removeChild(printStyles);
-    }, 500);
+    }, 700);
   };
 
   return (
