@@ -779,3 +779,10 @@ export const allRoadmapsData = {
     edges: emptyEdges
   }
 }; 
+
+// Export adicional: versión ordenada alfabéticamente por `title` (no reemplaza la exportación original)
+export const sortedAllRoadmapsData = Object.fromEntries(
+  Object.entries(allRoadmapsData).sort(([, a], [, b]) =>
+    a.title.localeCompare(b.title, 'es', { sensitivity: 'base' })
+  )
+);

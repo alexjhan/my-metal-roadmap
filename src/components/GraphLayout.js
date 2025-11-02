@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { ReactFlow, useNodesState, useEdgesState, addEdge, MarkerType, Controls, Background, useReactFlow, getBezierPath, getStraightPath, getSmoothStepPath } from 'reactflow';
 import 'reactflow/dist/style.css';
+import '../styles/graphLayout.css'; // Importar estilos personalizados mejorados
 import CustomNode from './CustomNode';
 import { allRoadmapsData } from '../data/allRoadmaps';
 import { nodes as initialNodes } from '../data/nodes';
@@ -12,6 +13,7 @@ import Auth from './Auth';
 import EditWarningModal from './EditWarningModal';
 import TopVersionsSection from './TopVersionsSection';
 import RecognitionPanel from './RecognitionPanel';
+import { getLayoutedNodes, getNodeStyle, getNodeColor } from '../lib/layoutUtils';
 
 // Edge types personalizados - Memoizados para evitar re-renders
 const StraightEdge = React.memo(({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style = {}, markerEnd, markerStart }) => {
@@ -287,15 +289,16 @@ function FlowWithFitView() {
   
   useEffect(() => {
     const timer = setTimeout(() => {
-      console.log('FlowWithFitView: Ejecutando fit view automático');
+      console.log('FlowWithFitView: Ejecutando fit view automático mejorado');
       fitView({ 
-        padding: 0.2, 
+        padding: 0.15,                    // Ajustar padding para mejor vista
         includeHiddenNodes: false,
-        duration: 800,
-        minZoom: 0.1,
-        maxZoom: 1.5
+        duration: 1000,                   // Animación suave
+        minZoom: 0.3,
+        maxZoom: 1.8,
+        nodes: undefined                  // Auto-fit a todos los nodos
       });
-    }, 1500); // Delay más largo para asegurar que todo esté renderizado
+    }, 500);  // Delay reducido para respuesta más rápida
 
     return () => clearTimeout(timer);
   }, [fitView]);
@@ -327,7 +330,9 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
   useEffect(() => {
     if (customNodes && customEdges) {
       console.log('GraphLayout: Actualizando con customNodes/customEdges');
-      setNodes(customNodes);
+      // Aplicar layout jerárquico (Dagre) a los nodos
+      const layoutedNodes = getLayoutedNodes(customNodes, customEdges);
+      setNodes(layoutedNodes);
       setEdges(customEdges.map(edge => ({
         ...edge,
         // Preservar el tipo original de la flecha si existe, sino usar default
@@ -336,7 +341,9 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
       })));
     } else {
       console.log('GraphLayout: Usando datos por defecto');
-      setNodes(initialRoadmapNodes);
+      // Aplicar layout jerárquico (Dagre) a los nodos predeterminados
+      const layoutedNodes = getLayoutedNodes(initialRoadmapNodes, initialRoadmapEdges);
+      setNodes(layoutedNodes);
       setEdges(initialRoadmapEdges.map(edge => ({
         ...edge,
         type: edge.type || 'default',
@@ -367,16 +374,18 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
     curved: CurvedEdge,
   }), []);
 
-  // Crear nodeTypes dinámicamente para incluir readOnly
+  // Crear nodeTypes dinámicamente para incluir readOnly y estilos mejorados
   const nodeTypes = useMemo(() => ({
     custom: (props) => (
       <CustomNode 
         {...props} 
         readOnly={readOnly} 
         onNodeSelect={setSelectedNodeId}
+        isSelected={selectedNodeId === props.id}
+        style={getNodeStyle(props, selectedNodeId)}
       />
     ),
-  }), [readOnly]);
+  }), [readOnly, selectedNodeId]);
 
   // Pasar información del nodo para mostrar off-canvas
   const nodesWithClick = useMemo(() => {
@@ -420,8 +429,8 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
   };
 
   return (
-    <div className="w-full h-screen flex flex-col">
-      {/* Área de React Flow */}
+    <div className="graph-layout-wrapper">
+      {/* Área de React Flow mejorada */}
       <div className="react-flow-container">
         <ReactFlow
           nodes={nodesWithClick}
@@ -432,15 +441,15 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           fitView={false}
-          fitViewOptions={{ padding: 0.2, includeHiddenNodes: false }}
-          defaultViewport={{ x: 0, y: 0, zoom: 0.2 }}
-          minZoom={0.05}
-          maxZoom={2}
+          fitViewOptions={{ padding: 0.15, includeHiddenNodes: false }}
+          defaultViewport={{ x: 0, y: 0, zoom: 0.5 }}
+          minZoom={0.1}
+          maxZoom={3}
           nodesDraggable={false}
           nodesConnectable={false}
           elementsSelectable={true}
-          panOnScroll={false}
-          zoomOnScroll={false}
+          panOnScroll={true}
+          zoomOnScroll={true}
           panOnDrag={true}
           zoomOnPinch={true}
           panOnScrollMode="free"
@@ -453,7 +462,7 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
             variant="dots" 
             gap={20} 
             size={1} 
-            color="#ffffff"
+            color="#d1fae5"
             style={{ backgroundColor: 'transparent' }}
           />
           <FlowWithFitView />

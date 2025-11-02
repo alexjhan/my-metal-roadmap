@@ -74,13 +74,15 @@ export default function Navbar() {
         </Link>
         
         {/* Texto IA Tutor Pronto - siempre visible */}
+        {/*
         <div className="hidden md:block">
           <div className="flex items-center space-x-2">
             <span className="text-2xl filter grayscale">🤖</span>
             <span className="text-blue-200 text-sm font-medium underline">IA Tutor Pronto</span>
           </div>
         </div>
-        
+        */}
+
         {/* Navegación para usuarios autenticados */}
         {user && (
           <div className="flex items-center space-x-2 sm:space-x-4">
