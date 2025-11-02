@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { ReactFlow, useNodesState, useEdgesState, addEdge, MarkerType, Controls, Background, useReactFlow, getBezierPath, getStraightPath, getSmoothStepPath } from 'reactflow';
 import 'reactflow/dist/style.css';
-import '../styles/graphLayout.css'; // Importar estilos personalizados mejorados
 import CustomNode from './CustomNode';
 import { allRoadmapsData } from '../data/allRoadmaps';
 import { nodes as initialNodes } from '../data/nodes';
@@ -13,7 +12,6 @@ import Auth from './Auth';
 import EditWarningModal from './EditWarningModal';
 import TopVersionsSection from './TopVersionsSection';
 import RecognitionPanel from './RecognitionPanel';
-import { getLayoutedNodes, getNodeStyle, getNodeColor } from '../lib/layoutUtils';
 
 // Edge types personalizados - Memoizados para evitar re-renders
 const StraightEdge = React.memo(({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style = {}, markerEnd, markerStart }) => {
@@ -289,16 +287,15 @@ function FlowWithFitView() {
   
   useEffect(() => {
     const timer = setTimeout(() => {
-      console.log('FlowWithFitView: Ejecutando fit view automático mejorado');
+      console.log('FlowWithFitView: Ejecutando fit view automático');
       fitView({ 
-        padding: 0.15,                    // Ajustar padding para mejor vista
+        padding: 0.2, 
         includeHiddenNodes: false,
-        duration: 1000,                   // Animación suave
-        minZoom: 0.3,
-        maxZoom: 1.8,
-        nodes: undefined                  // Auto-fit a todos los nodos
+        duration: 800,
+        minZoom: 0.1,
+        maxZoom: 1.5
       });
-    }, 500);  // Delay reducido para respuesta más rápida
+    }, 1500); // Delay más largo para asegurar que todo esté renderizado
 
     return () => clearTimeout(timer);
   }, [fitView]);
@@ -330,9 +327,7 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
   useEffect(() => {
     if (customNodes && customEdges) {
       console.log('GraphLayout: Actualizando con customNodes/customEdges');
-      // Aplicar layout jerárquico (Dagre) a los nodos
-      const layoutedNodes = getLayoutedNodes(customNodes, customEdges);
-      setNodes(layoutedNodes);
+      setNodes(customNodes);
       setEdges(customEdges.map(edge => ({
         ...edge,
         // Preservar el tipo original de la flecha si existe, sino usar default
@@ -341,9 +336,7 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
       })));
     } else {
       console.log('GraphLayout: Usando datos por defecto');
-      // Aplicar layout jerárquico (Dagre) a los nodos predeterminados
-      const layoutedNodes = getLayoutedNodes(initialRoadmapNodes, initialRoadmapEdges);
-      setNodes(layoutedNodes);
+      setNodes(initialRoadmapNodes);
       setEdges(initialRoadmapEdges.map(edge => ({
         ...edge,
         type: edge.type || 'default',
@@ -374,18 +367,16 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
     curved: CurvedEdge,
   }), []);
 
-  // Crear nodeTypes dinámicamente para incluir readOnly y estilos mejorados
+  // Crear nodeTypes dinámicamente para incluir readOnly
   const nodeTypes = useMemo(() => ({
     custom: (props) => (
       <CustomNode 
         {...props} 
         readOnly={readOnly} 
         onNodeSelect={setSelectedNodeId}
-        isSelected={selectedNodeId === props.id}
-        style={getNodeStyle(props, selectedNodeId)}
       />
     ),
-  }), [readOnly, selectedNodeId]);
+  }), [readOnly]);
 
   // Pasar información del nodo para mostrar off-canvas
   const nodesWithClick = useMemo(() => {
@@ -441,15 +432,15 @@ export default function GraphLayout({ roadmapType = 'termodinamica', customNodes
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           fitView={false}
-          fitViewOptions={{ padding: 0.15, includeHiddenNodes: false }}
-          defaultViewport={{ x: 0, y: 0, zoom: 0.5 }}
-          minZoom={0.1}
-          maxZoom={3}
+          fitViewOptions={{ padding: 0.2, includeHiddenNodes: false }}
+          defaultViewport={{ x: 0, y: 0, zoom: 0.2 }}
+          minZoom={0.05}
+          maxZoom={2}
           nodesDraggable={false}
           nodesConnectable={false}
           elementsSelectable={true}
-          panOnScroll={true}
-          zoomOnScroll={true}
+          panOnScroll={false}
+          zoomOnScroll={false}
           panOnDrag={true}
           zoomOnPinch={true}
           panOnScrollMode="free"
