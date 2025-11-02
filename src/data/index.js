@@ -9,6 +9,5 @@
  */
 
 export { allRoadmapsData, sortedAllRoadmapsData } from './allRoadmaps';
-export { default as roadmaps } from './roadmaps';
-export { nodes, edges } from './nodes'; // or import separately as needed
-export * from './edges';
+export { roadmaps } from './roadmaps';
+export { nodes, edges } from './edges';
